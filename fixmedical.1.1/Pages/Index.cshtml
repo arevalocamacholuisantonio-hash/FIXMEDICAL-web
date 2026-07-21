@@ -1,0 +1,72 @@
+﻿@page
+@model fixmedical._1._1.Pages.IndexModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Iniciar Sesión - FixMedical</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <style>
+            body {
+                background-color: #f8f9fa;
+            }
+
+            .login-card {
+                border-radius: 16px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            }
+
+            .logo-img {
+                /* 🚀 Agrandamos el tamaño máximo para que resalte más */
+                max-width: 200px;
+                height: auto;
+            }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center align-items-center" style="min-height: 100vh;">
+            <div class="col-md-5 col-lg-4">
+                <div class="card login-card border-0">
+                    <div class="card-body p-4 p-md-5">
+
+                        <div class="text-center mb-4">
+                            <img src="/images/logo_fix.png" alt="Logo FixMedical" class="logo-img" />
+                        </div>
+
+                        <form method="post">
+                            <div asp-validation-summary="ModelOnly" class="text-danger mb-3 small"></div>
+
+                            @if (TempData["SuccessMessage"] != null)
+                            {
+                                <div class="alert alert-success alert-dismissible fade show small py-2 text-center" role="alert">
+                                    @TempData["SuccessMessage"]
+                                </div>
+                            }
+
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold text-secondary">Correo Electrónico</label>
+                                <input asp-for="Input.Email" class="form-control" placeholder="nombre@correo.com" required type="email" style="border-radius: 8px;" />
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label small fw-bold text-secondary">Contraseña</label>
+                                <input asp-for="Input.Password" class="form-control" placeholder="••••••••" required type="password" style="border-radius: 8px;" />
+                            </div>
+
+                            <button type="submit" class="btn w-100 text-white fw-bold py-2" style="background-color: #004b87; border-radius: 8px;">
+                                Iniciar Sesión
+                            </button>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

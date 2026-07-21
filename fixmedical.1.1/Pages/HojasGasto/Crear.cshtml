@@ -1,0 +1,889 @@
+﻿@page
+@model fixmedical._1._1.Pages.HojasGasto.CrearModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Consumo Quirúrgico - FixMedical</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <style>
+            body {
+                background-color: #dcdcdc;
+                font-family: 'Calibri', sans-serif;
+                padding: 20px;
+                overflow-x: hidden;
+            }
+
+            .hoja-container {
+                background: white;
+                width: 34.5cm;
+                height: 27.4cm;
+                margin: 20px auto;
+                padding: 2cm 1.5cm 1cm 1.5cm;
+                border: none;
+                box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
+                box-sizing: border-box;
+                transform-origin: top center;
+                position: relative;
+                font-family: 'Calibri', sans-serif;
+            }
+
+            @@media screen and (max-width: 1200px) {
+                .hoja-container {
+                    transform: scale(0.7);
+                }
+            }
+
+            @@media screen and (max-width: 900px) {
+                .hoja-container {
+                    transform: scale(0.55);
+                }
+            }
+
+            @@media screen and (max-width: 600px) {
+                .hoja-container {
+                    transform: scale(0.4);
+                }
+            }
+
+            /* Botones circulares flotantes */
+            .btn-flotantes {
+                position: fixed;
+                top: 20px;
+                left: 20px;
+                z-index: 1000;
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .btn-circular {
+                width: 60px;
+                height: 60px;
+                border-radius: 50%;
+                border: 2px solid #808080;
+                background-color: #a9a9a9;
+                color: white;
+                font-size: 11px;
+                font-weight: bold;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                padding: 5px;
+                transition: all 0.3s ease;
+                box-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+                text-decoration: none;
+                font-family: 'Calibri', sans-serif;
+            }
+
+                .btn-circular:hover {
+                    background-color: #D8BFD8;
+                    border-color: #D8BFD8;
+                    color: #4a4a4a;
+                    transform: scale(1.05);
+                }
+
+            .header-top {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 10px;
+                padding-bottom: 0;
+                border-bottom: none;
+            }
+
+            .logo-section img {
+                max-width: 240px;
+                height: auto;
+            }
+
+            .title-section {
+                text-align: center;
+                flex: 1;
+                font-weight: bold;
+                font-size: 19px;
+                text-transform: uppercase;
+                padding-left: 0;
+                padding-right: 4cm;
+                font-family: 'Calibri', sans-serif;
+            }
+
+            .id-section {
+                font-size: 20px;
+                font-weight: bold;
+                color: #c00;
+                font-family: 'Calibri', sans-serif;
+            }
+
+            .campo-row {
+                display: flex;
+                margin-bottom: 5px;
+                align-items: baseline;
+            }
+
+            .campo-label {
+                font-weight: bold;
+                font-size: 12px;
+                margin-right: 5px;
+                white-space: nowrap;
+                font-family: 'Calibri', sans-serif;
+            }
+
+            .input-line {
+                border: none;
+                border-bottom: 1px solid #000;
+                flex: 1;
+                outline: none;
+                background: transparent;
+                font-size: 12px;
+                padding: 2px 5px;
+                font-family: 'Calibri', sans-serif;
+                font-weight: normal;
+                text-transform: uppercase;
+            }
+
+            /* Sección Línea en un solo párrafo */
+            .linea-section {
+                margin: 5px 0;
+                padding: 0;
+                border: none;
+                border-radius: 0;
+                display: flex;
+                align-items: baseline;
+                gap: 10px;
+            }
+
+            .linea-label {
+                font-weight: bold;
+                font-size: 11px;
+                font-family: 'Calibri', sans-serif;
+                white-space: nowrap;
+            }
+
+            .linea-opciones-inline {
+                display: flex;
+                gap: 15px;
+                flex: 1;
+                align-items: baseline;
+                flex-wrap: wrap;
+            }
+
+            .linea-item-inline {
+                display: flex;
+                align-items: baseline;
+                gap: 3px;
+                font-size: 11px;
+                font-family: 'Calibri', sans-serif;
+                font-weight: bold;
+                white-space: nowrap;
+            }
+
+            .linea-input-largo {
+                border: none;
+                border-bottom: 1px solid #000;
+                width: 50px;
+                text-align: center;
+                font-size: 11px;
+                font-weight: bold;
+                outline: none;
+                background: transparent;
+                font-family: 'Calibri', sans-serif;
+                text-transform: uppercase;
+            }
+
+            .tabla-formato {
+                width: 100%;
+                border-collapse: separate;
+                border-spacing: 0;
+                border: 2px solid #000;
+                border-radius: 10px;
+                overflow: hidden;
+                margin: 5px 0;
+                font-size: 11px;
+                font-family: 'Calibri', sans-serif;
+            }
+
+                .tabla-formato th {
+                    background-color: #ffffff;
+                    border: 1px solid #000;
+                    padding: 6px 4px;
+                    text-align: center;
+                    font-weight: bold;
+                    font-size: 10px;
+                    text-transform: uppercase;
+                    font-family: 'Calibri', sans-serif;
+                }
+
+                .tabla-formato td {
+                    border: 1px solid #000;
+                    padding: 0;
+                    height: 26px;
+                    font-family: 'Calibri', sans-serif;
+                }
+
+                    .tabla-formato th:first-child, .tabla-formato td:first-child {
+                        border-left: none;
+                    }
+
+                    .tabla-formato th:last-child, .tabla-formato td:last-child {
+                        border-right: none;
+                    }
+
+                .tabla-formato thead tr:first-child th {
+                    border-top: none;
+                }
+
+                .tabla-formato tbody tr:last-child td {
+                    border-bottom: none;
+                }
+
+            .input-cell {
+                border: none;
+                width: 100%;
+                height: 100%;
+                outline: none;
+                padding: 3px 5px;
+                font-size: 11px;
+                background: transparent;
+                font-family: 'Calibri', sans-serif;
+                text-transform: uppercase;
+            }
+
+            /* ALINEACIONES POR COLUMNA */
+            .tabla-formato td:nth-child(1) .input-cell {
+                text-align: center;
+            }
+
+            .tabla-formato td:nth-child(2) .input-cell {
+                text-align: center;
+            }
+
+            .tabla-formato td:nth-child(3) .input-cell {
+                text-align: left;
+            }
+
+            .tabla-formato td:nth-child(4) .input-cell {
+                text-align: center;
+            }
+
+            .tabla-formato td:nth-child(5) .input-cell {
+                text-align: center;
+            }
+
+            .tabla-formato td:nth-child(6) .input-cell {
+                text-align: center;
+            }
+
+            .bottom-section {
+                margin-top: 8px;
+                margin-bottom: 8px;
+                display: flex;
+                justify-content: space-between;
+                align-items: baseline;
+            }
+
+            .fabricante-box {
+                flex: 1;
+                margin-right: 20px;
+            }
+
+            .domicilio-box {
+                flex: 1;
+            }
+
+            .domicilio-section {
+                display: flex;
+                align-items: baseline;
+                gap: 10px;
+                margin-top: 5px;
+            }
+
+            .domicilio-label {
+                font-weight: bold;
+                font-size: 11px;
+                font-family: 'Calibri', sans-serif;
+                white-space: nowrap;
+            }
+
+            .pais-opciones-inline {
+                display: flex;
+                gap: 15px;
+                align-items: baseline;
+                flex-wrap: wrap;
+            }
+
+            .pais-item-inline {
+                display: flex;
+                align-items: baseline;
+                gap: 3px;
+                font-size: 11px;
+                font-family: 'Calibri', sans-serif;
+                font-weight: bold;
+                white-space: nowrap;
+            }
+
+            .pais-input-largo {
+                border: none;
+                border-bottom: 1px solid #000;
+                width: 40px;
+                text-align: center;
+                font-size: 11px;
+                font-weight: bold;
+                outline: none;
+                background: transparent;
+                font-family: 'Calibri', sans-serif;
+                text-transform: uppercase;
+            }
+
+            .firmas-section {
+                display: flex;
+                justify-content: space-between;
+                margin-top: 8px;
+                margin-bottom: 8px;
+                gap: 15px;
+            }
+
+            .firma-box {
+                flex: 1;
+                text-align: center;
+            }
+
+            .canvas-firma {
+                border: none;
+                background-color: transparent;
+                width: 100%;
+                height: 55px;
+                display: block;
+                margin: 0 auto 3px;
+                touch-action: none;
+                cursor: crosshair;
+            }
+
+            .firma-label {
+                font-size: 9px;
+                font-weight: bold;
+                text-align: center;
+                margin-top: 2px;
+                border-top: 1px solid #000;
+                padding-top: 2px;
+                font-family: 'Calibri', sans-serif;
+            }
+
+            .footer-final {
+                margin-top: 8px;
+                margin-bottom: 8px;
+                display: flex;
+                gap: 20px;
+                font-size: 11px;
+                font-family: 'Calibri', sans-serif;
+            }
+
+            .footer-item {
+                flex: 1;
+                display: flex;
+                align-items: baseline;
+            }
+
+            .footer-label {
+                font-weight: bold;
+                margin-right: 5px;
+                white-space: nowrap;
+                font-family: 'Calibri', sans-serif;
+            }
+
+            .footer-input {
+                border: none;
+                border-bottom: 1px solid #000;
+                flex: 1;
+                outline: none;
+                background: transparent;
+                font-size: 11px;
+                font-family: 'Calibri', sans-serif;
+                text-transform: uppercase;
+            }
+
+            /* ESTILOS COMPACTOS SOLO PARA EL CLON DEL PDF */
+            .hoja-container.pdf-compact {
+                width: 34.5cm !important;
+                height: auto !important;
+                padding: 1cm 1cm 0.5cm 1cm !important;
+                margin: 0 !important;
+                box-shadow: none !important;
+                transform: none !important;
+            }
+
+                .hoja-container.pdf-compact .header-top {
+                    margin-bottom: 3px !important;
+                }
+
+                .hoja-container.pdf-compact .logo-section img {
+                    max-width: 180px !important;
+                }
+
+                .hoja-container.pdf-compact .title-section {
+                    font-size: 16px !important;
+                }
+
+                .hoja-container.pdf-compact .id-section {
+                    font-size: 17px !important;
+                }
+
+                .hoja-container.pdf-compact .campo-row {
+                    margin-bottom: 2px !important;
+                }
+
+                .hoja-container.pdf-compact .campo-label,
+                .hoja-container.pdf-compact .input-line {
+                    font-size: 10px !important;
+                }
+
+                .hoja-container.pdf-compact .linea-section {
+                    margin: 2px 0 !important;
+                }
+
+                .hoja-container.pdf-compact .linea-label,
+                .hoja-container.pdf-compact .linea-item-inline,
+                .hoja-container.pdf-compact .linea-input-largo {
+                    font-size: 10px !important;
+                }
+
+                .hoja-container.pdf-compact .linea-input-largo {
+                    width: 40px !important;
+                }
+
+                .hoja-container.pdf-compact .tabla-formato {
+                    margin: 2px 0 !important;
+                }
+
+                    .hoja-container.pdf-compact .tabla-formato th {
+                        padding: 3px 2px !important;
+                        font-size: 9px !important;
+                    }
+
+                    .hoja-container.pdf-compact .tabla-formato td {
+                        height: 18px !important;
+                    }
+
+                .hoja-container.pdf-compact .input-cell {
+                    padding: 1px 3px !important;
+                    font-size: 9px !important;
+                }
+
+                .hoja-container.pdf-compact .bottom-section {
+                    margin-top: 3px !important;
+                    margin-bottom: 3px !important;
+                }
+
+                .hoja-container.pdf-compact .domicilio-label,
+                .hoja-container.pdf-compact .pais-item-inline,
+                .hoja-container.pdf-compact .pais-input-largo {
+                    font-size: 9px !important;
+                }
+
+                .hoja-container.pdf-compact .pais-input-largo {
+                    width: 30px !important;
+                }
+
+                .hoja-container.pdf-compact .firmas-section {
+                    margin-top: 3px !important;
+                    margin-bottom: 3px !important;
+                    gap: 10px !important;
+                }
+
+                .hoja-container.pdf-compact .canvas-firma {
+                    height: 40px !important;
+                    margin: 0 auto 1px !important;
+                }
+
+                .hoja-container.pdf-compact .firma-label {
+                    font-size: 8px !important;
+                    margin-top: 1px !important;
+                    padding-top: 1px !important;
+                }
+
+                .hoja-container.pdf-compact .footer-final {
+                    margin-top: 2px !important;
+                    margin-bottom: 2px !important;
+                    gap: 10px !important;
+                }
+
+                .hoja-container.pdf-compact .footer-label,
+                .hoja-container.pdf-compact .footer-input {
+                    font-size: 9px !important;
+                }
+
+            @@media print {
+                body {
+                    background-color: white;
+                    padding: 0;
+                }
+
+                .no-print, .btn-flotantes {
+                    display: none;
+                }
+
+                .hoja-container {
+                    margin: 0;
+                    border: none;
+                    box-shadow: none;
+                    transform: none !important;
+                    width: 34.5cm;
+                    height: 27.4cm;
+                    padding: 2cm 1cm 1cm 1cm;
+                }
+            }
+    </style>
+</head>
+<body>
+
+    <!-- Botones circulares flotantes -->
+    <div class="btn-flotantes no-print">
+        <button type="submit" form="formHoja" class="btn-circular" title="Guardar Tarjeta">
+            Guardar
+        </button>
+        <button type="button" class="btn-circular" onclick="descargarPDF()" title="Descargar PDF">
+            PDF
+        </button>
+    </div>
+
+    <div class="hoja-container" id="hojaOriginal">
+        <form method="post" id="formHoja">
+            <!-- Header -->
+            <div class="header-top">
+                <div class="logo-section">
+                    <img src="~/images/LOGO FIX1_sin_fondo.png" alt="FixMedical" />
+                </div>
+                <div class="title-section">
+                    CONSUMO QUIRURGICO (TARJETA DE PRODUCTO)
+                </div>
+                <div class="id-section">@Model.ConsecutivoGenerado</div>
+            </div>
+
+            <!-- Campos superiores - INSTITUCIÓN, FECHA, REMISIÓN -->
+            <div class="campo-row">
+                <span class="campo-label">INSTITUCIÓN:</span>
+                <input asp-for="NuevaHoja.Institucion" class="input-line" />
+                <span class="campo-label" style="margin-left: 20px;">FECHA:</span>
+                <input type="date" asp-for="NuevaHoja.Fecha" class="input-line" style="flex: 0 0 120px;" />
+                <span class="campo-label" style="margin-left: 20px;">REMISIÓN:</span>
+                <input asp-for="NuevaHoja.Remision" class="input-line" style="flex: 0 0 100px;" />
+            </div>
+
+            <!-- Campos en una sola línea - ESPECIALISTA, PACIENTE, ID -->
+            <div class="campo-row">
+                <span class="campo-label">ESPECIALISTA:</span>
+                <input asp-for="NuevaHoja.Especialista" class="input-line" />
+                <span class="campo-label" style="margin-left: 20px;">PACIENTE:</span>
+                <input asp-for="NuevaHoja.Paciente" class="input-line" />
+                <span class="campo-label" style="margin-left: 20px;">ID:</span>
+                <input asp-for="NuevaHoja.PacienteID" class="input-line" style="flex: 0 0 120px;" />
+            </div>
+
+            <!-- Sección Línea -->
+            <div class="linea-section">
+                <span class="linea-label">LÍNEA:</span>
+                <div class="linea-opciones-inline">
+                    <span class="linea-item-inline">FIXCMF <input type="text" class="linea-input-largo" name="Linea_FIXCMF" maxlength="1" /></span>
+                    <span class="linea-item-inline">BONEFIX <input type="text" class="linea-input-largo" name="Linea_BONEFIX" maxlength="1" /></span>
+                    <span class="linea-item-inline">FIXPIEZO <input type="text" class="linea-input-largo" name="Linea_FIXPIEZO" maxlength="1" /></span>
+                    <span class="linea-item-inline">FIXPECTUS <input type="text" class="linea-input-largo" name="Linea_FIXPECTUS" maxlength="1" /></span>
+                    <span class="linea-item-inline">FIXTORAX <input type="text" class="linea-input-largo" name="Linea_FIXTORAX" maxlength="1" /></span>
+                    <span class="linea-item-inline">FIXANCLAS <input type="text" class="linea-input-largo" name="Linea_FIXANCLAS" maxlength="1" /></span>
+                    <span class="linea-item-inline">FIXHAND <input type="text" class="linea-input-largo" name="Linea_FIXHAND" maxlength="1" /></span>
+                </div>
+            </div>
+
+            <!-- Tabla principal - 20 filas -->
+            <table class="tabla-formato">
+                <colgroup>
+                    <col style="width: 14%;">
+                    <col style="width: 17%;">
+                    <col style="width: 32%;">
+                    <col style="width: 8%;">
+                    <col style="width: 12%;">
+                    <col style="width: 17%;">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>CODIGO</th>
+                        <th>REFERENCIA</th>
+                        <th>DESCRIPCIÓN</th>
+                        <th>CANT.</th>
+                        <th>LOTE</th>
+                        <th>REG. INVIMA</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < 20; i++)
+                    {
+                        <tr>
+                            <td><input type="text" class="input-cell" name="Codigos[]" readonly /></td>
+                            <td><input type="text" class="input-cell" name="Referencias[]" onkeydown="manejarEnter(event, this)" onblur="buscarProducto(this)" /></td>
+                            <td><input type="text" class="input-cell" name="Descripciones[]" readonly /></td>
+                            <td><input type="text" class="input-cell" name="Cantidades[]" /></td>
+                            <td><input type="text" class="input-cell" name="Lotes[]" /></td>
+                            <td><input type="text" class="input-cell" name="Invimas[]" /></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <!-- Sección inferior -->
+            <div class="bottom-section">
+                <div class="fabricante-box">
+                    <div class="campo-row">
+                        <span class="campo-label">FABRICANTE:</span>
+                        <input type="text" class="input-line" name="Fabricante" />
+                    </div>
+                </div>
+                <div class="domicilio-box">
+                    <div class="domicilio-section">
+                        <span class="domicilio-label">DOMICILIO PAÍS:</span>
+                        <div class="pais-opciones-inline">
+                            <span class="pais-item-inline">CH <input type="text" class="pais-input-largo" name="Pais_CH" maxlength="1" /></span>
+                            <span class="pais-item-inline">IT <input type="text" class="pais-input-largo" name="Pais_IT" maxlength="1" /></span>
+                            <span class="pais-item-inline">AL <input type="text" class="pais-input-largo" name="Pais_AL" maxlength="1" /></span>
+                            <span class="pais-item-inline">USA <input type="text" class="pais-input-largo" name="Pais_USA" maxlength="1" /></span>
+                            <span class="pais-item-inline">BRA <input type="text" class="pais-input-largo" name="Pais_BRA" maxlength="1" /></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Firmas -->
+            <div class="firmas-section">
+                <div class="firma-box">
+                    <canvas id="canvasEsp" class="canvas-firma"></canvas>
+                    <div class="firma-label">FIRMA ESPECIALISTA</div>
+                    <input type="hidden" name="FirmaEspBase64" id="FirmaEspBase64" />
+                </div>
+                <div class="firma-box">
+                    <canvas id="canvasInst" class="canvas-firma"></canvas>
+                    <div class="firma-label">FIRMA IQX INSTITUCIÓN</div>
+                    <input type="hidden" name="FirmaInstBase64" id="FirmaInstBase64" />
+                </div>
+                <div class="firma-box">
+                    <canvas id="canvasFix" class="canvas-firma"></canvas>
+                    <div class="firma-label">FIRMA IQX FIXMEDICAL</div>
+                    <input type="hidden" name="FirmaFixBase64" id="FirmaFixBase64" />
+                </div>
+            </div>
+
+            <!-- Footer final -->
+            <div class="footer-final">
+                <div class="footer-item">
+                    <span class="footer-label">FACTURAR A:</span>
+                    <input type="text" class="footer-input" name="FacturarA" />
+                </div>
+                <div class="footer-item">
+                    <span class="footer-label">PEDIDO:</span>
+                    <input type="text" class="footer-input" name="Pedido" />
+                </div>
+                <div class="footer-item">
+                    <span class="footer-label">DESPACHO:</span>
+                    <input type="text" class="footer-input" name="Despacho" />
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script>
+            const canvasEsp = document.getElementById('canvasEsp');
+            const canvasInst = document.getElementById('canvasInst');
+            const canvasFix = document.getElementById('canvasFix');
+
+            function ajustarCanvas(c) {
+                const rect = c.getBoundingClientRect();
+                c.width = rect.width * window.devicePixelRatio;
+                c.height = rect.height * window.devicePixelRatio;
+                c.style.width = rect.width + 'px';
+                c.style.height = rect.height + 'px';
+                const ctx = c.getContext('2d');
+                ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+            }
+
+            window.addEventListener('load', () => {
+                [canvasEsp, canvasInst, canvasFix].forEach(c => ajustarCanvas(c));
+            });
+
+            const padEsp = new SignaturePad(canvasEsp);
+            const padInst = new SignaturePad(canvasInst);
+            const padFix = new SignaturePad(canvasFix);
+
+            // FUNCIÓN CORREGIDA: Genera PDF desde un clon compacto
+            function descargarPDF() {
+                const original = document.getElementById('hojaOriginal');
+
+                // 1. Crear un clon del contenedor original
+                const clone = original.cloneNode(true);
+                clone.id = 'hojaClonePDF';
+
+                // 2. Aplicar clase compacta para activar estilos específicos del PDF
+                clone.classList.add('pdf-compact');
+
+                // 3. OCULTAR el clon visualmente pero mantenerlo en el DOM
+                clone.style.position = 'absolute';
+                clone.style.left = '-9999px';
+                clone.style.top = '0';
+                clone.style.visibility = 'hidden';
+                document.body.appendChild(clone);
+
+                // 4. CORRECCIÓN CRÍTICA: Copiar valores de inputs
+                copiarValoresInputs(original, clone);
+
+                // 5. Re-renderizar las firmas en los canvas del clon
+                renderizarFirmasEnClon(clone);
+
+                // 6. Pequeño delay para asegurar que el DOM se renderice
+                setTimeout(() => {
+                    const opt = {
+                        filename: 'Consumo_Quirurgico.pdf',
+                        margin: [0.2, 0.2, 0.2, 0.2],
+                        image: { type: 'jpeg', quality: 0.98 },
+                        html2canvas: {
+                            scale: 2,
+                            useCORS: true,
+                            logging: false,
+                            letterRendering: true
+                        },
+                        jsPDF: {
+                            unit: 'cm',
+                            format: [34.5, 27.4],
+                            orientation: 'landscape',
+                            compress: true
+                        }
+                    };
+
+                    html2pdf().set(opt).from(clone).save().then(() => {
+                        // 7. Limpiar: eliminar el clon después de generar el PDF
+                        if (document.body.contains(clone)) {
+                            document.body.removeChild(clone);
+                        }
+                    });
+                }, 200);
+            }
+
+            // CORRECCIÓN: Copiar valores de inputs (crucial para evitar PDF en blanco)
+            function copiarValoresInputs(original, clone) {
+                const originalInputs = original.querySelectorAll('input');
+                const cloneInputs = clone.querySelectorAll('input');
+
+                for (let i = 0; i < originalInputs.length; i++) {
+                    if (originalInputs[i].type === 'checkbox' || originalInputs[i].type === 'radio') {
+                        cloneInputs[i].checked = originalInputs[i].checked;
+                    } else {
+                        cloneInputs[i].value = originalInputs[i].value;
+                    }
+                }
+            }
+
+            // Función para renderizar las firmas del original en los canvas del clon
+            function renderizarFirmasEnClon(clone) {
+                const canvasClon = clone.querySelectorAll('canvas.canvas-firma');
+                const pads = [padEsp, padInst, padFix];
+
+                canvasClon.forEach((canvasClonItem, index) => {
+                    if (!pads[index].isEmpty()) {
+                        // Configurar dimensiones del canvas del clon
+                        canvasClonItem.width = 300;
+                        canvasClonItem.height = 80;
+
+                        const ctx = canvasClonItem.getContext('2d');
+                        const img = new Image();
+                        img.src = pads[index].toDataURL('image/png');
+
+                        img.onload = function() {
+                            ctx.drawImage(img, 0, 0, canvasClonItem.width, canvasClonItem.height);
+                        };
+                    }
+                });
+            }
+
+            document.getElementById('formHoja').addEventListener('submit', function() {
+                document.getElementById('FirmaEspBase64').value = padEsp.isEmpty() ? '' : padEsp.toDataURL('image/png');
+                document.getElementById('FirmaInstBase64').value = padInst.isEmpty() ? '' : padInst.toDataURL('image/png');
+                document.getElementById('FirmaFixBase64').value = padFix.isEmpty() ? '' : padFix.toDataURL('image/png');
+            });
+
+            function manejarEnter(event, input) {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+
+                    let ref = input.value.trim();
+                    let fila = input.closest('tr');
+
+                    if (ref) {
+                        fetch('?handler=BuscarProducto&referencia=' + encodeURIComponent(ref))
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data) {
+                                    fila.querySelector('[name="Codigos[]"]').value = data.codigo;
+                                    fila.querySelector('[name="Descripciones[]"]').value = data.descripcion;
+                                }
+                                saltarASiguienteFila(fila);
+                            })
+                            .catch(err => {
+                                console.error('Error:', err);
+                                saltarASiguienteFila(fila);
+                            });
+                    } else {
+                        saltarASiguienteFila(fila);
+                    }
+                }
+            }
+
+            function saltarASiguienteFila(filaActual) {
+                const siguienteFila = filaActual.nextElementSibling;
+                if (siguienteFila) {
+                    const siguienteReferencia = siguienteFila.querySelector('[name="Referencias[]"]');
+                    if (siguienteReferencia) {
+                        siguienteReferencia.focus();
+                        siguienteReferencia.select();
+                    }
+                } else {
+                    const cantidadActual = filaActual.querySelector('[name="Cantidades[]"]');
+                    if (cantidadActual) {
+                        cantidadActual.focus();
+                    }
+                }
+            }
+
+            function buscarProducto(input) {
+                let ref = input.value;
+                let fila = input.closest('tr');
+                if (!ref) return;
+                fetch('?handler=BuscarProducto&referencia=' + encodeURIComponent(ref))
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data) {
+                            fila.querySelector('[name="Codigos[]"]').value = data.codigo;
+                            fila.querySelector('[name="Descripciones[]"]').value = data.descripcion;
+                        }
+                    })
+                    .catch(err => console.error('Error:', err));
+            }
+
+            document.querySelectorAll('input[type="text"]').forEach(input => {
+                input.addEventListener('input', function() {
+                    const start = this.selectionStart;
+                    const end = this.selectionEnd;
+                    this.value = this.value.toUpperCase();
+                    this.setSelectionRange(start, end);
+                });
+
+                input.setAttribute('autocapitalize', 'characters');
+                input.setAttribute('autocomplete', 'off');
+                input.setAttribute('autocorrect', 'off');
+                input.setAttribute('spellcheck', 'false');
+            });
+    </script>
+</body>
+</html>

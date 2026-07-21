@@ -1,0 +1,88 @@
+﻿@page
+@model fixmedical._1._1.Pages.RegisterModel
+@{
+    Layout = null; // Pantalla limpia sin menús superiores
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registro - FixMedical</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <style>
+            body {
+                background-color: #f8f9fa;
+            }
+
+            .register-card {
+                border-radius: 16px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center align-items-center" style="min-height: 100vh;">
+            <div class="col-md-6 col-lg-5">
+                <div class="card register-card border-0 my-5">
+                    <div class="card-body p-4 p-md-5">
+
+                        <div class="text-center mb-4">
+                            <h2 class="fw-bold" style="color: #004b87;">Fix<span style="color: #f39200;">Medical</span></h2>
+                            <p class="text-muted small">Crea una nueva cuenta de usuario en el sistema</p>
+                        </div>
+
+                        <form method="post">
+                            <div asp-validation-summary="ModelOnly" class="text-danger mb-3 small"></div>
+
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold text-secondary">Nombre de Usuario</label>
+                                <input asp-for="Input.NombreUsuario" class="form-control" placeholder="Ej. Juan Pérez" required style="border-radius: 8px;" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold text-secondary">Correo Electrónico</label>
+                                <input asp-for="Input.Email" class="form-control" placeholder="nombre@correo.com" required type="email" style="border-radius: 8px;" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold text-secondary">Rol asignado</label>
+                                <select asp-for="Input.ID_Rol" class="form-select" required style="border-radius: 8px;">
+                                    <option value="">-- Selecciona un Rol --</option>
+                                    @foreach (var rol in Model.RolesDisponibles)
+                                    {
+                                        <option value="@rol.ID_Rol">@rol.Nombre_Rol</option>
+                                    }
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold text-secondary">Contraseña</label>
+                                <input asp-for="Input.Password" class="form-control" placeholder="••••••••" required type="password" style="border-radius: 8px;" />
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label small fw-bold text-secondary">Confirmar Contraseña</label>
+                                <input asp-for="Input.ConfirmPassword" class="form-control" placeholder="••••••••" required type="password" style="border-radius: 8px;" />
+                            </div>
+
+                            <button type="submit" class="btn w-100 text-white fw-bold py-2 mb-3" style="background-color: #004b87; border-radius: 8px;">
+                                Crear Cuenta
+                            </button>
+
+                            <div class="text-center">
+                                <a asp-page="/Index" class="small text-decoration-none" style="color: #f39200; font-weight: 500;">
+                                    ¿Ya tienes cuenta? Inicia sesión aquí
+                                </a>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
