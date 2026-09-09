@@ -1,0 +1,480 @@
+﻿@page "/Admin/Database/Historial"
+@model fixmedical._1._1.Pages.Admin.Database.HistorialModel
+@{
+    Layout = null;
+    ViewData["Title"] = "Historial - FixMedical";
+
+    string FmtDur(int? s)
+    {
+        if (s == null) return "—";
+        int t = s.Value;
+        return $"{t / 3600:D2}:{(t % 3600) / 60:D2}:{t % 60:D2}";
+    }
+    string FmtDurInt(int s)
+    {
+        return $"{s / 3600:D2}:{(s % 3600) / 60:D2}:{s % 60:D2}";
+    }
+    string FmtCoord(double? v) => v.HasValue ? v.Value.ToString("0.000000", System.Globalization.CultureInfo.InvariantCulture) : "";
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Historial - FixMedical</title>
+    <link rel="icon" type="image/png" sizes="40x40" href="~/images/LOGO FIX CORTO_sin_fondo (1).png" />
+    <link rel="apple-touch-icon" href="~/images/LOGO FIX CORTO_sin_fondo (1).png" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <style>
+        :root {
+            --bg-0:#05070f;--bg-1:#0a1226;--bg-2:#0d1b3a;
+            --azul:#004b87;--azul-2:#002d54;--naranja:#f39200;
+            --neon-cyan:#22d3ee;--neon-magenta:#ff4d8d;
+            --ok:#34d399;--bad:#ff5a6e;
+            --txt:#eaf2ff;--txt-soft:#8fb3d9;
+            --glass:rgba(13,20,40,.55);--glass-border:rgba(255,255,255,.08);
+        }
+        *{box-sizing:border-box;} html,body{height:100%;}
+        body{margin:0;background:var(--bg-0);color:var(--txt);font-family:'Segoe UI',Tahoma,sans-serif;overflow-x:hidden;}
+        .bg{position:fixed;inset:0;z-index:0;overflow:hidden;}
+        .bg-gradient{position:absolute;inset:0;background:linear-gradient(135deg,var(--bg-0),var(--bg-1) 45%,var(--bg-2));background-size:200% 200%;animation:gs 18s ease infinite;}
+        .blob{position:absolute;border-radius:50%;filter:blur(90px);opacity:.4;mix-blend-mode:screen;}
+        .b1{width:520px;height:520px;background:radial-gradient(circle at 30% 30%,var(--naranja),transparent 60%);top:-140px;left:-120px;animation:f1 22s ease-in-out infinite;}
+        .b2{width:600px;height:600px;background:radial-gradient(circle at 70% 40%,var(--azul),transparent 60%);bottom:-200px;right:-160px;animation:f2 26s ease-in-out infinite;}
+        .b3{width:420px;height:420px;background:radial-gradient(circle at 50% 50%,var(--neon-cyan),transparent 60%);top:30%;left:48%;opacity:.22;animation:f3 30s ease-in-out infinite;}
+        .grid-overlay{position:absolute;inset:0;background-image:linear-gradient(rgba(34,211,238,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(34,211,238,.06) 1px,transparent 1px);background-size:44px 44px;-webkit-mask-image:radial-gradient(ellipse 80% 70% at 50% 30%,#000,transparent 80%);mask-image:radial-gradient(ellipse 80% 70% at 50% 30%,#000,transparent 80%);}
+        #particles{position:fixed;inset:0;z-index:1;pointer-events:none;}
+        .navbar-neon{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:16px 28px;background:rgba(5,7,15,.55);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--glass-border);box-shadow:0 6px 24px rgba(0,0,0,.4);}
+        .brand{display:inline-flex;align-items:center;text-decoration:none;}
+        .brand-logo{height:55px;width:auto;display:block;filter:drop-shadow(0 0 8px rgba(243,146,0,.55)) drop-shadow(0 0 18px rgba(243,146,0,.28));transition:filter .25s,transform .25s;}
+        .brand:hover .brand-logo{filter:drop-shadow(0 0 12px rgba(243,146,0,.85)) drop-shadow(0 0 26px rgba(34,211,238,.35));transform:scale(1.04);}
+        .nav-right{display:flex;align-items:center;gap:12px;}
+        .btn-glass{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);color:var(--txt);border-radius:8px;padding:7px 16px;font-size:.85rem;cursor:pointer;text-decoration:none;transition:.25s;}
+        .btn-glass:hover{border-color:var(--naranja);box-shadow:0 0 16px rgba(243,146,0,.35);color:#fff;}
+        .shell{position:relative;z-index:2;max-width:1320px;margin:0 auto;padding:32px 24px 60px;}
+        .head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+        .head h3{margin:0;font-size:1.7rem;font-weight:800;display:flex;align-items:center;gap:10px;}
+        .head h3 i{color:var(--neon-cyan);text-shadow:0 0 16px rgba(34,211,238,.5);}
+        .glass{background:var(--glass);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid var(--glass-border);border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.5);position:relative;overflow:hidden;animation:ci .7s cubic-bezier(.2,.8,.2,1) both;}
+        .glass::before{content:"";position:absolute;top:0;left:10%;right:10%;height:2px;background:linear-gradient(90deg,transparent,var(--naranja),var(--neon-cyan),transparent);filter:blur(1px);opacity:.85;}
+        .panel{padding:22px 24px;margin-bottom:22px;}
+
+        /* ===== SWITCH ===== */
+        .switch-row{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;}
+        .switch-btn{padding:10px 18px;border-radius:12px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);color:var(--txt-soft);font-weight:700;font-size:13px;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:.25s;cursor:pointer;}
+        .switch-btn:hover{border-color:var(--neon-cyan);color:#fff;box-shadow:0 0 14px rgba(34,211,238,.35);}
+        .switch-btn.active{background:linear-gradient(135deg,var(--azul),var(--azul-2));border-color:rgba(34,211,238,.55);color:#fff;box-shadow:0 8px 24px rgba(0,75,135,.45),0 0 18px rgba(34,211,238,.35);}
+
+        .banner-ok{margin-bottom:18px;padding:12px 16px;border-radius:12px;background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.5);color:#6ee7b7;font-size:13px;font-weight:600;display:flex;align-items:center;gap:9px;box-shadow:0 0 20px rgba(52,211,153,.18);animation:ci .5s ease both;}
+        .filt-row{display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:12px;align-items:end;}
+        .campo{font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--txt-soft);margin-bottom:6px;}
+        .neon-input{width:100%;padding:11px 13px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:10px;color:var(--txt);font-size:14px;outline:none;transition:.25s;}
+        .neon-input:focus{border-color:var(--naranja);box-shadow:0 0 0 3px rgba(243,146,0,.18);}
+        .neon-btn{padding:11px 18px;border:1px solid rgba(243,146,0,.35);border-radius:10px;font-weight:700;color:#fff;cursor:pointer;background:linear-gradient(135deg,var(--azul),var(--azul-2));box-shadow:0 8px 24px rgba(0,75,135,.45);transition:.2s;position:relative;overflow:hidden;white-space:nowrap;}
+        .neon-btn:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(0,75,135,.6),0 0 24px rgba(243,146,0,.5);}
+        .neon-btn.ghost{background:rgba(255,255,255,.05);border-color:rgba(34,211,238,.4);color:var(--neon-cyan);box-shadow:none;}
+        .neon-btn.ghost:hover{box-shadow:0 0 18px rgba(34,211,238,.4);}
+        .count{color:var(--txt-soft);font-size:12px;margin-bottom:12px;}
+        .count b{color:var(--neon-cyan);}
+        .table-wrap{overflow-x:auto;}
+        .neon-table{width:100%;border-collapse:collapse;font-size:13px;min-width:980px;}
+        .neon-table thead th{color:var(--neon-cyan);text-transform:uppercase;font-size:10px;letter-spacing:.7px;padding:12px 12px;border-bottom:1px solid rgba(34,211,238,.25);text-align:left;white-space:nowrap;}
+        .neon-table tbody td{padding:12px;border-bottom:1px solid rgba(255,255,255,.06);vertical-align:top;}
+        .neon-table tbody tr{transition:background .2s;}
+        .neon-table tbody tr:hover td{background:rgba(34,211,238,.05);}
+        .mono{font-family:ui-monospace,'Cascadia Code',Consolas,monospace;letter-spacing:.2px;}
+        .muted{color:var(--txt-soft);}
+        .cons{font-weight:800;color:#fff;white-space:nowrap;}
+        .cir{font-weight:700;text-shadow:0 0 10px rgba(243,146,0,.2);}
+        .dur{font-weight:800;color:var(--neon-cyan);white-space:nowrap;}
+        .mini-btn{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;margin-left:4px;border-radius:6px;background:none;border:1px solid rgba(34,211,238,.35);color:#22d3ee;cursor:pointer;text-decoration:none;font-size:11px;line-height:1;transition:box-shadow .2s,transform .2s;}
+        .mini-btn:hover{box-shadow:0 0 12px rgba(34,211,238,.6);transform:scale(1.12);}
+        .btn-del{background:rgba(255,90,110,.1);border:1px solid rgba(255,90,110,.45);color:var(--bad);border-radius:8px;width:34px;height:34px;cursor:pointer;font-size:14px;transition:.2s;}
+        .btn-del:hover{box-shadow:0 0 16px rgba(255,90,110,.55);transform:translateY(-2px);background:rgba(255,90,110,.2);}
+        .dir-out{font-size:11px;color:var(--neon-cyan);margin-top:3px;}
+        .empty{color:var(--txt-soft);display:flex;align-items:center;gap:8px;padding:8px 2px;}
+
+        .confirm-modal{position:fixed;inset:0;z-index:210000;display:none;align-items:center;justify-content:center;background:rgba(2,4,10,.78);-webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px);opacity:0;transition:opacity .25s ease;}
+        .confirm-modal.show{display:flex;opacity:1;}
+        .confirm-box{width:440px;max-width:92%;text-align:center;position:relative;overflow:hidden;background:rgba(13,20,40,.92);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border:1px solid rgba(255,90,110,.35);border-radius:20px;padding:30px 30px 26px;box-shadow:0 24px 80px rgba(0,0,0,.65),0 0 40px rgba(255,77,109,.18);transform:translateY(18px) scale(.96);transition:transform .3s cubic-bezier(.2,.9,.25,1);}
+        .confirm-modal.show .confirm-box{transform:translateY(0) scale(1);}
+        .confirm-box::before{content:"";position:absolute;top:0;left:14%;right:14%;height:2px;background:linear-gradient(90deg,transparent,var(--bad),var(--neon-magenta),transparent);filter:blur(1px);opacity:.9;}
+        .confirm-x{position:absolute;top:10px;right:14px;background:none;border:none;color:#8fb3d9;font-size:22px;cursor:pointer;line-height:1;transition:color .2s;}
+        .confirm-x:hover{color:#fff;}
+        .warn-orb{width:70px;height:70px;margin:4px auto 16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px;color:var(--bad);background:rgba(255,90,110,.12);border:1px solid rgba(255,90,110,.5);box-shadow:0 0 0 0 rgba(255,90,110,.5);animation:warnpulse 1.8s ease-out infinite;}
+        .confirm-box h4{margin:0 0 8px;font-size:1.25rem;font-weight:800;color:#fff;}
+        .confirm-box p{margin:0 0 6px;color:var(--txt-soft);font-size:13.5px;line-height:1.55;}
+        .confirm-target{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px 14px;margin:14px 0 18px;text-align:left;font-size:13px;}
+        .confirm-target .k{color:var(--txt-soft);font-size:11px;text-transform:uppercase;letter-spacing:.6px;}
+        .confirm-target .v{color:#fff;font-weight:700;}
+        .confirm-target .v.cons{color:var(--neon-cyan);}
+        .confirm-warn{color:var(--bad);font-size:12px;font-weight:600;margin:0 0 18px;}
+        .confirm-actions{display:flex;gap:12px;}
+        .confirm-actions .neon-btn{flex:1;padding:13px;}
+        .btn-cancel{background:rgba(255,255,255,.06)!important;border:1px solid rgba(255,255,255,.16)!important;color:var(--txt)!important;box-shadow:none!important;}
+        .btn-cancel:hover{box-shadow:0 0 16px rgba(255,255,255,.12)!important;}
+        .btn-danger{background:linear-gradient(135deg,#c62828,#8e1c1c)!important;border:1px solid rgba(255,90,110,.5)!important;box-shadow:0 8px 24px rgba(198,40,40,.4)!important;}
+        .btn-danger:hover{box-shadow:0 12px 30px rgba(198,40,40,.6),0 0 24px rgba(255,90,110,.5)!important;}
+        .btn-danger[disabled]{opacity:.7;cursor:progress;transform:none!important;}
+
+        @@keyframes gs{0%{background-position:0 50%;}50%{background-position:100% 50%;}100%{background-position:0 50%;}}
+        @@keyframes f1{0%,100%{transform:translate(0,0);}50%{transform:translate(60px,50px);}}
+        @@keyframes f2{0%,100%{transform:translate(0,0);}50%{transform:translate(-70px,-40px);}}
+        @@keyframes f3{0%,100%{transform:translate(0,0);}50%{transform:translate(-50px,40px);}}
+        @@keyframes ci{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+        @@keyframes warnpulse{0%{box-shadow:0 0 0 0 rgba(255,90,110,.45);}70%{box-shadow:0 0 0 16px rgba(255,90,110,0);}100%{box-shadow:0 0 0 0 rgba(255,90,110,0);}}
+
+        @@media (prefers-reduced-motion:reduce){.blob,.bg-gradient,.glass,.warn-orb,.banner-ok{animation:none!important;}.confirm-box,.confirm-modal{transition:none!important;}}
+        @@media (max-width:760px){.filt-row{grid-template-columns:1fr 1fr;}.head h3{font-size:1.3rem;}}
+    </style>
+</head>
+<body>
+
+    <div class="bg" aria-hidden="true">
+        <div class="bg-gradient"></div>
+        <div class="blob b1"></div>
+        <div class="blob b2"></div>
+        <div class="blob b3"></div>
+        <div class="grid-overlay"></div>
+    </div>
+    <canvas id="particles" aria-hidden="true"></canvas>
+
+    <nav class="navbar-neon">
+        <a href="/Admin/Database" class="brand" title="FixMedical">
+            <img src="~/images/LOGO FIX CORTO_sin_fondo (1).png" alt="FixMedical" class="brand-logo" />
+        </a>
+        <div class="nav-right">
+            <a href="/Admin/Database" class="btn-glass"><i class="bi bi-arrow-left"></i> Database</a>
+            <form method="post" asp-page="/Dashboard" asp-page-handler="Logout" style="margin:0;">
+                <button type="submit" class="btn-glass">Cerrar Sesión</button>
+            </form>
+        </div>
+    </nav>
+
+    <div class="shell">
+
+        <div class="head">
+            <h3><i class="bi bi-clock-history"></i> Historial de cirugías realizadas</h3>
+            <a href="/Admin/Database" class="btn-glass"><i class="bi bi-arrow-left"></i> Volver</a>
+        </div>
+
+        @if (TempData["OkMessage"] != null)
+        {
+            <div class="banner-ok" role="status"><i class="bi bi-check-circle-fill"></i> @TempData["OkMessage"]</div>
+        }
+
+        <!-- ===== SWITCH HOJAS ↔ TARJETAS ===== -->
+        <div class="switch-row">
+            <a href="?tipo=hojas&Buscar=@Uri.EscapeDataString(Model.Buscar ?? "")&FechaDesde=@Uri.EscapeDataString(Model.FechaDesde ?? "")&FechaHasta=@Uri.EscapeDataString(Model.FechaHasta ?? "")"
+               class="switch-btn @(Model.Tipo == "hojas" ? "active" : "")">
+                <i class="bi bi-file-earmark-medical"></i> Hojas de Gasto
+            </a>
+            <a href="?tipo=tarjetas&Buscar=@Uri.EscapeDataString(Model.Buscar ?? "")&FechaDesde=@Uri.EscapeDataString(Model.FechaDesde ?? "")&FechaHasta=@Uri.EscapeDataString(Model.FechaHasta ?? "")"
+               class="switch-btn @(Model.Tipo == "tarjetas" ? "active" : "")">
+                <i class="bi bi-card-checklist"></i> Tarjetas de Implante
+            </a>
+        </div>
+
+        <!-- ===== FILTROS ===== -->
+        <div class="glass panel">
+            <form method="get" class="filt-row">
+                <input type="hidden" name="tipo" value="@Model.Tipo" />
+                <div>
+                    <div class="campo">Buscar</div>
+                    <input type="text" name="Buscar" value="@Model.Buscar" class="neon-input" placeholder="Consecutivo, cirujano, cirugía o paciente" />
+                </div>
+                <div>
+                    <div class="campo">Desde</div>
+                    <input type="date" name="FechaDesde" value="@Model.FechaDesde" class="neon-input" />
+                </div>
+                <div>
+                    <div class="campo">Hasta</div>
+                    <input type="date" name="FechaHasta" value="@Model.FechaHasta" class="neon-input" />
+                </div>
+                <div style="display:flex; gap:8px;">
+                    <button class="neon-btn"><i class="bi bi-funnel"></i> Filtrar</button>
+                    <a href="/Admin/Database/Historial?tipo=@Model.Tipo" class="neon-btn ghost" title="Limpiar"><i class="bi bi-x-circle"></i></a>
+                </div>
+            </form>
+        </div>
+
+        <!-- ===== TABLA ===== -->
+        <div class="glass panel">
+            @if (Model.Tipo == "tarjetas")
+            {
+                <div class="count">Total de tarjetas: <b>@Model.RegistrosTarjetas.Count</b></div>
+
+                @if (Model.RegistrosTarjetas.Any())
+                {
+                    <div class="table-wrap">
+                        <table class="neon-table">
+                            <thead>
+                                <tr>
+                                    <th>Consecutivo</th>
+                                    <th>Cirujano / Cirugía / Paciente</th>
+                                    <th>Fecha</th>
+                                    <th>Duración</th>
+                                    <th>Ubicación INICIO</th>
+                                    <th>Ubicación FIN</th>
+                                    <th>PDF</th>
+                                    <th class="text-center">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var t in Model.RegistrosTarjetas)
+                                {
+                                    <tr>
+                                        <td class="cons">@t.NumeroConsecutivo</td>
+                                        <td>
+                                            <div class="cir">@t.CirujanoSnapshot</div>
+                                            <div class="muted">@t.CirugiaSnapshot</div>
+                                            <div class="muted"><i class="bi bi-person"></i> @t.NombrePaciente</div>
+                                        </td>
+                                        <td class="muted" style="white-space:nowrap;">@t.FechaCirugia.ToString("dd/MM/yyyy")</td>
+                                        <td class="dur">@FmtDurInt(t.DuracionSegundos)</td>
+                                        <td>
+                                            @if (t.LatitudInicio != null)
+                                            {
+                                                <div class="mono">@FmtCoord(t.LatitudInicio), @FmtCoord(t.LongitudInicio)</div>
+                                                <div class="muted" style="margin-top:3px;">
+                                                    @t.FechaHoraInicio
+                                                    <button type="button" class="mini-btn" data-lat="@FmtCoord(t.LatitudInicio)" data-lng="@FmtCoord(t.LongitudInicio)" onclick="verDireccion(this)" title="Dirección legible"><i class="bi bi-signpost-2"></i></button>
+                                                    <a class="mini-btn" href="https://www.google.com/maps?q=@FmtCoord(t.LatitudInicio),@FmtCoord(t.LongitudInicio)" target="_blank" rel="noopener" title="Ver en el mapa"><i class="bi bi-geo-alt-fill" style="color:#ff5a6e"></i></a>
+                                                </div>
+                                                <div class="dir-out"></div>
+                                            }
+                                            else
+                                            {
+                                                <span class="muted">—</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (t.LatitudFin != null)
+                                            {
+                                                <div class="mono">@FmtCoord(t.LatitudFin), @FmtCoord(t.LongitudFin)</div>
+                                                <div class="muted" style="margin-top:3px;">
+                                                    @t.FechaHoraFin
+                                                    <button type="button" class="mini-btn" data-lat="@FmtCoord(t.LatitudFin)" data-lng="@FmtCoord(t.LongitudFin)" onclick="verDireccion(this)" title="Dirección legible"><i class="bi bi-signpost-2"></i></button>
+                                                    <a class="mini-btn" href="https://www.google.com/maps?q=@FmtCoord(t.LatitudFin),@FmtCoord(t.LongitudFin)" target="_blank" rel="noopener" title="Ver en el mapa"><i class="bi bi-geo-alt-fill" style="color:#ff5a6e"></i></a>
+                                                </div>
+                                                <div class="dir-out"></div>
+                                            }
+                                            else
+                                            {
+                                                <span class="muted">—</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(t.RutaPdf))
+                                            {
+                                                <a href="@t.RutaPdf" target="_blank" class="mini-btn" style="border-color:rgba(255,90,110,.45);color:#ff5a6e;" title="Ver PDF"><i class="bi bi-file-earmark-pdf-fill"></i></a>
+                                            }
+                                            else
+                                            {
+                                                <span class="muted">—</span>
+                                            }
+                                        </td>
+                                        <td style="text-align:center;">
+                                            <button type="button" class="btn-del"
+                                                    data-id="@t.ID_TarjetaImplante"
+                                                    data-tipo="tarjetas"
+                                                    data-cons="@t.NumeroConsecutivo"
+                                                    data-cir="@t.CirujanoSnapshot"
+                                                    data-op="@t.CirugiaSnapshot"
+                                                    onclick="confirmarBorrar(this)" title="Eliminar registro">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="empty"><i class="bi bi-info-circle"></i> Aún no hay tarjetas de implante finalizadas registradas.</div>
+                }
+            }
+            else
+            {
+                <div class="count">Total de registros: <b>@Model.Registros.Count</b></div>
+
+                @if (Model.Registros.Any())
+                {
+                    <div class="table-wrap">
+                        <table class="neon-table">
+                            <thead>
+                                <tr>
+                                    <th>Consecutivo</th>
+                                    <th>Cirujano / Cirugía / Paciente</th>
+                                    <th>Fecha</th>
+                                    <th>Duración</th>
+                                    <th>Ubicación INICIO</th>
+                                    <th>Ubicación FIN</th>
+                                    <th>PDF</th>
+                                    <th class="text-center">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var h in Model.Registros)
+                                {
+                                    <tr>
+                                        <td class="cons">@h.NumeroConsecutivo</td>
+                                        <td>
+                                            <div class="cir">@h.CirujanoSnapshot</div>
+                                            <div class="muted">@h.CirugiaSnapshot</div>
+                                            <div class="muted"><i class="bi bi-person"></i> @h.Paciente</div>
+                                        </td>
+                                        <td class="muted" style="white-space:nowrap;">@h.Fecha.ToString("dd/MM/yyyy")</td>
+                                        <td class="dur">@FmtDur(h.DuracionSegundos)</td>
+                                        <td>
+                                            @if (h.LatitudInicio != null)
+                                            {
+                                                <div class="mono">@FmtCoord(h.LatitudInicio), @FmtCoord(h.LongitudInicio)</div>
+                                                <div class="muted" style="margin-top:3px;">
+                                                    @h.FechaHoraInicio
+                                                    <button type="button" class="mini-btn" data-lat="@FmtCoord(h.LatitudInicio)" data-lng="@FmtCoord(h.LongitudInicio)" onclick="verDireccion(this)" title="Dirección legible"><i class="bi bi-signpost-2"></i></button>
+                                                    <a class="mini-btn" href="https://www.google.com/maps?q=@FmtCoord(h.LatitudInicio),@FmtCoord(h.LongitudInicio)" target="_blank" rel="noopener" title="Ver en el mapa"><i class="bi bi-geo-alt-fill" style="color:#ff5a6e"></i></a>
+                                                </div>
+                                                <div class="dir-out"></div>
+                                            }
+                                            else
+                                            {
+                                                <span class="muted">—</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (h.LatitudFin != null)
+                                            {
+                                                <div class="mono">@FmtCoord(h.LatitudFin), @FmtCoord(h.LongitudFin)</div>
+                                                <div class="muted" style="margin-top:3px;">
+                                                    @h.FechaHoraFin
+                                                    <button type="button" class="mini-btn" data-lat="@FmtCoord(h.LatitudFin)" data-lng="@FmtCoord(h.LongitudFin)" onclick="verDireccion(this)" title="Dirección legible"><i class="bi bi-signpost-2"></i></button>
+                                                    <a class="mini-btn" href="https://www.google.com/maps?q=@FmtCoord(h.LatitudFin),@FmtCoord(h.LongitudFin)" target="_blank" rel="noopener" title="Ver en el mapa"><i class="bi bi-geo-alt-fill" style="color:#ff5a6e"></i></a>
+                                                </div>
+                                                <div class="dir-out"></div>
+                                            }
+                                            else
+                                            {
+                                                <span class="muted">—</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(h.RutaPdf))
+                                            {
+                                                <a href="@h.RutaPdf" target="_blank" class="mini-btn" style="border-color:rgba(255,90,110,.45);color:#ff5a6e;" title="Ver PDF"><i class="bi bi-file-earmark-pdf-fill"></i></a>
+                                            }
+                                            else
+                                            {
+                                                <span class="muted">—</span>
+                                            }
+                                        </td>
+                                        <td style="text-align:center;">
+                                            <button type="button" class="btn-del"
+                                                    data-id="@h.ID_HojaGasto"
+                                                    data-tipo="hojas"
+                                                    data-cons="@h.NumeroConsecutivo"
+                                                    data-cir="@h.CirujanoSnapshot"
+                                                    data-op="@h.CirugiaSnapshot"
+                                                    onclick="confirmarBorrar(this)" title="Eliminar registro">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="empty"><i class="bi bi-info-circle"></i> Aún no hay cirugías finalizadas registradas.</div>
+                }
+            }
+        </div>
+    </div>
+
+    <!-- ===== MODAL CONFIRMACIÓN ===== -->
+    <div id="confirmModal" class="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+        <div class="confirm-box">
+            <button type="button" class="confirm-x" onclick="cerrarConfirm()" aria-label="Cancelar">&times;</button>
+            <div class="warn-orb"><i class="bi bi-exclamation-triangle-fill"></i></div>
+            <h4 id="confirmTitle">¿Eliminar este registro?</h4>
+            <p>Estás a punto de borrar del historial la siguiente cirugía realizada:</p>
+            <div class="confirm-target">
+                <div class="k">Consecutivo</div>
+                <div class="v cons" id="cCons">—</div>
+                <div class="k" style="margin-top:8px;">Cirujano · Cirugía</div>
+                <div class="v"><span id="cCir">—</span> · <span id="cOp">—</span></div>
+            </div>
+            <p class="confirm-warn"><i class="bi bi-exclamation-circle-fill"></i> Esta acción también elimina el PDF y las firmas asociadas, y no se puede deshacer.</p>
+
+            <form method="post" asp-page-handler="Eliminar" id="formBorrar" class="confirm-actions">
+                <input type="hidden" name="tipoBorrar" id="borrarTipo" value="@Model.Tipo" />
+                <input type="hidden" name="Buscar" value="@Model.Buscar" />
+                <input type="hidden" name="FechaDesde" value="@Model.FechaDesde" />
+                <input type="hidden" name="FechaHasta" value="@Model.FechaHasta" />
+                <input type="hidden" name="id" id="borrarId" value="0" />
+                <button type="button" class="neon-btn btn-cancel" onclick="cerrarConfirm()">Cancelar</button>
+                <button type="submit" class="neon-btn btn-danger" id="btnConfirmar"><i class="bi bi-trash-fill"></i> Sí, eliminar</button>
+            </form>
+        </div>
+    </div>
+
+        <!-- ===== PARTÍCULAS ===== -->
+    <script>
+        (function(){
+            try{
+                var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+                if(reduce)return;
+                var canvas=document.getElementById('particles');
+                if(!canvas||!canvas.getContext)return;
+                var ctx=canvas.getContext('2d');var w,h,particles=[];
+                var COLORS=['34,211,238','243,146,0','255,77,141'];
+                function resize(){w=canvas.width=window.innerWidth;h=canvas.height=window.innerHeight;var count=Math.min(80,Math.floor((w*h)/18000));particles=[];for(var i=0;i<count;i++)particles.push({x:Math.random()*w,y:Math.random()*h,vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4,r:Math.random()*1.8+.6,c:COLORS[Math.floor(Math.random()*COLORS.length)]});}
+                function draw(){ctx.clearRect(0,0,w,h);for(var i=0;i<particles.length;i++){var p=particles[i];p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>w)p.vx*=-1;if(p.y<0||p.y>h)p.vy*=-1;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle='rgba('+p.c+',0.8)';ctx.fill();for(var j=i+1;j<particles.length;j++){var q=particles[j];var dx=p.x-q.x,dy=p.y-q.y,dist=Math.sqrt(dx*dx+dy*dy);if(dist<120){ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(q.x,q.y);ctx.strokeStyle='rgba('+p.c+','+(0.12*(1-dist/120))+')';ctx.lineWidth=0.6;ctx.stroke();}}}requestAnimationFrame(draw);}
+                resize();window.addEventListener('resize',resize);draw();
+            }catch(e){}
+        })();
+    </script>
+
+    <!-- ===== DIRECCIÓN LEGIBLE ===== -->
+    <script>
+        async function verDireccion(btn){
+            var lat=btn.getAttribute('data-lat'),lng=btn.getAttribute('data-lng');
+            var out=btn.closest('td').querySelector('.dir-out');
+            out.textContent='…';
+            try{
+                var r=await fetch('https://nominatim.openstreetmap.org/reverse?format=json&lat='+lat+'&lon='+lng+'&zoom=18&addressdetails=1&accept-language=es');
+                var j=await r.json();var a=j.address||{};
+                var via=[a.road||a.pedestrian||a.street||a.path||'',a.house_number||''].filter(Boolean).join(' ');
+                var ciudad=a.city||a.town||a.village||a.municipality||a.county||'';
+                var txt=(via?via:'')+(ciudad?' · '+ciudad:'');
+                if(!txt)txt=(j.display_name||'').split(',').slice(0,2).join(',');
+                out.textContent=txt||'(sin datos)';
+            }catch(e){out.textContent='(no disponible)';}
+        }
+    </script>
+
+    <!-- ===== CONFIRMACIÓN BORRADO ===== -->
+    <script>
+        var confirmModal=document.getElementById('confirmModal');
+        function confirmarBorrar(btn){
+            document.getElementById('borrarId').value=btn.getAttribute('data-id');
+            document.getElementById('borrarTipo').value=btn.getAttribute('data-tipo');
+            document.getElementById('cCons').textContent=btn.getAttribute('data-cons')||'—';
+            document.getElementById('cCir').textContent=btn.getAttribute('data-cir')||'—';
+            document.getElementById('cOp').textContent=btn.getAttribute('data-op')||'—';
+            var b=document.getElementById('btnConfirmar');
+            b.disabled=false;b.innerHTML='<i class="bi bi-trash-fill"></i> Sí, eliminar';
+            confirmModal.classList.add('show');
+            document.body.style.overflow='hidden';
+        }
+        function cerrarConfirm(){confirmModal.classList.remove('show');document.body.style.overflow='';}
+        confirmModal.addEventListener('mousedown',function(e){if(e.target===confirmModal)cerrarConfirm();});
+        document.addEventListener('keydown',function(e){if(e.key==='Escape'&&confirmModal.classList.contains('show'))cerrarConfirm();});
+        document.getElementById('formBorrar').addEventListener('submit',function(){var b=document.getElementById('btnConfirmar');b.disabled=true;b.innerHTML='<i class="bi bi-hourglass-split"></i> Eliminando…';});
+    </script>
+</body>
+</html>

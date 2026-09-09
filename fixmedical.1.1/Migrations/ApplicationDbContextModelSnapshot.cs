@@ -86,10 +86,23 @@ namespace fixmedical._1._1.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID_HojaGasto"));
 
+                    b.Property<string>("CirugiaSnapshot")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("CirujanoSnapshot")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
                     b.Property<string>("DomicilioPais")
                         .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int?>("DuracionSegundos")
+                        .HasColumnType("int");
 
                     b.Property<string>("Especialista")
                         .IsRequired()
@@ -104,15 +117,55 @@ namespace fixmedical._1._1.Migrations
                     b.Property<DateTime>("Fecha")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("FechaHoraFin")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("FechaHoraInicio")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("FirmaEspecialista")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("FirmaFixMedical")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("FirmaInstitucion")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int?>("ID_Programacion")
+                        .HasColumnType("int");
+
                     b.Property<string>("Institucion")
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
+                    b.Property<double?>("LatitudFin")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("LatitudInicio")
+                        .HasColumnType("float");
+
                     b.Property<string>("Linea")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<double?>("LongitudFin")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("LongitudInicio")
+                        .HasColumnType("float");
 
                     b.Property<string>("NumeroConsecutivo")
                         .IsRequired()
@@ -133,6 +186,11 @@ namespace fixmedical._1._1.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("RutaPdf")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.HasKey("ID_HojaGasto");
 
@@ -282,6 +340,47 @@ namespace fixmedical._1._1.Migrations
                     b.ToTable("Productos");
                 });
 
+            modelBuilder.Entity("FixMedicalWeb.Models.ProgramacionCirugia", b =>
+                {
+                    b.Property<int>("ID_Programacion")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID_Programacion"));
+
+                    b.Property<string>("CirugiaProgramada")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Cirujano")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("Estado")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateTime>("FechaProgramada")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("ID_EQC_Asignado")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ID_SolicitudMaterial")
+                        .HasColumnType("int");
+
+                    b.HasKey("ID_Programacion");
+
+                    b.HasIndex("ID_EQC_Asignado");
+
+                    b.HasIndex("ID_SolicitudMaterial");
+
+                    b.ToTable("ProgramacionesCirugia");
+                });
+
             modelBuilder.Entity("FixMedicalWeb.Models.RegistroConsumo", b =>
                 {
                     b.Property<int>("ID_Consumo")
@@ -354,7 +453,208 @@ namespace fixmedical._1._1.Migrations
                             ID_Rol = 3,
                             Descripcion = "Solo lectura. Genera reportes y consulta consumos.",
                             Nombre_Rol = "Auditor"
+                        },
+                        new
+                        {
+                            ID_Rol = 4,
+                            Descripcion = "Genera solicitudes de material de cirugia .",
+                            Nombre_Rol = "Comercial"
                         });
+                });
+
+            modelBuilder.Entity("FixMedicalWeb.Models.TarjetaImplante", b =>
+                {
+                    b.Property<int>("ID_TarjetaImplante")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID_TarjetaImplante"));
+
+                    b.Property<string>("CirugiaSnapshot")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("CirujanoSnapshot")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("Ciudad")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<int>("DuracionSegundos")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Fabricante")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<DateTime>("FechaCirugia")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FechaHoraFin")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("FechaHoraInicio")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("FirmaEQCPath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirmaEspPath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirmaEspecialista")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("FirmaIQXPath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirmaIqxInstitucion")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<int?>("ID_Programacion")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Institucion")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<double?>("LatitudFin")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("LatitudInicio")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("LongitudFin")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("LongitudInicio")
+                        .HasColumnType("float");
+
+                    b.Property<string>("NombreEQC")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("NombreEspecialista")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("NombreIqxInstitucion")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("NombrePaciente")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("NumeroConsecutivo")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
+
+                    b.Property<string>("NumeroIdentificacion")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("Pais")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("PdfPath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Remision")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("RutaPdf")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("RutaStiker")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("firmaEQC")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.HasKey("ID_TarjetaImplante");
+
+                    b.ToTable("TarjetasImplante");
+                });
+
+            modelBuilder.Entity("FixMedicalWeb.Models.TarjetaImplateDetalle", b =>
+                {
+                    b.Property<int>("ID_TarjetaImplanteDetalle")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID_TarjetaImplanteDetalle"));
+
+                    b.Property<int>("Cantidad")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Codigo")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Descripcion")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<int>("ID_TarjetaImplante")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Lote")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Referencias")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("RegInvima")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("TarjetaID_TarjetaImplante")
+                        .HasColumnType("int");
+
+                    b.HasKey("ID_TarjetaImplanteDetalle");
+
+                    b.HasIndex("TarjetaID_TarjetaImplante");
+
+                    b.ToTable("TarjetasImplanteDetalle");
                 });
 
             modelBuilder.Entity("FixMedicalWeb.Models.Usuario", b =>
@@ -488,6 +788,111 @@ namespace fixmedical._1._1.Migrations
                     b.ToTable("Pacientes");
                 });
 
+            modelBuilder.Entity("fixmedical._1._1.Modelos.SolicitudMaterial", b =>
+                {
+                    b.Property<int>("ID_SolicitudMaterial")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID_SolicitudMaterial"));
+
+                    b.Property<string>("Ciudad")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("EjecutivoComercial")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Especialidad")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Especialista")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Estado")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Facturar_A")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime>("FechaCirugia")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime>("FechaSolicitud")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime>("HoraCirugia")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("HoraSolicitud")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Indicacion")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Institucion")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("MaterialSolicitado")
+                        .IsRequired()
+                        .HasMaxLength(400)
+                        .HasColumnType("nvarchar(400)");
+
+                    b.Property<string>("Motor")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("NombrePaciente")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("NumeroIdentificacion")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("NumeroSolicitud")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("ObservacionesEjecutivos")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("Sucursal")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("TipoSolicitud")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("ID_SolicitudMaterial");
+
+                    b.ToTable("SolicitudesMaterial");
+                });
+
             modelBuilder.Entity("FixMedicalWeb.Models.HistorialCambio", b =>
                 {
                     b.HasOne("FixMedicalWeb.Models.Usuario", "Usuario")
@@ -519,6 +924,21 @@ namespace fixmedical._1._1.Migrations
                     b.Navigation("Linea");
                 });
 
+            modelBuilder.Entity("FixMedicalWeb.Models.ProgramacionCirugia", b =>
+                {
+                    b.HasOne("FixMedicalWeb.Models.Usuario", "EQCAsignado")
+                        .WithMany()
+                        .HasForeignKey("ID_EQC_Asignado");
+
+                    b.HasOne("fixmedical._1._1.Modelos.SolicitudMaterial", "SolicitudMaterial")
+                        .WithMany()
+                        .HasForeignKey("ID_SolicitudMaterial");
+
+                    b.Navigation("EQCAsignado");
+
+                    b.Navigation("SolicitudMaterial");
+                });
+
             modelBuilder.Entity("FixMedicalWeb.Models.RegistroConsumo", b =>
                 {
                     b.HasOne("FixMedicalWeb.Models.Producto", "Producto")
@@ -536,6 +956,17 @@ namespace fixmedical._1._1.Migrations
                     b.Navigation("InformacionPaciente");
 
                     b.Navigation("Producto");
+                });
+
+            modelBuilder.Entity("FixMedicalWeb.Models.TarjetaImplateDetalle", b =>
+                {
+                    b.HasOne("FixMedicalWeb.Models.TarjetaImplante", "Tarjeta")
+                        .WithMany("Detalles")
+                        .HasForeignKey("TarjetaID_TarjetaImplante")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Tarjeta");
                 });
 
             modelBuilder.Entity("FixMedicalWeb.Models.Usuario", b =>
@@ -607,6 +1038,11 @@ namespace fixmedical._1._1.Migrations
             modelBuilder.Entity("FixMedicalWeb.Models.Role", b =>
                 {
                     b.Navigation("Usuarios");
+                });
+
+            modelBuilder.Entity("FixMedicalWeb.Models.TarjetaImplante", b =>
+                {
+                    b.Navigation("Detalles");
                 });
 
             modelBuilder.Entity("fixmedical._1._1.Modelos.P.InformacionPaciente", b =>

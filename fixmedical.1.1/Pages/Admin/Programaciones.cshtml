@@ -1,0 +1,502 @@
+﻿@page
+@model fixmedical._1._1.Pages.Admin.ProgramacionesModel
+@{
+    Layout = null;
+    ViewData["Title"] = "Programaciones - FixMedical";
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Programaciones - FixMedical</title>
+    <link rel="icon" type="image/png" href="~/images/LOGO FIX CORTO_sin_fondo (1).png" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <style>
+        :root {
+            --bg-0: #05070f;
+            --bg-1: #0a1226;
+            --bg-2: #0d1b3a;
+            --azul: #004b87;
+            --azul-2: #002d54;
+            --naranja: #f39200;
+            --neon-cyan: #22d3ee;
+            --neon-magenta: #ff4d8d;
+            --txt: #eaf2ff;
+            --txt-soft: #8fb3d9;
+            --glass: rgba(13, 20, 40, .55);
+            --glass-border: rgba(255, 255, 255, .08);
+        }
+
+        * { box-sizing: border-box; }
+        html, body { height: 100%; }
+
+        body {
+            margin: 0;
+            background-color: var(--bg-0);
+            color: var(--txt);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* ===== FONDO EN MOVIMIENTO ===== */
+        .bg { position: fixed; inset: 0; z-index: 0; overflow: hidden; }
+        .bg-gradient {
+            position: absolute; inset: 0;
+            background: linear-gradient(135deg, var(--bg-0) 0%, var(--bg-1) 45%, var(--bg-2) 100%);
+            background-size: 200% 200%;
+            animation: gradientShift 18s ease infinite;
+        }
+        .blob { position: absolute; border-radius: 50%; filter: blur(90px); opacity: .5; mix-blend-mode: screen; will-change: transform; }
+        .b1 { width: 520px; height: 520px; background: radial-gradient(circle at 30% 30%, var(--naranja), transparent 60%); top: -120px; left: -100px; animation: float1 22s ease-in-out infinite; }
+        .b2 { width: 620px; height: 620px; background: radial-gradient(circle at 70% 40%, var(--azul), transparent 60%); bottom: -180px; right: -140px; animation: float2 26s ease-in-out infinite; }
+        .b3 { width: 420px; height: 420px; background: radial-gradient(circle at 50% 50%, var(--neon-cyan), transparent 60%); top: 38%; left: 55%; opacity: .25; animation: float3 30s ease-in-out infinite; }
+        .grid-overlay {
+            position: absolute; inset: 0;
+            background-image:
+                linear-gradient(rgba(34, 211, 238, .06) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(34, 211, 238, .06) 1px, transparent 1px);
+            background-size: 44px 44px;
+            -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 30%, #000 0%, transparent 80%);
+            mask-image: radial-gradient(ellipse 80% 70% at 50% 30%, #000 0%, transparent 80%);
+        }
+        #particles { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
+
+        /* ===== NAVBAR GLASS ===== */
+        .navbar-neon {
+            position: sticky; top: 0; z-index: 50;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 14px 28px;
+            background: rgba(5, 7, 15, .55);
+            -webkit-backdrop-filter: blur(14px) saturate(140%);
+            backdrop-filter: blur(14px) saturate(140%);
+            border-bottom: 1px solid var(--glass-border);
+            box-shadow: 0 6px 24px rgba(0, 0, 0, .4);
+        }
+        /* KIT LOGO (reemplaza el texto FixMedical) */
+        .brand { display: inline-flex; align-items: center; text-decoration: none; }
+        .brand-logo {
+            height: 55px; width: auto; display: block;
+            filter: drop-shadow(0 0 8px rgba(243,146,0,.55)) drop-shadow(0 0 18px rgba(243,146,0,.28));
+            transition: filter .25s, transform .25s;
+        }
+        .brand:hover .brand-logo {
+            filter: drop-shadow(0 0 12px rgba(243,146,0,.85)) drop-shadow(0 0 26px rgba(34,211,238,.35));
+            transform: scale(1.04);
+        }
+        .nav-right { display: flex; align-items: center; gap: 16px; }
+        .user-chip { color: var(--txt-soft); font-size: .85rem; display: flex; align-items: center; gap: 6px; }
+        .btn-glass {
+            background: rgba(255, 255, 255, .06);
+            border: 1px solid rgba(255, 255, 255, .15);
+            color: var(--txt); border-radius: 8px; padding: 7px 16px;
+            font-size: .85rem; cursor: pointer; transition: border-color .25s, box-shadow .25s, color .25s;
+            text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+        }
+        .btn-glass:hover { border-color: var(--naranja); box-shadow: 0 0 16px rgba(243, 146, 0, .35); color: #fff; }
+
+        /* ===== CONTENEDOR ===== */
+        .container-neon { position: relative; z-index: 2; max-width: 1100px; margin: 0 auto; padding: 40px 24px 60px; }
+
+        /* ===== WELCOME GLASS ===== */
+        .welcome-glass {
+            position: relative; overflow: hidden;
+            background: var(--glass);
+            -webkit-backdrop-filter: blur(16px) saturate(140%);
+            backdrop-filter: blur(16px) saturate(140%);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px; padding: 32px 36px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, .45);
+            display: flex; align-items: center; justify-content: space-between; gap: 20px;
+            margin-bottom: 30px;
+            animation: cardIn .7s cubic-bezier(.2, .8, .2, 1) both;
+        }
+        .welcome-glass::before {
+            content: ""; position: absolute; top: 0; left: 10%; right: 10%; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--naranja), var(--neon-cyan), transparent);
+            filter: blur(1px); opacity: .85;
+        }
+        .welcome-glass h1 { margin: 0 0 6px; font-size: 1.7rem; font-weight: 800; text-shadow: 0 0 22px rgba(34, 211, 238, .25); }
+        .welcome-glass p { margin: 0; color: var(--txt-soft); }
+        .welcome-icon { font-size: 3rem; color: var(--neon-cyan); opacity: .35; text-shadow: 0 0 24px rgba(34, 211, 238, .5); }
+
+        /* ===== PANELES GLASS ===== */
+        .panel-glass {
+            background: var(--glass);
+            -webkit-backdrop-filter: blur(16px) saturate(140%);
+            backdrop-filter: blur(16px) saturate(140%);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px; padding: 28px 30px;
+            box-shadow: 0 16px 44px rgba(0, 0, 0, .4);
+            margin-bottom: 30px;
+            animation: cardIn .9s cubic-bezier(.2, .8, .2, 1) both;
+        }
+        .panel-head { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+        .panel-head h4 { margin: 0; font-weight: 800; color: #fff; }
+        .panel-head i { color: var(--neon-cyan); text-shadow: 0 0 14px rgba(34, 211, 238, .5); font-size: 1.3rem; }
+
+        /* ===== FORMULARIO NEÓN ===== */
+        .form-grid-neon { display: grid; grid-template-columns: 1.2fr 1.2fr 1fr auto; gap: 14px; align-items: end; }
+        .campo-neon { font-size: 11px; letter-spacing: .8px; text-transform: uppercase; color: var(--txt-soft); margin-bottom: 6px; font-weight: 700; }
+        .input-neon {
+            width: 100%; background: rgba(255, 255, 255, .05);
+            border: 1px solid rgba(255, 255, 255, .12); color: var(--txt);
+            padding: 11px 14px; border-radius: 10px; font-size: .9rem; outline: none;
+            transition: border-color .2s, box-shadow .2s, background .2s;
+        }
+        .input-neon:focus { border-color: var(--neon-cyan); box-shadow: 0 0 14px rgba(34, 211, 238, .25); background: rgba(255, 255, 255, .08); }
+        .input-neon.upper { text-transform: uppercase; }
+        input[type="datetime-local"].input-neon { color-scheme: dark; }
+
+        .alert-neon {
+            background: rgba(255, 77, 141, .12); border: 1px solid rgba(255, 77, 141, .4);
+            color: #ff8fb3; border-radius: 12px; padding: 10px 16px; margin-bottom: 18px; font-size: .85rem;
+        }
+        .validation-summary-valid { display: none; }
+
+        /* ===== BOTONES NEÓN ===== */
+        .neon-btn {
+            display: inline-block; width: 100%; padding: 13px; border: 1px solid rgba(243, 146, 0, .35);
+            border-radius: 10px; font-size: 15px; font-weight: 700; letter-spacing: .5px; color: #fff;
+            cursor: pointer; text-decoration: none; text-align: center;
+            background: linear-gradient(135deg, var(--azul) 0%, var(--azul-2) 100%);
+            box-shadow: 0 8px 24px rgba(0, 75, 135, .45), 0 0 0 1px rgba(34, 211, 238, .12) inset;
+            transition: transform .18s, box-shadow .25s, filter .25s; position: relative; overflow: hidden;
+        }
+        .neon-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(0, 75, 135, .6), 0 0 24px rgba(243, 146, 0, .5); filter: brightness(1.08); color: #fff; }
+        .neon-btn::after {
+            content: ""; position: absolute; top: 0; left: -60%; width: 40%; height: 100%;
+            background: linear-gradient(120deg, transparent, rgba(255, 255, 255, .28), transparent);
+            transform: skewX(-20deg); transition: left .6s;
+        }
+        .neon-btn:hover::after { left: 130%; }
+
+        .neon-btn-sm {
+            display: inline-flex; align-items: center; gap: 6px; padding: 8px 18px; width: auto;
+            border: 1px solid rgba(243, 146, 0, .35); border-radius: 9px; font-size: 13px; font-weight: 700;
+            color: #fff; cursor: pointer; background: linear-gradient(135deg, var(--azul) 0%, var(--azul-2) 100%);
+            box-shadow: 0 6px 18px rgba(0, 75, 135, .4); transition: transform .18s, box-shadow .25s, filter .25s;
+            position: relative; overflow: hidden;
+        }
+        .neon-btn-sm:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(0, 75, 135, .55), 0 0 20px rgba(243, 146, 0, .5); filter: brightness(1.08); }
+        .neon-btn-sm::after {
+            content: ""; position: absolute; top: 0; left: -60%; width: 40%; height: 100%;
+            background: linear-gradient(120deg, transparent, rgba(255, 255, 255, .28), transparent);
+            transform: skewX(-20deg); transition: left .6s;
+        }
+        .neon-btn-sm:hover::after { left: 130%; }
+
+        .neon-btn-danger {
+            display: inline-flex; align-items: center; gap: 6px; padding: 8px 18px; width: auto;
+            border: 1px solid rgba(255, 77, 141, .4); border-radius: 9px; font-size: 13px; font-weight: 700;
+            color: #fff; cursor: pointer; background: linear-gradient(135deg, #7a1030 0%, #4a0a1e 100%);
+            box-shadow: 0 6px 18px rgba(122, 16, 48, .4); transition: transform .18s, box-shadow .25s, filter .25s;
+        }
+        .neon-btn-danger:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(122, 16, 48, .55), 0 0 20px rgba(255, 77, 141, .5); filter: brightness(1.15); }
+
+        /* ===== TABLA NEÓN ===== */
+        .table-wrap { overflow-x: auto; }
+        .neon-table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 640px; }
+        .neon-table thead th {
+            color: var(--neon-cyan); text-transform: uppercase; font-size: 11px; letter-spacing: .7px;
+            padding: 12px 14px; border-bottom: 1px solid rgba(34, 211, 238, .25); text-align: left; white-space: nowrap;
+        }
+        .neon-table tbody td { padding: 14px; border-bottom: 1px solid rgba(255, 255, 255, .06); color: var(--txt); }
+        .neon-table tbody tr { transition: background .2s; }
+        .neon-table tbody tr:hover { background: rgba(34, 211, 238, .05); }
+        .td-cirujano { font-weight: 700; text-shadow: 0 0 10px rgba(243, 146, 0, .2); }
+        .td-fecha { color: var(--txt-soft); white-space: nowrap; }
+        .td-center { text-align: center; }
+        .td-actions { text-align: right; white-space: nowrap; }
+        .td-actions form { display: inline; margin-left: 6px; }
+
+        .badge-neon { display: inline-block; padding: 5px 12px; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase; }
+        .badge-ok { color: #7dffb8; background: rgba(40, 167, 69, .12); border: 1px solid rgba(40, 167, 69, .45); box-shadow: 0 0 12px rgba(40, 167, 69, .25); }
+        .badge-pend { color: #ffc46b; background: rgba(243, 146, 0, .12); border: 1px solid rgba(243, 146, 0, .45); box-shadow: 0 0 12px rgba(243, 146, 0, .25); }
+
+        .empty-state { color: var(--txt-soft); display: flex; align-items: center; gap: 8px; padding: 6px 2px; }
+
+        /* ===== MODAL DE EDICIÓN (SIN BOOTSTRAP) ===== */
+        .modal-neon {
+            position: fixed; inset: 0; z-index: 200000; display: none;
+            align-items: center; justify-content: center;
+            background: rgba(2, 4, 10, .72);
+            -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px);
+        }
+        .modal-neon-box {
+            width: 480px; max-width: 92%; position: relative; overflow: hidden;
+            background: rgba(13, 20, 40, .85);
+            -webkit-backdrop-filter: blur(18px) saturate(140%);
+            backdrop-filter: blur(18px) saturate(140%);
+            border: 1px solid var(--glass-border); border-radius: 18px; padding: 28px 30px;
+            box-shadow: 0 24px 70px rgba(0, 0, 0, .6);
+            animation: cardIn .4s cubic-bezier(.2, .8, .2, 1) both;
+        }
+        .modal-neon-box::before {
+            content: ""; position: absolute; top: 0; left: 14%; right: 14%; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--neon-magenta), var(--naranja), transparent);
+            filter: blur(1px); opacity: .9;
+        }
+        .modal-neon-box h5 { margin: 0 0 4px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 8px; }
+        .modal-neon-box h5 i { color: var(--neon-magenta); text-shadow: 0 0 14px rgba(255, 77, 141, .6); }
+        .modal-sub { color: var(--txt-soft); font-size: 13px; margin: 0 0 16px; }
+        .modal-form { display: flex; flex-direction: column; gap: 14px; }
+        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 6px; }
+
+        /* ===== ANIMACIONES ===== */
+        @@keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        @@keyframes float1 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(60px,50px) scale(1.12); } }
+        @@keyframes float2 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-70px,-40px) scale(1.10); } }
+        @@keyframes float3 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-50px,40px) scale(1.15); } }
+        @@keyframes cardIn { from { opacity: 0; transform: translateY(26px) scale(.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+        @@media (prefers-reduced-motion: reduce) {
+            .blob, .bg-gradient, .welcome-glass, .panel-glass, .modal-neon-box { animation: none !important; }
+            .neon-btn::after, .neon-btn-sm::after { display: none; }
+        }
+
+        @@media (max-width: 768px) {
+            .form-grid-neon { grid-template-columns: 1fr; }
+            .welcome-glass { flex-direction: column; text-align: center; padding: 26px 22px; }
+            .welcome-icon { display: none; }
+            .navbar-neon { padding: 12px 16px; }
+            .user-chip { display: none; }
+            .container-neon { padding: 28px 16px 48px; }
+            .td-actions { text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== FONDO ANIMADO ===== -->
+    <div class="bg" aria-hidden="true">
+        <div class="bg-gradient"></div>
+        <div class="blob b1"></div>
+        <div class="blob b2"></div>
+        <div class="blob b3"></div>
+        <div class="grid-overlay"></div>
+    </div>
+    <canvas id="particles" aria-hidden="true"></canvas>
+
+    <!-- ===== NAVBAR GLASS CON LOGO ===== -->
+    <nav class="navbar-neon">
+        <a href="/Dashboard" class="brand" title="FixMedical">
+            <img src="~/images/LOGO FIX CORTO_sin_fondo (1).png" alt="FixMedical" class="brand-logo" />
+        </a>
+        <div class="nav-right">
+            <span class="user-chip"><i class="bi bi-person-circle"></i> @Model.NombreUsuario (Administrador)</span>
+            <a href="/Dashboard" class="btn-glass"><i class="bi bi-arrow-left"></i> Volver</a>
+            <form method="post" asp-page="/Dashboard" asp-page-handler="Logout" style="margin:0;">
+                <button type="submit" class="btn-glass">Cerrar Sesión</button>
+            </form>
+        </div>
+    </nav>
+
+    <div class="container-neon">
+
+        <!-- ===== ENCABEZADO ===== -->
+        <section class="welcome-glass">
+            <div>
+                <h1>Programación de cirugías</h1>
+                <p>Administra el calendario quirúrgico de FixMedical.</p>
+            </div>
+            <i class="bi bi-calendar2-week welcome-icon"></i>
+        </section>
+
+        <div asp-validation-summary="All" class="alert-neon"></div>
+
+        <!-- ===== FORMULARIO DE CREAR ===== -->
+        <div class="panel-glass">
+            <div class="panel-head">
+                <i class="bi bi-plus-circle"></i>
+                <h4>Nueva programación</h4>
+            </div>
+            <form method="post" asp-page-handler="Crear">
+                <div class="form-grid-neon">
+                    <div>
+                        <div class="campo-neon">Cirujano</div>
+                        <input type="text" name="cirujano" class="input-neon upper" placeholder="Nombre del cirujano" required />
+                    </div>
+                    <div>
+                        <div class="campo-neon">Cirugía programada</div>
+                        <input type="text" name="cirugia" class="input-neon upper" placeholder="Tipo de cirugía" required />
+                    </div>
+                    <div>
+                        <div class="campo-neon">Fecha y hora</div>
+                        <input type="datetime-local" name="fecha" class="input-neon" required />
+                    </div>
+                    <button type="submit" class="neon-btn-sm" style="height:42px;">
+                        <i class="bi bi-save"></i> Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- ===== LISTADO ===== -->
+        <div class="panel-glass">
+            <div class="panel-head">
+                <i class="bi bi-calendar2-week"></i>
+                <h4>Programaciones registradas</h4>
+            </div>
+
+            @if (Model.Programaciones.Any())
+            {
+                <div class="table-wrap">
+                    <table class="neon-table">
+                        <thead>
+                            <tr>
+                                <th>Cirujano</th>
+                                <th>Cirugía</th>
+                                <th>Fecha y hora</th>
+                                <th class="td-center">Estado</th>
+                                <th style="text-align:right;">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var p in Model.Programaciones)
+                            {
+                                <tr>
+                                    <td class="td-cirujano">@p.Cirujano</td>
+                                    <td>@p.CirugiaProgramada</td>
+                                    <td class="td-fecha">@p.FechaProgramada.ToString("dd/MM/yyyy HH:mm")</td>
+                                    <td class="td-center">
+                                        @if (p.Estado == "Realizada")
+                                        {
+                                            <span class="badge-neon badge-ok">Realizada</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge-neon badge-pend">Pendiente</span>
+                                        }
+                                    </td>
+                                    <td class="td-actions">
+                                        <button type="button" class="neon-btn-sm"
+                                                data-id="@p.ID_Programacion"
+                                                data-cirujano="@p.Cirujano"
+                                                data-cirugia="@p.CirugiaProgramada"
+                                                data-fecha="@p.FechaProgramada.ToString("yyyy-MM-ddTHH:mm")"
+                                                onclick="abrirEditar(this)">
+                                            <i class="bi bi-pencil"></i> Editar
+                                        </button>
+                                        <form method="post" asp-page-handler="Eliminar"
+                                              onsubmit="return confirm('¿Eliminar esta programación?');">
+                                            <input type="hidden" name="id" value="@p.ID_Programacion" />
+                                            <button type="submit" class="neon-btn-danger"><i class="bi bi-trash"></i> Eliminar</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="empty-state"><i class="bi bi-info-circle"></i> Aún no hay programaciones. Crea la primera arriba.</div>
+            }
+        </div>
+    </div>
+
+    <!-- ===== MODAL DE EDICIÓN NEÓN (SIN BOOTSTRAP) ===== -->
+    <div id="modalEditar" class="modal-neon">
+        <div class="modal-neon-box">
+            <h5><i class="bi bi-pencil-square"></i> Editar programación</h5>
+            <p class="modal-sub">Modifica los datos y guarda los cambios.</p>
+            <form method="post" asp-page-handler="Actualizar" class="modal-form">
+                <input type="hidden" name="id" id="ed_id" />
+                <div>
+                    <div class="campo-neon">Cirujano</div>
+                    <input type="text" name="cirujano" id="ed_cirujano" class="input-neon upper" required />
+                </div>
+                <div>
+                    <div class="campo-neon">Cirugía programada</div>
+                    <input type="text" name="cirugia" id="ed_cirugia" class="input-neon upper" required />
+                </div>
+                <div>
+                    <div class="campo-neon">Fecha y hora</div>
+                    <input type="datetime-local" name="fecha" id="ed_fecha" class="input-neon" required />
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-glass" onclick="cerrarModalEditar()">Cancelar</button>
+                    <button type="submit" class="neon-btn-sm"><i class="bi bi-save"></i> Guardar cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===== PARTÍCULAS NEÓN (defensivo) ===== -->
+    <script>
+        (function () {
+            try {
+                var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                if (reduce) return;
+                var canvas = document.getElementById('particles');
+                if (!canvas || !canvas.getContext) return;
+                var ctx = canvas.getContext('2d');
+                var w, h, particles = [];
+                var COLORS = ['34,211,238', '243,146,0', '255,77,141'];
+                function resize() {
+                    w = canvas.width = window.innerWidth;
+                    h = canvas.height = window.innerHeight;
+                    var count = Math.min(90, Math.floor((w * h) / 16000));
+                    particles = [];
+                    for (var i = 0; i < count; i++) {
+                        particles.push({
+                            x: Math.random() * w, y: Math.random() * h,
+                            vx: (Math.random() - 0.5) * 0.4, vy: (Math.random() - 0.5) * 0.4,
+                            r: Math.random() * 1.8 + 0.6, c: COLORS[Math.floor(Math.random() * COLORS.length)]
+                        });
+                    }
+                }
+                function draw() {
+                    ctx.clearRect(0, 0, w, h);
+                    for (var i = 0; i < particles.length; i++) {
+                        var p = particles[i];
+                        p.x += p.vx; p.y += p.vy;
+                        if (p.x < 0 || p.x > w) p.vx *= -1;
+                        if (p.y < 0 || p.y > h) p.vy *= -1;
+                        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                        ctx.fillStyle = 'rgba(' + p.c + ',0.8)'; ctx.fill();
+                        for (var j = i + 1; j < particles.length; j++) {
+                            var q = particles[j];
+                            var dx = p.x - q.x, dy = p.y - q.y, dist = Math.sqrt(dx * dx + dy * dy);
+                            if (dist < 120) {
+                                ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y);
+                                ctx.strokeStyle = 'rgba(' + p.c + ',' + (0.12 * (1 - dist / 120)) + ')';
+                                ctx.lineWidth = 0.6; ctx.stroke();
+                            }
+                        }
+                    }
+                    requestAnimationFrame(draw);
+                }
+                resize(); window.addEventListener('resize', resize); draw();
+            } catch (e) { }
+        })();
+    </script>
+
+    <!-- ===== LÓGICA DEL MODAL DE EDICIÓN ===== -->
+    <script>
+        var modalEditar = document.getElementById('modalEditar');
+
+        function abrirEditar(btn) {
+            document.getElementById('ed_id').value = btn.getAttribute('data-id');
+            document.getElementById('ed_cirujano').value = btn.getAttribute('data-cirujano');
+            document.getElementById('ed_cirugia').value = btn.getAttribute('data-cirugia');
+            document.getElementById('ed_fecha').value = btn.getAttribute('data-fecha');
+            modalEditar.style.display = 'flex';
+        }
+
+        function cerrarModalEditar() {
+            modalEditar.style.display = 'none';
+        }
+
+        modalEditar.addEventListener('click', function (e) {
+            if (e.target === modalEditar) cerrarModalEditar();
+        });
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') cerrarModalEditar();
+        });
+    </script>
+</body>
+</html>

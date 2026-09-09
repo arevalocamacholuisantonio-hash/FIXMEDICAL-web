@@ -1,0 +1,328 @@
+﻿@page "/Admin/Database/Registros"
+@model fixmedical._1._1.Pages.Admin.Database.RegistrosModel
+@using System.Text.Json
+@{
+    Layout = null;
+    ViewData["Title"] = "Registros - FixMedical";
+    var lista = Model.Tipo == "tarjetas" ? Model.RegistrosTarjetas : Model.Registros;
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registros - FixMedical</title>
+    <link rel="icon" type="image/png" sizes="40x40" href="~/images/LOGO FIX CORTO_sin_fondo (1).png" />
+    <link rel="apple-touch-icon" href="~/images/LOGO FIX CORTO_sin_fondo (1).png" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <style>
+        :root {
+            --bg-0:#05070f;--bg-1:#0a1226;--bg-2:#0d1b3a;
+            --azul:#004b87;--azul-2:#002d54;--naranja:#f39200;
+            --neon-cyan:#22d3ee;--neon-magenta:#ff4d8d;
+            --ok:#34d399;--bad:#ff5a6e;
+            --txt:#eaf2ff;--txt-soft:#8fb3d9;
+            --glass:rgba(13,20,40,.55);--glass-border:rgba(255,255,255,.08);
+        }
+        *{box-sizing:border-box;} html,body{height:100%;}
+        body{margin:0;background:var(--bg-0);color:var(--txt);font-family:'Segoe UI',Tahoma,sans-serif;overflow-x:hidden;}
+        .bg{position:fixed;inset:0;z-index:0;overflow:hidden;}
+        .bg-gradient{position:absolute;inset:0;background:linear-gradient(135deg,var(--bg-0),var(--bg-1) 45%,var(--bg-2));background-size:200% 200%;animation:gs 18s ease infinite;}
+        .blob{position:absolute;border-radius:50%;filter:blur(90px);opacity:.4;mix-blend-mode:screen;}
+        .b1{width:520px;height:520px;background:radial-gradient(circle at 30% 30%,var(--naranja),transparent 60%);top:-140px;left:-120px;animation:f1 22s ease-in-out infinite;}
+        .b2{width:600px;height:600px;background:radial-gradient(circle at 70% 40%,var(--azul),transparent 60%);bottom:-200px;right:-160px;animation:f2 26s ease-in-out infinite;}
+        .b3{width:420px;height:420px;background:radial-gradient(circle at 50% 50%,var(--neon-cyan),transparent 60%);top:30%;left:48%;opacity:.22;animation:f3 30s ease-in-out infinite;}
+        .grid-overlay{position:absolute;inset:0;background-image:linear-gradient(rgba(34,211,238,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(34,211,238,.06) 1px,transparent 1px);background-size:44px 44px;-webkit-mask-image:radial-gradient(ellipse 80% 70% at 50% 30%,#000,transparent 80%);mask-image:radial-gradient(ellipse 80% 70% at 50% 30%,#000,transparent 80%);}
+        #particles{position:fixed;inset:0;z-index:1;pointer-events:none;}
+        .navbar-neon{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:16px 28px;background:rgba(5,7,15,.55);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--glass-border);box-shadow:0 6px 24px rgba(0,0,0,.4);}
+        .brand{display:inline-flex;align-items:center;text-decoration:none;}
+        .brand-logo{height:55px;width:auto;display:block;filter:drop-shadow(0 0 8px rgba(243,146,0,.55)) drop-shadow(0 0 18px rgba(243,146,0,.28));transition:filter .25s,transform .25s;}
+        .brand:hover .brand-logo{filter:drop-shadow(0 0 12px rgba(243,146,0,.85)) drop-shadow(0 0 26px rgba(34,211,238,.35));transform:scale(1.04);}
+        .nav-right{display:flex;align-items:center;gap:12px;}
+        .btn-glass{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);color:var(--txt);border-radius:8px;padding:7px 16px;font-size:.85rem;cursor:pointer;text-decoration:none;transition:.25s;display:inline-flex;align-items:center;gap:6px;}
+        .btn-glass:hover{border-color:var(--naranja);box-shadow:0 0 16px rgba(243,146,0,.35);color:#fff;}
+        .shell{position:relative;z-index:2;max-width:1400px;margin:0 auto;padding:32px 24px 60px;}
+        .head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;}
+        .head h3{margin:0;font-size:1.7rem;font-weight:800;display:flex;align-items:center;gap:10px;}
+        .head h3 i{color:var(--neon-cyan);text-shadow:0 0 16px rgba(34,211,238,.5);}
+        .glass{background:var(--glass);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid var(--glass-border);border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.5);position:relative;overflow:hidden;animation:ci .7s cubic-bezier(.2,.8,.2,1) both;}
+        .glass::before{content:"";position:absolute;top:0;left:10%;right:10%;height:2px;background:linear-gradient(90deg,transparent,var(--naranja),var(--neon-cyan),transparent);filter:blur(1px);opacity:.85;}
+        .panel{padding:22px 24px;margin-bottom:22px;}
+
+        /* ===== SWITCH HOJAS ↔ TARJETAS ===== */
+        .switch-row{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;}
+        .switch-btn{padding:10px 18px;border-radius:12px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);color:var(--txt-soft);font-weight:700;font-size:13px;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:.25s;cursor:pointer;}
+        .switch-btn:hover{border-color:var(--neon-cyan);color:#fff;box-shadow:0 0 14px rgba(34,211,238,.35);}
+        .switch-btn.active{background:linear-gradient(135deg,var(--azul),var(--azul-2));border-color:rgba(34,211,238,.55);color:#fff;box-shadow:0 8px 24px rgba(0,75,135,.45),0 0 18px rgba(34,211,238,.35);}
+
+        .filt-row{display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:12px;align-items:end;}
+        .campo{font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--txt-soft);margin-bottom:6px;}
+        .neon-input{width:100%;padding:11px 13px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:10px;color:var(--txt);font-size:14px;outline:none;transition:.25s;}
+        .neon-input:focus{border-color:var(--naranja);box-shadow:0 0 0 3px rgba(243,146,0,.18);}
+        input[type="date"].neon-input{color-scheme:dark;}
+        .neon-btn{padding:11px 18px;border:1px solid rgba(243,146,0,.35);border-radius:10px;font-weight:700;color:#fff;cursor:pointer;background:linear-gradient(135deg,var(--azul),var(--azul-2));box-shadow:0 8px 24px rgba(0,75,135,.45);transition:.2s;position:relative;overflow:hidden;white-space:nowrap;display:inline-flex;align-items:center;gap:7px;}
+        .neon-btn:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(0,75,135,.6),0 0 24px rgba(243,146,0,.5);}
+        .neon-btn.ghost{background:rgba(255,255,255,.05);border-color:rgba(34,211,238,.4);color:var(--neon-cyan);box-shadow:none;}
+        .neon-btn.ghost:hover{box-shadow:0 0 18px rgba(34,211,238,.4);}
+        .neon-btn.ok{background:linear-gradient(135deg,#065f46,#064e3b);border-color:rgba(52,211,153,.45);box-shadow:0 8px 24px rgba(6,95,70,.45);}
+        .neon-btn.ok:hover{box-shadow:0 12px 30px rgba(6,95,70,.6),0 0 24px rgba(52,211,153,.5);}
+        .toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+        .toolbar-left{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+        .count{color:var(--txt-soft);font-size:12px;display:flex;align-items:center;gap:8px;}
+        .count b{color:var(--neon-cyan);}
+        .count .dot{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 10px rgba(52,211,153,.7);animation:pp 1.6s ease infinite;}
+        .hint-keys{color:var(--txt-soft);font-size:11px;display:flex;align-items:center;gap:6px;}
+        .hint-keys i{color:var(--neon-cyan);}
+        .toolbar-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+        .namebox{display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border-radius:8px;border:1px solid rgba(34,211,238,.4);background:rgba(34,211,238,.08);color:var(--neon-cyan);font-weight:800;font-family:ui-monospace,Consolas,monospace;font-size:12px;letter-spacing:1px;min-width:70px;justify-content:center;}
+        .table-wrap{overflow-x:auto;}
+        .neon-table{width:100%;border-collapse:collapse;font-size:13px;min-width:1400px;}
+        .neon-table thead th{color:var(--neon-cyan);text-transform:uppercase;font-size:10px;letter-spacing:.7px;padding:12px 12px;border-bottom:1px solid rgba(34,211,238,.25);text-align:left;white-space:nowrap;}
+        .neon-table tbody td{padding:12px;border-bottom:1px solid rgba(255,255,255,.06);vertical-align:top;}
+        .neon-table tbody tr{transition:background .2s;}
+        .neon-table tbody tr:hover td{background:rgba(34,211,238,.05);}
+        .neon-table tbody td.cell-active{outline:2px solid var(--neon-cyan);outline-offset:-2px;background:rgba(34,211,238,.14)!important;box-shadow:inset 0 0 14px rgba(34,211,238,.25);}
+        .mono{font-family:ui-monospace,'Cascadia Code',Consolas,monospace;letter-spacing:.2px;}
+        .muted{color:var(--txt-soft);}
+        .cons{font-weight:800;color:#fff;white-space:nowrap;}
+        .ref{font-weight:700;text-shadow:0 0 10px rgba(243,146,0,.2);white-space:nowrap;}
+        .inv{font-weight:800;color:var(--neon-cyan);white-space:nowrap;}
+        .td-center{text-align:center;}
+        .badge-linea{display:inline-block;padding:3px 10px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--naranja);background:rgba(243,146,0,.1);border:1px solid rgba(243,146,0,.4);}
+        .empty{color:var(--txt-soft);display:flex;align-items:center;gap:8px;padding:8px 2px;}
+        @@keyframes gs{0%{background-position:0 50%;}50%{background-position:100% 50%;}100%{background-position:0 50%;}}
+        @@keyframes f1{0%,100%{transform:translate(0,0);}50%{transform:translate(60px,50px);}}
+        @@keyframes f2{0%,100%{transform:translate(0,0);}50%{transform:translate(-70px,-40px);}}
+        @@keyframes f3{0%,100%{transform:translate(0,0);}50%{transform:translate(-50px,40px);}}
+        @@keyframes ci{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+        @@keyframes pp{0%,100%{opacity:1;}50%{opacity:.3;}}
+        @@media (prefers-reduced-motion:reduce){.blob,.bg-gradient,.glass,.count .dot{animation:none!important;}}
+        @@media (max-width:760px){.filt-row{grid-template-columns:1fr 1fr;}.head h3{font-size:1.3rem;}.navbar-neon{padding:12px 16px;}}
+    </style>
+</head>
+<body>
+
+    <div class="bg" aria-hidden="true">
+        <div class="bg-gradient"></div>
+        <div class="blob b1"></div>
+        <div class="blob b2"></div>
+        <div class="blob b3"></div>
+        <div class="grid-overlay"></div>
+    </div>
+    <canvas id="particles" aria-hidden="true"></canvas>
+
+    <nav class="navbar-neon">
+        <a href="/Admin/Database" class="brand" title="FixMedical">
+            <img src="~/images/LOGO FIX CORTO_sin_fondo (1).png" alt="FixMedical" class="brand-logo" />
+        </a>
+        <div class="nav-right">
+            <a href="/Admin/Database" class="btn-glass"><i class="bi bi-arrow-left"></i> Database</a>
+            <form method="post" asp-page="/Dashboard" asp-page-handler="Logout" style="margin:0;">
+                <button type="submit" class="btn-glass">Cerrar Sesión</button>
+            </form>
+        </div>
+    </nav>
+
+    <div class="shell">
+
+        <div class="head">
+            <h3><i class="bi bi-journal-medical"></i> Registros de consumo</h3>
+            <a href="/Admin/Database" class="btn-glass"><i class="bi bi-arrow-left"></i> Volver</a>
+        </div>
+
+        <!-- ===== SWITCH HOJAS ↔ TARJETAS ===== -->
+        <div class="switch-row">
+            <a href="?tipo=hojas&buscar=@Uri.EscapeDataString(Model.Buscar ?? "")&fechaDesde=@Uri.EscapeDataString(Model.FechaDesde ?? "")&fechaHasta=@Uri.EscapeDataString(Model.FechaHasta ?? "")"
+               class="switch-btn @(Model.Tipo == "hojas" ? "active" : "")">
+                <i class="bi bi-file-earmark-medical"></i> Hojas de Gasto
+            </a>
+            <a href="?tipo=tarjetas&buscar=@Uri.EscapeDataString(Model.Buscar ?? "")&fechaDesde=@Uri.EscapeDataString(Model.FechaDesde ?? "")&fechaHasta=@Uri.EscapeDataString(Model.FechaHasta ?? "")"
+               class="switch-btn @(Model.Tipo == "tarjetas" ? "active" : "")">
+                <i class="bi bi-card-checklist"></i> Tarjetas de Implante
+            </a>
+        </div>
+
+        <!-- ===== FILTROS ===== -->
+        <div class="glass panel">
+            <form method="get" class="filt-row">
+                <input type="hidden" name="tipo" value="@Model.Tipo" />
+                <div>
+                    <div class="campo">Buscar</div>
+                    <input type="text" name="buscar" value="@Model.Buscar" class="neon-input" placeholder="Consecutivo, paciente, referencia o descripción" />
+                </div>
+                <div>
+                    <div class="campo">Desde</div>
+                    <input type="date" name="fechaDesde" value="@Model.FechaDesde" class="neon-input" />
+                </div>
+                <div>
+                    <div class="campo">Hasta</div>
+                    <input type="date" name="fechaHasta" value="@Model.FechaHasta" class="neon-input" />
+                </div>
+                <div style="display:flex;gap:8px;">
+                    <button class="neon-btn"><i class="bi bi-funnel"></i> Filtrar</button>
+                    <a href="?tipo=@Model.Tipo" class="neon-btn ghost" title="Limpiar"><i class="bi bi-x-circle"></i></a>
+                </div>
+            </form>
+        </div>
+
+        <!-- ===== LIBRO DE REGISTROS ===== -->
+        <div class="glass panel">
+            <div class="toolbar">
+                <div class="toolbar-left">
+                    <div class="count">
+                        <span class="dot"></span>
+                        Libro en vivo: <b>@lista.Count</b> filas · cada @(Model.Tipo == "tarjetas" ? "Tarjeta de Implante" : "Hoja de Gasto") guardada suma sus dispositivos aquí.
+                    </div>
+                    <div class="hint-keys"><i class="bi bi-keyboard"></i> Clic en una celda y muévete con ← ↑ ↓ →</div>
+                </div>
+                <div class="toolbar-actions">
+                    <div class="namebox" id="nameBox" title="Celda activa">—</div>
+                    <button type="button" class="neon-btn ok" onclick="exportar('xlsx')"><i class="bi bi-download"></i> Descargar Excel</button>
+                    <button type="button" class="neon-btn ghost" onclick="exportar('csv')"><i class="bi bi-filetype-csv"></i> CSV</button>
+                </div>
+            </div>
+
+            <div class="table-wrap">
+                <table class="neon-table" id="tablaRegistros">
+                    <thead>
+                        <tr>
+                            <th>Consecutivo</th>
+                            <th>Fecha</th>
+                            <th>ID Paciente</th>
+                            <th>Código Fix</th>
+                            <th>Referencia</th>
+                            <th>Descripción</th>
+                            <th class="td-center">Cant.</th>
+                            <th>Lote</th>
+                            <th>Reg. Sanitario</th>
+                            <th>Fabricante</th>
+                            <th>Domicilio</th>
+                            <th>EQC</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (lista != null && lista.Count > 0)
+                        {
+                            @foreach (var r in lista)
+                            {
+                                <tr>
+                                    <td class="cons">@r.Consecutivo</td>
+                                    <td class="muted" style="white-space:nowrap;">@r.Fecha.ToString("dd/MM/yyyy")</td>
+                                    <td class="mono">@r.PacienteId</td>
+                                    <td class="mono">@r.CodigoFix</td>
+                                    <td class="ref">@r.Referencia</td>
+                                    <td>@r.Descripcion</td>
+                                    <td class="td-center"><span class="badge-linea">@r.Cantidad</span></td>
+                                    <td class="mono muted">@r.Lote</td>
+                                    <td class="inv">@r.RegistroSanitario</td>
+                                    <td class="muted">@r.Fabricante</td>
+                                    <td class="muted">@r.Domicilio</td>
+                                    <td class="muted">@r.Eqc</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr><td colspan="12"><div class="empty"><i class="bi bi-info-circle"></i> Aún no hay filas en este libro con los filtros actuales.</div></td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script>
+            /* ===== EXPORTAR (respeta filtros actuales) ===== */
+            const DATA = @Html.Raw(JsonSerializer.Serialize(lista ?? new System.Collections.Generic.List<fixmedical._1._1.Pages.Admin.Database.RegistroConsumoVm>()));
+
+            function filaExport(r) {
+                var f = r.Fecha ? new Date(r.Fecha) : null;
+                var fecha = f && !isNaN(f) ? ('0' + f.getDate()).slice(-2) + '/' + ('0' + (f.getMonth() + 1)).slice(-2) + '/' + f.getFullYear() : '';
+                return {
+                    'CONSECUTIVO': r.Consecutivo, 'FECHA': fecha, 'ID PACIENTE': r.PacienteId,
+                    'CODIGO FIX': r.CodigoFix, 'REFERENCIA': r.Referencia, 'DESCRIPCION': r.Descripcion,
+                    'CANTIDAD': r.Cantidad, 'LOTE': r.Lote, 'REGISTRO SANITARIO': r.RegistroSanitario,
+                    'FABRICANTE': r.Fabricante, 'DOMICILIO': r.Domicilio, 'EQC': r.Eqc
+                };
+            }
+
+            function exportar(tipo) {
+                if (!DATA || DATA.length === 0) { alert('No hay filas para exportar con los filtros actuales.'); return; }
+                var ws = XLSX.utils.json_to_sheet(DATA.map(filaExport));
+                ws['!cols'] = [{ wch: 18 }, { wch: 10 }, { wch: 14 }, { wch: 14 }, { wch: 14 }, { wch: 45 }, { wch: 8 }, { wch: 12 }, { wch: 18 }, { wch: 40 }, { wch: 10 }, { wch: 16 }];
+                var wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, 'Registros');
+                var nombre = 'Registros_' + (document.querySelector('.switch-btn.active') ? (typeof tipo !== 'undefined' ? '' : '') : '') + new Date().toISOString().slice(0, 10);
+                XLSX.writeFile(wb, 'Registros_Consumo_' + new Date().toISOString().slice(0, 10) + (tipo === 'csv' ? '.csv' : '.xlsx'), { bookType: tipo });
+            }
+
+            /* ===== NAVEGACIÓN DE CELDAS CON FLECHAS (estilo Excel) ===== */
+            const LETRAS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'];
+            const cuerpo = document.querySelector('#tablaRegistros tbody');
+            let fAct = -1, cAct = -1;
+
+            function filasNav() {
+                if (!cuerpo) return [];
+                return Array.prototype.filter.call(cuerpo.querySelectorAll('tr'), tr => tr.children.length > 1);
+            }
+            function marcarCelda(f, c) {
+                const filas = filasNav();
+                if (!filas.length) return;
+                f = Math.max(0, Math.min(f, filas.length - 1));
+                c = Math.max(0, Math.min(c, filas[0].children.length - 1));
+                const prev = cuerpo.querySelector('.cell-active');
+                if (prev) prev.classList.remove('cell-active');
+                fAct = f; cAct = c;
+                const td = filas[f].children[c];
+                if (td) {
+                    td.classList.add('cell-active');
+                    td.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+                    const nb = document.getElementById('nameBox');
+                    if (nb) nb.textContent = (LETRAS[c] || ('C' + (c + 1))) + (f + 1);
+                }
+            }
+            document.addEventListener('keydown', function(e) {
+                const ae = document.activeElement;
+                if (ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.tagName === 'SELECT' || ae.isContentEditable)) return;
+                if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].indexOf(e.key) === -1) return;
+                if (!filasNav().length) return;
+                e.preventDefault();
+                if (fAct === -1) { marcarCelda(0, 0); return; }
+                if (e.key === 'ArrowLeft') marcarCelda(fAct, cAct - 1);
+                else if (e.key === 'ArrowRight') marcarCelda(fAct, cAct + 1);
+                else if (e.key === 'ArrowUp') marcarCelda(fAct - 1, cAct);
+                else marcarCelda(fAct + 1, cAct);
+            });
+            if (cuerpo) {
+                cuerpo.addEventListener('mousedown', function(e) {
+                    const td = e.target.closest('td');
+                    if (!td) return;
+                    const tr = td.parentElement;
+                    if (tr.children.length < 2) return;
+                    const filas = filasNav();
+                    const f = Array.prototype.indexOf.call(filas, tr);
+                    const c = Array.prototype.indexOf.call(tr.children, td);
+                    if (f >= 0 && c >= 0) marcarCelda(f, c);
+                });
+            }
+    </script>
+
+    <!-- ===== PARTÍCULAS ===== -->
+    <script>
+            (function() {
+                try {
+                    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+                    if (reduce) return;
+                    var canvas = document.getElementById('particles');
+                    if (!canvas || !canvas.getContext) return;
+                    var ctx = canvas.getContext('2d'); var w, h, particles = [];
+                    var COLORS = ['34,211,238', '243,146,0', '255,77,141'];
+                    function resize() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; var count = Math.min(80, Math.floor((w * h) / 18000)); particles = []; for (var i = 0; i < count; i++)particles.push({ x: Math.random() * w, y: Math.random() * h, vx: (Math.random() - .5) * .4, vy: (Math.random() - .5) * .4, r: Math.random() * 1.8 + .6, c: COLORS[Math.floor(Math.random() * COLORS.length)] }); }
+                    function draw() { ctx.clearRect(0, 0, w, h); for (var i = 0; i < particles.length; i++) { var p = particles[i]; p.x += p.vx; p.y += p.vy; if (p.x < 0 || p.x > w) p.vx *= -1; if (p.y < 0 || p.y > h) p.vy *= -1; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fillStyle = 'rgba(' + p.c + ',0.8)'; ctx.fill(); for (var j = i + 1; j < particles.length; j++) { var q = particles[j]; var dx = p.x - q.x, dy = p.y - q.y, dist = Math.sqrt(dx * dx + dy * dy); if (dist < 120) { ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y); ctx.strokeStyle = 'rgba(' + p.c + ',' + (0.12 * (1 - dist / 120)) + ')'; ctx.lineWidth = 0.6; ctx.stroke(); } } } requestAnimationFrame(draw); }
+                    resize(); window.addEventListener('resize', resize); draw();
+                } catch (e) { }
+            })();
+    </script>
+</body>
+</html>

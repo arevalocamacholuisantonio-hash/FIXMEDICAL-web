@@ -1,0 +1,1281 @@
+﻿@page
+@model fixmedical._1._1.Pages.TarjetasImplante.CrearModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" sizes="40x40" href="~/images/LOGO FIX CORTO_sin_fondo (1).png" />
+    <link rel="apple-touch-icon" href="~/images/LOGO FIX CORTO_sin_fondo (1).png" />
+    <title>Tarjeta de Implante - FixMedical</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <style>
+            /* ===== CHASIS PLANO ===== */
+            body {
+                background-color: #dcdcdc;
+                font-family: 'Calibri', sans-serif;
+                padding: 20px;
+                overflow-x: hidden;
+            }
+
+            .hoja-container {
+                background: white;
+                width: 34.5cm;
+                height: 27.4cm;
+                margin: 20px auto;
+                padding: .8cm 1cm;
+                border: none;
+                box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
+                box-sizing: border-box;
+                transform-origin: top center;
+                position: relative;
+                font-family: 'Calibri', sans-serif;
+                overflow: hidden;
+            }
+
+            @@media screen and (max-width: 1200px) {
+                .hoja-container {
+                    transform: scale(0.7);
+                }
+            }
+
+            @@media screen and (max-width: 900px) {
+                .hoja-container {
+                    transform: scale(0.55);
+                }
+            }
+
+            @@media screen and (max-width: 600px) {
+                .hoja-container {
+                    transform: scale(0.4);
+                }
+            }
+
+            #formTarjeta {
+                width: 100%;
+                position: relative;
+                z-index: 1;
+            }
+
+            .validation-summary-valid {
+                display: none !important;
+            }
+
+            .btn-flotantes {
+                position: fixed;
+                top: 20px;
+                left: 20px;
+                z-index: 1000;
+            }
+
+            .btn-circular {
+                width: 64px;
+                height: 64px;
+                border-radius: 50%;
+                border: 2px solid #808080;
+                background-color: #a9a9a9;
+                color: white;
+                font-size: 9px;
+                font-weight: bold;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                padding: 4px;
+                transition: all 0.25s ease;
+                box-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+                text-decoration: none;
+                font-family: 'Calibri', sans-serif;
+                line-height: 1.1;
+            }
+
+                .btn-circular:hover {
+                    background-color: #D8BFD8;
+                    border-color: #D8BFD8;
+                    color: #4a4a4a;
+                    transform: scale(1.05);
+                    box-shadow: 3px 3px 12px rgba(0,0,0,0.35);
+                }
+
+                .btn-circular:active {
+                    transform: scale(0.94);
+                }
+
+            .barra-acto {
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                z-index: 150000;
+                background: #c62828;
+                color: #fff;
+                padding: 8px 20px;
+                border-radius: 30px;
+                font-weight: bold;
+                font-size: 13px;
+                box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+                display: none;
+                align-items: center;
+                gap: 9px;
+                font-family: 'Calibri', sans-serif;
+                letter-spacing: .3px;
+            }
+
+            .ba-dot {
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+                background: #fff;
+                animation: parpadeo 1s infinite;
+            }
+
+            @@keyframes parpadeo {
+                0%, 100% {
+                    opacity: 1;
+                }
+
+                50% {
+                    opacity: .25;
+                }
+            }
+
+            .id-float {
+                position: absolute;
+                top: 1.1cm;
+                right: 1.3cm;
+                color: #c00;
+                font-weight: bold;
+                font-size: 18px;
+                font-family: 'Calibri', sans-serif;
+                z-index: 2;
+            }
+
+            .watermark-layer {
+                position: absolute;
+                inset: 0;
+                overflow: hidden;
+                z-index: 0;
+                pointer-events: none;
+                user-select: none;
+            }
+
+            .watermark-grid {
+                position: absolute;
+                top: -35%;
+                left: -35%;
+                width: 170%;
+                height: 170%;
+                transform: rotate(-30deg);
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                grid-auto-rows: 1fr;
+                row-gap: 2.6cm;
+                column-gap: 0.5cm;
+                align-items: center;
+                justify-items: center;
+            }
+
+                .watermark-grid span {
+                    font-family: 'Calibri', sans-serif;
+                    font-weight: bold;
+                    font-size: 2.3cm;
+                    letter-spacing: .35cm;
+                    color: rgba(130, 130, 130, 0.12);
+                    white-space: nowrap;
+                }
+
+            .doc {
+                width: 100%;
+                border-collapse: collapse;
+                border: none;
+                table-layout: fixed;
+                font-family: 'Calibri', sans-serif;
+            }
+
+                .doc td {
+                    border: 1px solid #000;
+                    padding: 4px 8px;
+                    font-size: 12px;
+                    vertical-align: middle;
+                }
+
+                .doc .titulo-maestro {
+                    text-align: center;
+                    font-weight: bold;
+                    font-size: 15px;
+                    letter-spacing: .5px;
+                    padding: 6px;
+                    border-top: none;
+                }
+
+                .doc .titulo-sec {
+                    text-align: center;
+                    font-weight: bold;
+                    font-size: 12px;
+                    padding: 4px;
+                }
+
+                .doc .etq {
+                    font-weight: bold;
+                    white-space: nowrap;
+                }
+
+                .doc .etq-sm {
+                    font-weight: bold;
+                    white-space: nowrap;
+                }
+
+            .fila-dm td {
+                height: 0.55cm;
+                padding: 1px 6px;
+            }
+
+            .c {
+                border: none;
+                width: 100%;
+                outline: none;
+                background: transparent;
+                font-size: 12px;
+                font-family: 'Calibri', sans-serif;
+                padding: 1px 3px;
+                text-transform: uppercase;
+            }
+
+                .c.auto {
+                    background: transparent;
+                    color: #111;
+                    cursor: default;
+                }
+
+            .canvas-firma {
+                width: 100%;
+                height: 40px;
+                display: block;
+                background: transparent;
+                cursor: crosshair;
+                touch-action: none;
+            }
+
+            .sticker {
+                text-align: center;
+                vertical-align: middle;
+                color: #9aa0a6;
+                font-style: italic;
+                font-weight: bold;
+                letter-spacing: 1px;
+                font-size: 13px;
+            }
+
+            .logo-header {
+                display: flex;
+                align-items: center;
+                gap: 0.8cm;
+                padding: 0.25cm 0.4cm;
+                box-sizing: border-box;
+            }
+
+                .logo-header img {
+                    max-height: 1.9cm;
+                    height: auto;
+                    width: auto;
+                    display: block;
+                }
+
+            .sugerencias-dropdown {
+                position: fixed;
+                z-index: 100000;
+                background: #ffffff;
+                border: 1px solid #999;
+                border-radius: 5px;
+                max-height: 230px;
+                overflow-y: auto;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.25);
+                display: none;
+                font-family: 'Calibri', sans-serif;
+            }
+
+            .sugerencias-item {
+                padding: 6px 10px;
+                cursor: pointer;
+                font-size: 11px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 12px;
+                border-bottom: 1px solid #eee;
+                transition: background .15s ease;
+            }
+
+                .sugerencias-item:last-child {
+                    border-bottom: none;
+                }
+
+                .sugerencias-item:hover, .sugerencias-item.active {
+                    background-color: #D8BFD8;
+                }
+
+            .sugerencias-ref {
+                font-weight: bold;
+                white-space: nowrap;
+            }
+
+            .sugerencias-desc {
+                color: #555;
+                font-size: 10px;
+                max-width: 320px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                text-align: right;
+            }
+
+            .sugerencias-vacio {
+                padding: 6px 10px;
+                font-size: 10px;
+                color: #888;
+                font-style: italic;
+            }
+
+            .modal-acciones {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.55);
+                -webkit-backdrop-filter: blur(3px);
+                backdrop-filter: blur(3px);
+                z-index: 200000;
+                display: none;
+                align-items: center;
+                justify-content: center;
+                font-family: 'Calibri', sans-serif;
+            }
+
+            .modal-box {
+                background: #fff;
+                border-radius: 14px;
+                padding: 25px 30px;
+                width: 440px;
+                max-width: 92%;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+                position: relative;
+                animation: modalIn .25s cubic-bezier(.2,.8,.2,1) both;
+            }
+
+                .modal-box h3 {
+                    margin: 0 0 18px 0;
+                    font-size: 18px;
+                    text-transform: uppercase;
+                    color: #333;
+                    text-align: center;
+                    letter-spacing: .5px;
+                }
+
+            .modal-close {
+                position: absolute;
+                top: 8px;
+                right: 12px;
+                border: none;
+                background: transparent;
+                font-size: 24px;
+                cursor: pointer;
+                color: #888;
+                line-height: 1;
+                transition: color .2s, transform .2s;
+            }
+
+                .modal-close:hover {
+                    color: #c00;
+                    transform: rotate(90deg);
+                }
+
+            .modal-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+
+            .accion-btn {
+                border: none;
+                border-radius: 10px;
+                padding: 14px 10px;
+                font-size: 13px;
+                font-weight: bold;
+                cursor: pointer;
+                color: #fff;
+                font-family: 'Calibri', sans-serif;
+                transition: transform 0.15s ease, filter 0.15s ease, box-shadow .15s ease;
+                position: relative;
+                overflow: hidden;
+            }
+
+                .accion-btn:hover {
+                    transform: translateY(-2px);
+                    filter: brightness(1.08);
+                    box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+                }
+
+                .accion-btn:active {
+                    transform: translateY(0);
+                }
+
+                .accion-btn::after {
+                    content: "";
+                    position: absolute;
+                    top: 0;
+                    left: -60%;
+                    width: 40%;
+                    height: 100%;
+                    background: linear-gradient(120deg, transparent, rgba(255,255,255,.35), transparent);
+                    transform: skewX(-20deg);
+                    transition: left .55s ease;
+                }
+
+                .accion-btn:hover::after {
+                    left: 130%;
+                }
+
+                .accion-btn.guardar {
+                    background: #2e7d32;
+                    grid-column: 1 / -1;
+                    font-size: 15px;
+                }
+
+                .accion-btn.pdf {
+                    background: #1565c0;
+                }
+
+                .accion-btn.correo {
+                    background: #6a1b9a;
+                }
+
+            @@keyframes modalIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(12px) scale(.95);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: none;
+                }
+            }
+
+            .hoja-container.pdf-compact {
+                width: 27.94cm !important;
+                height: 21.59cm !important;
+                padding: 0.5cm !important;
+                margin: 0 !important;
+                box-shadow: none !important;
+                transform: none !important;
+                overflow: hidden !important;
+            }
+
+                .hoja-container.pdf-compact .valsum {
+                    display: none !important;
+                }
+
+                .hoja-container.pdf-compact .id-float {
+                    top: 0.7cm;
+                    right: 0.8cm;
+                    font-size: 12px;
+                }
+
+                .hoja-container.pdf-compact .watermark-grid {
+                    row-gap: 2cm;
+                }
+
+                    .hoja-container.pdf-compact .watermark-grid span {
+                        font-size: 1.8cm;
+                        letter-spacing: .25cm;
+                    }
+
+                .hoja-container.pdf-compact .doc {
+                    font-size: 9px;
+                }
+
+                    .hoja-container.pdf-compact .doc td {
+                        padding: 1px 4px;
+                    }
+
+                .hoja-container.pdf-compact .logo-header {
+                    padding: 0.15cm 0.3cm;
+                    gap: 0.5cm;
+                }
+
+                    .hoja-container.pdf-compact .logo-header img {
+                        max-height: 1.5cm !important;
+                    }
+
+                .hoja-container.pdf-compact .doc .titulo-maestro {
+                    font-size: 11px;
+                    padding: 3px;
+                }
+
+                .hoja-container.pdf-compact .doc .titulo-sec {
+                    font-size: 8px;
+                    padding: 2px;
+                }
+
+                .hoja-container.pdf-compact .doc .etq, .hoja-container.pdf-compact .doc .etq-sm {
+                    font-size: 7.5px;
+                }
+
+                .hoja-container.pdf-compact .fila-dm td {
+                    height: 0.5cm;
+                    padding: 0 4px;
+                }
+
+                .hoja-container.pdf-compact .c {
+                    font-size: 8px;
+                    padding: 0 2px;
+                }
+
+                .hoja-container.pdf-compact .canvas-firma {
+                    height: 22px;
+                }
+
+                .hoja-container.pdf-compact .sticker {
+                    font-size: 9px;
+                }
+
+            .pdf-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.6);
+                z-index: 99999;
+                display: none;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-size: 20px;
+                font-family: 'Calibri', sans-serif;
+                font-weight: bold;
+                animation: fadeIn .2s ease both;
+            }
+
+                .pdf-overlay .spin {
+                    width: 36px;
+                    height: 36px;
+                    border: 4px solid rgba(255,255,255,.28);
+                    border-top-color: #fff;
+                    border-radius: 50%;
+                    animation: spin .8s linear infinite;
+                    margin: 0 auto 14px;
+                }
+
+            @@keyframes spin {
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+
+            @@keyframes fadeIn {
+                from {
+                    opacity: 0;
+                }
+
+                to {
+                    opacity: 1;
+                }
+            }
+
+            @@page {
+                size: letter landscape;
+                margin: 0.5cm;
+            }
+
+            @@media print {
+                body {
+                    background-color: white;
+                    padding: 0;
+                }
+
+                .no-print, .btn-flotantes, .barra-acto, .valsum {
+                    display: none !important;
+                }
+
+                .hoja-container {
+                    margin: 0;
+                    border: none;
+                    box-shadow: none;
+                    transform: none !important;
+                    width: auto;
+                    height: auto;
+                    padding: 0.5cm;
+                    overflow: visible;
+                }
+            }
+
+            @@media screen and (max-width: 700px) {
+                body {
+                    padding: 8px;
+                }
+
+                .hoja-container {
+                    width: 100%;
+                    height: auto;
+                    margin: 8px auto;
+                    padding: 12px;
+                    transform: none !important;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+                }
+
+                .id-float {
+                    position: static;
+                    display: block;
+                    text-align: right;
+                    margin: 0 0 8px 0;
+                    font-size: 16px;
+                }
+
+                .tabla-scroll {
+                    overflow-x: auto;
+                    -webkit-overflow-scrolling: touch;
+                }
+
+                .doc {
+                    min-width: 700px;
+                }
+
+                .c {
+                    font-size: 16px;
+                    min-height: 44px;
+                }
+
+                .canvas-firma {
+                    height: 120px;
+                }
+
+                .sticker {
+                    min-height: 120px;
+                }
+
+                .logo-header {
+                    flex-wrap: wrap;
+                    gap: 0.4cm;
+                    padding: 6px 0;
+                }
+
+                    .logo-header img {
+                        max-height: 1.4cm;
+                    }
+
+                .watermark-grid span {
+                    font-size: 1.6cm;
+                    letter-spacing: .2cm;
+                }
+
+                .btn-flotantes {
+                    top: auto;
+                    left: auto;
+                    right: 16px;
+                    bottom: 16px;
+                }
+
+                .barra-acto {
+                    font-size: 11px;
+                    padding: 6px 12px;
+                    max-width: 92vw;
+                    top: 12px;
+                }
+
+                .modal-grid {
+                    grid-template-columns: 1fr;
+                }
+
+                .sugerencias-dropdown {
+                    max-width: 94vw;
+                }
+            }
+
+            .hoja-container.pdf-compact .tabla-scroll {
+                overflow: visible !important;
+            }
+
+            .hoja-container.pdf-compact .doc {
+                min-width: 0 !important;
+            }
+
+            .hoja-container.pdf-compact .c {
+                min-height: 0 !important;
+            }
+
+            .hoja-container.pdf-compact .id-float {
+                position: absolute !important;
+            }
+
+            .hoja-container.pdf-compact .logo-header {
+                flex-wrap: nowrap !important;
+            }
+    </style>
+</head>
+<body>
+
+    <div class="btn-flotantes no-print">
+        <button type="button" class="btn-circular" onclick="abrirModal()" title="Opciones">OPCIONES</button>
+    </div>
+
+    <div id="barraActo" class="barra-acto no-print">
+        <span class="ba-dot"></span> CIRUGÍA EN CURSO — <span id="cronometro">00:00:00</span>
+    </div>
+
+    <div class="hoja-container" id="hojaOriginal">
+        <div class="watermark-layer" aria-hidden="true">
+            <div class="watermark-grid">
+                <span>FIXMEDICAL</span><span>FIXMEDICAL</span><span>FIXMEDICAL</span>
+                <span>FIXMEDICAL</span><span>FIXMEDICAL</span><span>FIXMEDICAL</span>
+                <span>FIXMEDICAL</span><span>FIXMEDICAL</span><span>FIXMEDICAL</span>
+                <span>FIXMEDICAL</span><span>FIXMEDICAL</span><span>FIXMEDICAL</span>
+            </div>
+        </div>
+
+        <div class="id-float">@Model.ConsecutivoGenerado</div>
+
+        <form method="post" id="formTarjeta" enctype="multipart/form-data">
+            <div asp-validation-summary="All" class="valsum" style="color:red; font-weight:bold; margin:0 0 6px 0;"></div>
+
+            <div class="tabla-scroll">
+                <table class="doc">
+                    <colgroup>
+                        <col style="width:14%">
+                        <col style="width:19%">
+                        <col style="width:9%">
+                        <col style="width:8%">
+                        <col style="width:14%">
+                        <col style="width:9%">
+                        <col style="width:13%">
+                        <col style="width:14%">
+                    </colgroup>
+
+                    <tr>
+                        <td colspan="8" style="padding:0;">
+                            <div class="logo-header">
+                                <img src="~/images/LOGO FIX_sin_fondo.png" alt="FixMedical" />
+                                <img src="~/images/logo_bic.png" alt="Sociedades BIC" onerror="this.style.display='none'" />
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr><td colspan="8" class="titulo-maestro">TARJETA DE IMPLANTE</td></tr>
+
+                    <tr><td colspan="8" class="titulo-sec">INFORMACIÓN INSTITUCIÓN MÉDICA</td></tr>
+                    <tr>
+                        <td class="etq">INSTITUCIÓN</td>
+                        <td colspan="4"><input asp-for="NuevaTarjeta.Institucion" class="c" /></td>
+                        <td class="etq-sm" rowspan="2" style="text-align:center;">REMISIÓN</td>
+                        <td colspan="2" rowspan="2"><input asp-for="NuevaTarjeta.Remision" class="c" /></td>
+                    </tr>
+                    <tr>
+                        <td class="etq">CIUDAD</td>
+                        <td colspan="4"><input asp-for="NuevaTarjeta.Ciudad" class="c" /></td>
+                    </tr>
+
+                    <tr><td colspan="8" class="titulo-sec">INFORMACIÓN PACIENTE</td></tr>
+                    <tr>
+                        <td class="etq">FECHA DE CIRUGÍA</td>
+                        <td colspan="7"><input asp-for="NuevaTarjeta.FechaCirugia" type="date" class="c" /></td>
+                    </tr>
+                    <tr>
+                        <td class="etq">NOMBRE PACIENTE</td>
+                        <td colspan="7"><input asp-for="NuevaTarjeta.NombrePaciente" class="c" /></td>
+                    </tr>
+                    <tr>
+                        <td class="etq">No. IDENTIFICACIÓN</td>
+                        <td colspan="7"><input asp-for="NuevaTarjeta.NumeroIdentificacion" class="c" /></td>
+                    </tr>
+                    <tr>
+                        <td class="etq-sm">NOMBRE ESPECIALISTA</td>
+                        <td colspan="2"><input asp-for="NuevaTarjeta.NombreEspecialista" class="c" /></td>
+                        <td class="etq-sm">NOMBRE EQC</td>
+                        <td colspan="2"><input asp-for="NuevaTarjeta.NombreEQC" class="c" /></td>
+                        <td class="etq-sm">NOMBRE IQX INSTITUCIÓN</td>
+                        <td><input asp-for="NuevaTarjeta.NombreIqxInstitucion" class="c" /></td>
+                    </tr>
+                    <tr>
+                        <td class="etq-sm">FIRMA</td>
+                        <td colspan="2"><canvas id="canvasEsp" class="canvas-firma"></canvas></td>
+                        <td class="etq-sm">FIRMA</td>
+                        <td colspan="2"><canvas id="canvasEqc" class="canvas-firma"></canvas></td>
+                        <td class="etq-sm">FIRMA</td>
+                        <td><canvas id="canvasIqx" class="canvas-firma"></canvas></td>
+                    </tr>
+
+                    <tr><td colspan="8" class="titulo-sec">DISPOSITIVOS MÉDICOS</td></tr>
+                    <tr>
+                        <td class="etq-sm">FABRICANTE</td>
+                        <td colspan="2"><input asp-for="NuevaTarjeta.Fabricante" class="c" /></td>
+                        <td class="etq-sm">PAÍS</td>
+                        <td colspan="4"><input asp-for="NuevaTarjeta.Pais" class="c" /></td>
+                    </tr>
+                    <tr>
+                        <td class="etq-sm" style="text-align:center;">CÓDIGO</td>
+                        <td class="etq-sm" style="text-align:center;">REFERENCIA</td>
+                        <td colspan="3" class="etq-sm" style="text-align:center;">DESCRIPCIÓN</td>
+                        <td class="etq-sm" style="text-align:center;">CANTIDAD</td>
+                        <td class="etq-sm" style="text-align:center;">LOTE</td>
+                        <td class="etq-sm" style="text-align:center;">REG. INVIMA</td>
+                    </tr>
+                    @for (int i = 0; i < 16; i++)
+                    {
+                        <tr class="fila-dm">
+                            <td><input type="text" class="c auto" name="Codigos[]" readonly /></td>
+                            <td><input type="text" class="c" name="Referencias[]" onkeydown="manejarEnter(event, this)" onblur="buscarProducto(this)" autocomplete="off" /></td>
+                            <td colspan="3"><input type="text" class="c auto" name="Descripciones[]" readonly /></td>
+                            <td><input type="text" class="c" name="Cantidades[]" /></td>
+                            <td><input type="text" class="c" name="Lotes[]" /></td>
+                            <td><input type="text" class="c" name="Invimas[]" /></td>
+                        </tr>
+                    }
+                    <tr class="fila-sticker"><td colspan="8" class="sticker">POR FAVOR COLOCAR STIKER DE DM</td></tr>
+                </table>
+            </div>
+
+            <input type="hidden" name="FirmaEspBase64" id="FirmaEspBase64" />
+            <input type="hidden" name="FirmaEqcBase64" id="FirmaEqcBase64" />
+            <input type="hidden" name="FirmaIqxBase64" id="FirmaIqxBase64" />
+            <input type="hidden" name="LatInicioStr" id="LatitudInicio" />
+            <input type="hidden" name="LngInicioStr" id="LongitudInicio" />
+            <input type="hidden" name="FhInicioStr" id="FechaHoraInicio" />
+            <input type="hidden" name="LatFinStr" id="LatitudFin" />
+            <input type="hidden" name="LngFinStr" id="LongitudFin" />
+            <input type="hidden" name="FhFinStr" id="FechaHoraFin" />
+            <input type="hidden" name="NuevaTarjeta.DuracionSegundos" id="DuracionSegundos" value="0" />
+            <input type="hidden" name="PdfBase64" id="PdfBase64" />
+            <input type="hidden" name="progIdHidden" value="@Model.ProgIdActual" />
+        </form>
+    </div>
+
+    <div id="modalAcciones" class="modal-acciones">
+        <div class="modal-box">
+            <button type="button" class="modal-close" onclick="cerrarModal()">&times;</button>
+            <h3>Acciones de la tarjeta</h3>
+            <div class="modal-grid">
+                <button type="submit" form="formTarjeta" class="accion-btn guardar">💾 GUARDAR TARJETA</button>
+                <button type="button" class="accion-btn pdf" onclick="descargarPDF()">📄 DESCARGAR PDF</button>
+                <button type="button" class="accion-btn correo" onclick="enviarCorreo()">✉️ ENVIAR CORREO</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="sugerenciasDropdown" class="sugerencias-dropdown"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script>
+            const canvasEsp = document.getElementById('canvasEsp');
+            const canvasEqc = document.getElementById('canvasEqc');
+            const canvasIqx = document.getElementById('canvasIqx');
+
+            function ajustarCanvas(c) {
+                const rect = c.getBoundingClientRect();
+                c.width = rect.width * window.devicePixelRatio;
+                c.height = rect.height * window.devicePixelRatio;
+                c.style.width = rect.width + 'px';
+                c.style.height = rect.height + 'px';
+                const ctx = c.getContext('2d');
+                ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+            }
+
+            function ajustarSticker() {
+                var hoja = document.getElementById('hojaOriginal');
+                if (!hoja || hoja.classList.contains('pdf-compact')) return;
+                var form = document.getElementById('formTarjeta');
+                var tabla = hoja.querySelector('.doc');
+                var stickerTd = hoja.querySelector('.fila-sticker td');
+                if (!form || !tabla || !stickerTd) return;
+
+                stickerTd.style.height = '';
+                var cs = getComputedStyle(hoja);
+                var padV = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+                var altoInterno = hoja.clientHeight - padV;
+
+                var extra = 0;
+                Array.prototype.forEach.call(form.children, function(ch) {
+                    if (ch !== tabla && !ch.contains(tabla) && ch.offsetParent !== null) {
+                        var m = getComputedStyle(ch);
+                        extra += ch.offsetHeight + parseFloat(m.marginTop) + parseFloat(m.marginBottom);
+                    }
+                });
+                var disponibleTabla = altoInterno - extra;
+
+                var usado = 0;
+                Array.prototype.forEach.call(tabla.rows, function(tr) {
+                    if (!tr.classList.contains('fila-sticker')) usado += tr.offsetHeight;
+                });
+
+                var h = disponibleTabla - usado;
+                if (h < 50) h = 50;
+                stickerTd.style.height = h + 'px';
+            }
+
+            function prepararCompacto() {
+                var hoja = document.getElementById('hojaOriginal');
+                var form = document.getElementById('formTarjeta');
+                var tabla = hoja.querySelector('.doc');
+                var stickerTd = hoja.querySelector('.fila-sticker td');
+                if (!form || !tabla || !stickerTd) return hoja;
+
+                hoja.classList.add('pdf-compact');
+                void hoja.offsetHeight;
+
+                var cs = getComputedStyle(hoja);
+                var padV = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+                var altoInterno = hoja.clientHeight - padV;
+                var SEG = 14;
+
+                var extra = 0;
+                Array.prototype.forEach.call(form.children, function(ch) {
+                    if (ch !== tabla && !ch.contains(tabla) && ch.offsetParent !== null) {
+                        var m = getComputedStyle(ch);
+                        extra += ch.offsetHeight + parseFloat(m.marginTop) + parseFloat(m.marginBottom);
+                    }
+                });
+                var objetivo = altoInterno - extra - SEG;
+
+                stickerTd.style.height = '2px';
+                void hoja.offsetHeight;
+                var base = form.scrollHeight;
+
+                var crecer = objetivo - (base - 2);
+                if (crecer < 30) crecer = 30;
+                stickerTd.style.height = crecer + 'px';
+                void hoja.offsetHeight;
+
+                var over = form.scrollHeight - objetivo;
+                if (over > 0) {
+                    crecer -= (over + 4);
+                    if (crecer < 30) crecer = 30;
+                    stickerTd.style.height = crecer + 'px';
+                    void hoja.offsetHeight;
+                }
+
+                var overHoja = hoja.scrollHeight - hoja.clientHeight;
+                if (overHoja > 0) {
+                    crecer -= (overHoja + 2);
+                    if (crecer < 20) crecer = 20;
+                    stickerTd.style.height = crecer + 'px';
+                    void hoja.offsetHeight;
+                }
+                return hoja;
+            }
+
+            function limpiarCompacto() {
+                var hoja = document.getElementById('hojaOriginal');
+                var stickerTd = hoja.querySelector('.fila-sticker td');
+                if (stickerTd) stickerTd.style.height = '';
+                hoja.classList.remove('pdf-compact');
+                void hoja.offsetHeight;
+                ajustarSticker();
+            }
+
+            window.addEventListener('load', function() {
+                [canvasEsp, canvasEqc, canvasIqx].forEach(c => ajustarCanvas(c));
+                ajustarSticker();
+                setTimeout(ajustarSticker, 80);
+            });
+            window.addEventListener('resize', ajustarSticker);
+
+            const padEsp = new SignaturePad(canvasEsp);
+            const padEqc = new SignaturePad(canvasEqc);
+            const padIqx = new SignaturePad(canvasIqx);
+
+            function setFirmas() {
+                document.getElementById('FirmaEspBase64').value = padEsp.isEmpty() ? '' : padEsp.toDataURL('image/png');
+                document.getElementById('FirmaEqcBase64').value = padEqc.isEmpty() ? '' : padEqc.toDataURL('image/png');
+                document.getElementById('FirmaIqxBase64').value = padIqx.isEmpty() ? '' : padIqx.toDataURL('image/png');
+            }
+
+            function abrirModal() { document.getElementById('modalAcciones').style.display = 'flex'; }
+            function cerrarModal() { document.getElementById('modalAcciones').style.display = 'none'; }
+            document.getElementById('modalAcciones').addEventListener('mousedown', function(e) { if (e.target === this) cerrarModal(); });
+
+            function showOverlay(msg) {
+                let o = document.getElementById('pdfOverlay');
+                if (!o) { o = document.createElement('div'); o.id = 'pdfOverlay'; o.className = 'pdf-overlay'; document.body.appendChild(o); }
+                o.innerHTML = '<div class="spin"></div><div>' + msg + '</div>';
+                o.style.display = 'flex';
+            }
+            function hideOverlay() { const o = document.getElementById('pdfOverlay'); if (o) o.style.display = 'none'; }
+
+            function getProgId() { return new URLSearchParams(location.search).get('progId'); }
+            function getActo() {
+                const id = getProgId();
+                if (!id) return null;
+                try { const s = localStorage.getItem('acto_prog_' + id); return s ? JSON.parse(s) : null; }
+                catch (e) { return null; }
+            }
+            function ahoraStr() {
+                const d = new Date(), p = n => String(n).padStart(2, '0');
+                return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
+            }
+            function tomarUbicacion() {
+                return new Promise((resolve, reject) => {
+                    if (!navigator.geolocation) { reject('Este navegador no soporta geolocalización.'); return; }
+                    navigator.geolocation.getCurrentPosition(
+                        pos => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+                        err => reject('No se pudo obtener la ubicación (' + err.message + '). Verifique permisos y HTTPS.'),
+                        { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+                    );
+                });
+            }
+            let cronTimer = null;
+            function iniciarCronometro(horaInicioStr) {
+                const t0 = new Date(horaInicioStr.replace(' ', 'T')).getTime();
+                const el = document.getElementById('cronometro');
+                function tick() {
+                    const s = Math.max(0, Math.floor((Date.now() - t0) / 1000));
+                    const h = Math.floor(s / 3600).toString().padStart(2, '0');
+                    const m = Math.floor((s % 3600) / 60).toString().padStart(2, '0');
+                    const ss = (s % 60).toString().padStart(2, '0');
+                    el.textContent = h + ':' + m + ':' + ss;
+                }
+                tick(); cronTimer = setInterval(tick, 1000);
+            }
+            window.addEventListener('load', () => {
+                const acto = getActo();
+                if (acto && acto.horaInicio) {
+                    document.getElementById('barraActo').style.display = 'flex';
+                    document.getElementById('LatitudInicio').value = acto.lat != null ? acto.lat : '';
+                    document.getElementById('LongitudInicio').value = acto.lng != null ? acto.lng : '';
+                    document.getElementById('FechaHoraInicio').value = acto.horaInicio || '';
+                    iniciarCronometro(acto.horaInicio);
+                }
+            });
+
+            const dropdown = document.getElementById('sugerenciasDropdown');
+            let inputActivo = null, indiceActivo = -1, sugerenciasActuales = [], debounceTimer = null;
+            function dropdownVisible() { return dropdown.style.display === 'block'; }
+            function mostrarDropdown() { dropdown.style.display = 'block'; }
+            function ocultarDropdown() { dropdown.style.display = 'none'; indiceActivo = -1; sugerenciasActuales = []; }
+            function escapeHtml(s) { return (s || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+            function posicionarDropdown(input) {
+                const rect = input.getBoundingClientRect();
+                dropdown.style.top = (rect.bottom + 2) + 'px';
+                dropdown.style.left = (rect.left) + 'px';
+                dropdown.style.width = Math.max(rect.width, 440) + 'px';
+            }
+            function pedirSugerencias(input) {
+                const texto = input.value.trim();
+                inputActivo = input;
+                if (texto.length < 1) { ocultarDropdown(); return; }
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    fetch('?handler=BuscarReferencias&texto=' + encodeURIComponent(texto))
+                        .then(r => r.json())
+                        .then(data => {
+                            if (input !== inputActivo) return;
+                            if (!data || data.length === 0) {
+                                sugerenciasActuales = [];
+                                dropdown.innerHTML = '<div class="sugerencias-vacio">Sin coincidencias</div>';
+                                posicionarDropdown(input); mostrarDropdown(); return;
+                            }
+                            sugerenciasActuales = data; indiceActivo = -1;
+                            renderSugerencias(); posicionarDropdown(input); mostrarDropdown();
+                        }).catch(() => ocultarDropdown());
+                }, 200);
+            }
+            function renderSugerencias() {
+                dropdown.innerHTML = '';
+                sugerenciasActuales.forEach((item, idx) => {
+                    const div = document.createElement('div');
+                    div.className = 'sugerencias-item' + (idx === indiceActivo ? ' active' : '');
+                    div.innerHTML = '<span class="sugerencias-ref">' + escapeHtml(item.referencia) + '</span><span class="sugerencias-desc">' + escapeHtml(item.descripcion) + '</span>';
+                    div.addEventListener('mousedown', function(e) { e.preventDefault(); aplicarSugerencia(idx); });
+                    dropdown.appendChild(div);
+                });
+            }
+            function actualizarActivo() {
+                const items = dropdown.querySelectorAll('.sugerencias-item');
+                items.forEach((it, i) => it.classList.toggle('active', i === indiceActivo));
+                if (indiceActivo >= 0 && items[indiceActivo]) items[indiceActivo].scrollIntoView({ block: 'nearest' });
+            }
+
+            /* ← FIX 1: aplicarSugerencia ahora también llena REG. INVIMA */
+            function aplicarSugerencia(idx) {
+                if (!inputActivo || idx < 0 || idx >= sugerenciasActuales.length) return;
+                const data = sugerenciasActuales[idx];
+                const fila = inputActivo.closest('tr');
+                inputActivo.value = (data.referencia || '').toUpperCase();
+                if (fila) {
+                    const cod = fila.querySelector('[name="Codigos[]"]');
+                    const desc = fila.querySelector('[name="Descripciones[]"]');
+                    const inv = fila.querySelector('[name="Invimas[]"]');
+                    if (cod) cod.value = (data.codigo || '').toUpperCase();
+                    if (desc) desc.value = (data.descripcion || '').toUpperCase();
+                    if (inv) inv.value = (data.regInvima || '').toUpperCase();   // ← FIX: regInvima
+                }
+                ocultarDropdown();
+                if (fila) saltarASiguienteFila(fila);
+            }
+            document.querySelectorAll('input[name="Referencias[]"]').forEach(input => {
+                input.addEventListener('input', () => pedirSugerencias(input));
+                input.addEventListener('focus', () => { if (input.value.trim()) pedirSugerencias(input); });
+                input.addEventListener('blur', () => { setTimeout(ocultarDropdown, 120); });
+            });
+            window.addEventListener('scroll', ocultarDropdown, true);
+            document.addEventListener('mousedown', function(e) {
+                if (!dropdown.contains(e.target) && e.target !== inputActivo) ocultarDropdown();
+            });
+
+            function getOpt() {
+                return {
+                    filename: 'Tarjeta_Implante.pdf',
+                    margin: 0,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2, useCORS: true, logging: false, backgroundColor: '#ffffff' },
+                    jsPDF: { unit: 'cm', format: 'letter', orientation: 'landscape', compress: true }
+                };
+            }
+            async function generarPdfDataUri() {
+                cerrarModal(); ocultarDropdown();
+                prepararCompacto();
+                await new Promise(r => setTimeout(r, 220));
+                try { return (await html2pdf().set(getOpt()).from(document.getElementById('hojaOriginal')).outputPdf('datauristring')) || ''; }
+                finally { limpiarCompacto(); }
+            }
+            async function descargarPDF() {
+                cerrarModal(); ocultarDropdown();
+                showOverlay('Generando PDF...');
+                prepararCompacto();
+                await new Promise(r => setTimeout(r, 220));
+                try { await html2pdf().set(getOpt()).from(document.getElementById('hojaOriginal')).save(); }
+                catch (err) { console.error('Error generando PDF:', err); alert('Error al generar el PDF'); }
+                finally { limpiarCompacto(); hideOverlay(); }
+            }
+
+            let enviando = false;
+            document.getElementById('formTarjeta').addEventListener('submit', async function(e) {
+                if (enviando) { e.preventDefault(); return; }
+                setFirmas();
+                const btnGuardar = document.querySelector('.accion-btn.guardar');
+                const acto = getActo();
+
+                if (acto && acto.horaInicio) {
+                    e.preventDefault();
+                    enviando = true;
+                    if (btnGuardar) btnGuardar.disabled = true;
+                    showOverlay('Guardando tarjeta y generando PDF...');
+                    try {
+                        try {
+                            const u = await tomarUbicacion();
+                            document.getElementById('LatitudFin').value = u.lat;
+                            document.getElementById('LongitudFin').value = u.lng;
+                            document.getElementById('FechaHoraFin').value = ahoraStr();
+                            const t0 = new Date(acto.horaInicio.replace(' ', 'T')).getTime();
+                            document.getElementById('DuracionSegundos').value = Math.max(0, Math.round((Date.now() - t0) / 1000));
+                        } catch (geoErr) {
+                            if (!confirm('No se pudo obtener la ubicación de FIN (' + geoErr + '). ¿Guardar sin ubicación de fin?')) {
+                                enviando = false; if (btnGuardar) btnGuardar.disabled = false; hideOverlay(); return;
+                            }
+                        }
+                        try { document.getElementById('PdfBase64').value = await generarPdfDataUri(); } catch (pdfErr) { console.error('PDF:', pdfErr); }
+                        const id = getProgId(); if (id) localStorage.removeItem('acto_prog_' + id);
+                        if (cronTimer) { clearInterval(cronTimer); cronTimer = null; }
+                        hideOverlay();
+                        this.submit();
+                    } catch (err) {
+                        enviando = false; if (btnGuardar) btnGuardar.disabled = false; hideOverlay(); alert('Error al guardar: ' + err);
+                    }
+                } else {
+                    enviando = true;
+                    if (btnGuardar) btnGuardar.disabled = true;
+                    showOverlay('Guardando tarjeta...');
+                }
+            });
+
+            function enviarCorreo() {
+                const f = document.getElementById('formTarjeta');
+                const v = n => { const el = f.querySelector('[name="NuevaTarjeta.' + n + '"]'); return el ? (el.value || '') : ''; };
+                const cons = (document.querySelector('.id-float') || {}).textContent || '';
+                const asunto = 'Tarjeta de Implante ' + cons.trim() + ' - Paciente ' + v('NombrePaciente');
+                const cuerpo =
+                    'Institución: ' + v('Institucion') + ' (' + v('Ciudad') + ')\n' +
+                    'Especialista: ' + v('NombreEspecialista') + '\n' +
+                    'EQC: ' + v('NombreEQC') + '\n' + 'Paciente: ' + v('NombrePaciente') + ' (ID ' + v('NumeroIdentificacion') + ')\n' +
+                    'Remisión: ' + v('Remision') + '\n' +
+                    'Consecutivo: ' + cons.trim() + '\n\n' +
+                    'Se remite tarjeta de implante.';
+                window.location.href = 'mailto:?subject=' + encodeURIComponent(asunto) + '&body=' + encodeURIComponent(cuerpo);
+            }
+
+            /* ← FIX 2: manejarEnter (Enter sobre referencia) ahora también llena REG. INVIMA */
+            function manejarEnter(event, input) {
+                if (dropdownVisible()) {
+                    if (event.key === 'ArrowDown') { event.preventDefault(); if (sugerenciasActuales.length) { indiceActivo = (indiceActivo + 1) % sugerenciasActuales.length; actualizarActivo(); } return; }
+                    if (event.key === 'ArrowUp') { event.preventDefault(); if (sugerenciasActuales.length) { indiceActivo = (indiceActivo - 1 + sugerenciasActuales.length) % sugerenciasActuales.length; actualizarActivo(); } return; }
+                    if (event.key === 'Escape') { event.preventDefault(); ocultarDropdown(); return; }
+                    if (event.key === 'Enter') { event.preventDefault(); if (indiceActivo >= 0) aplicarSugerencia(indiceActivo); else if (sugerenciasActuales.length > 0) aplicarSugerencia(0); else ocultarDropdown(); return; }
+                }
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    let ref = input.value.trim(), fila = input.closest('tr');
+                    if (ref) {
+                        fetch('?handler=BuscarProducto&referencia=' + encodeURIComponent(ref))
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data) {
+                                    const cod = fila.querySelector('[name="Codigos[]"]');
+                                    const desc = fila.querySelector('[name="Descripciones[]"]');
+                                    const inv = fila.querySelector('[name="Invimas[]"]');
+                                    if (cod) cod.value = (data.codigo || '').toUpperCase();
+                                    if (desc) desc.value = (data.descripcion || '').toUpperCase();
+                                    if (inv) inv.value = (data.regInvima || '').toUpperCase();   // ← FIX: regInvima
+                                }
+                                saltarASiguienteFila(fila);
+                            }).catch(err => { console.error(err); saltarASiguienteFila(fila); });
+                    } else { saltarASiguienteFila(fila); }
+                }
+            }
+            function saltarASiguienteFila(filaActual) {
+                const siguienteFila = filaActual.nextElementSibling;
+                if (siguienteFila) {
+                    const siguienteReferencia = siguienteFila.querySelector('[name="Referencias[]"]');
+                    if (siguienteReferencia) { siguienteReferencia.focus(); siguienteReferencia.select(); }
+                } else {
+                    const cantidadActual = filaActual.querySelector('[name="Cantidades[]"]');
+                    if (cantidadActual) cantidadActual.focus();
+                }
+            }
+            /* ← FIX 3: buscarProducto (blur tras escribir referencia) ahora también llena REG. INVIMA */
+            function buscarProducto(input) {
+                let ref = input.value, fila = input.closest('tr');
+                if (!ref) return;
+                fetch('?handler=BuscarProducto&referencia=' + encodeURIComponent(ref))
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data) {
+                            const cod = fila.querySelector('[name="Codigos[]"]');
+                            const desc = fila.querySelector('[name="Descripciones[]"]');
+                            const inv = fila.querySelector('[name="Invimas[]"]');
+                            if (cod) cod.value = (data.codigo || '').toUpperCase();
+                            if (desc) desc.value = (data.descripcion || '').toUpperCase();
+                            if (inv) inv.value = (data.regInvima || '').toUpperCase();   // ← FIX: regInvima
+                        }
+                    })
+                    .catch(err => console.error('Error:', err));
+            }
+
+            document.querySelectorAll('input[type="text"]').forEach(input => {
+                input.addEventListener('input', function() {
+                    const start = this.selectionStart, end = this.selectionEnd;
+                    this.value = this.value.toUpperCase();
+                    this.setSelectionRange(start, end);
+                });
+                input.setAttribute('autocapitalize', 'characters');
+                input.setAttribute('autocomplete', 'off');
+                input.setAttribute('autocorrect', 'off');
+                input.setAttribute('spellcheck', 'false');
+            });
+    </script>
+</body>
+</html>

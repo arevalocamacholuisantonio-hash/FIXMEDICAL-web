@@ -1,0 +1,368 @@
+﻿@page
+@model fixmedical._1._1.Pages.Solicitudes.CrearModel
+@{
+    Layout = null;
+    ViewData["Title"] = "Nueva Solicitud de Material";
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nueva Solicitud - FixMedical</title>
+    <link rel="icon" type="image/png" href="~/images/LOGO FIX CORTO_sin_fondo (1).png" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <style>
+        :root {
+            --bg-0: #ffffff; --bg-1: #f8fafc; --bg-2: #e2e8f0;
+            --azul: #0369a1; --azul-2: #075985;
+            --neon-cyan: #0891b2;
+            --ok: #059669; --bad: #dc2626;
+            --txt: #0f172a; --txt-soft: #64748b;
+            --glass: rgba(255, 255, 255, 0.75);
+            --glass-border: rgba(0, 0, 0, 0.08);
+            --glass-shadow: 0 8px 32px rgba(15, 23, 42, 0.08);
+        }
+        * { box-sizing: border-box; }
+        html, body { height: 100%; margin: 0; background: var(--bg-0); color: var(--txt); font-family: 'Segoe UI', Tahoma, sans-serif; overflow-x: hidden; }
+
+        /* ===== FONDO CLARO (SOLO AZULES) ===== */
+        .bg { position: fixed; inset: 0; z-index: 0; overflow: hidden; background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 50%, #e0f2fe 100%); }
+        .blob { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.30; mix-blend-mode: multiply; }
+        .b1 { width: 520px; height: 520px; background: radial-gradient(circle, #60a5fa, transparent 70%); top: -120px; left: -100px; animation: f1 22s ease-in-out infinite; }
+        .b2 { width: 620px; height: 620px; background: radial-gradient(circle, #0369a1, transparent 70%); bottom: -180px; right: -140px; animation: f2 26s ease-in-out infinite; }
+        .b3 { width: 420px; height: 420px; background: radial-gradient(circle, #0891b2, transparent 70%); top: 38%; left: 55%; opacity: 0.22; animation: f3 30s ease-in-out infinite; }
+        .grid-overlay {
+            position: absolute; inset: 0;
+            background-image:
+                linear-gradient(rgba(3, 105, 161, 0.06) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(3, 105, 161, 0.06) 1px, transparent 1px);
+            background-size: 44px 44px;
+            -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 30%, #000 0%, transparent 80%);
+            mask-image: radial-gradient(ellipse 80% 70% at 50% 30%, #000 0%, transparent 80%);
+        }
+
+        /* ===== PLACAS DE IMPLANTE FLOTANTES ===== */
+        .placas-layer { position: fixed; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
+        .placa {
+            position: absolute;
+            opacity: var(--op, .12);
+            animation: flotarPlaca var(--dur, 14s) ease-in-out infinite;
+            animation-delay: var(--del, 0s);
+            will-change: transform;
+        }
+        .placa svg { display: block; width: 100%; height: 100%; }
+        #particles { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
+
+        /* ===== NAVBAR GLASS ===== */
+        .navbar-neon { position: sticky; top: 0; z-index: 50; display: flex; align-items: center; justify-content: space-between; padding: 14px 28px; background: rgba(255,255,255,.75); backdrop-filter: blur(14px) saturate(180%); -webkit-backdrop-filter: blur(14px) saturate(180%); border-bottom: 1px solid var(--glass-border); box-shadow: 0 4px 20px rgba(15,23,42,.06); }
+        .brand { display: inline-flex; align-items: center; text-decoration: none; }
+        .brand-logo { height: 55px; width: auto; display: block; filter: drop-shadow(0 0 8px rgba(3,105,161,.4)); transition: filter .25s, transform .25s; }
+        .brand:hover .brand-logo { filter: drop-shadow(0 0 12px rgba(3,105,161,.7)); transform: scale(1.04); }
+        .nav-right { display: flex; align-items: center; gap: 16px; }
+        .user-chip { color: var(--txt-soft); font-size: .85rem; display: flex; align-items: center; gap: 6px; font-weight: 500; }
+        .btn-glass { background: rgba(255,255,255,.6); border: 1px solid rgba(0,0,0,.1); color: var(--txt); border-radius: 8px; padding: 7px 16px; font-size: .85rem; font-weight: 600; cursor: pointer; transition: .25s; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-glass:hover { border-color: var(--azul); box-shadow: 0 0 16px rgba(3,105,161,.2); transform: translateY(-1px); color: var(--azul); }
+
+        .container-neon { position: relative; z-index: 2; max-width: 1100px; margin: 0 auto; padding: 40px 24px 60px; }
+
+        .welcome-glass { position: relative; overflow: hidden; background: var(--glass); backdrop-filter: blur(16px) saturate(180%); -webkit-backdrop-filter: blur(16px) saturate(180%); border: 1px solid var(--glass-border); border-radius: 20px; padding: 32px 36px; box-shadow: var(--glass-shadow); display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 30px; animation: cardIn .7s cubic-bezier(.2,.8,.2,1) both; }
+        .welcome-glass::before { content: ""; position: absolute; top: 0; left: 10%; right: 10%; height: 2px; background: linear-gradient(90deg, transparent, var(--azul), var(--neon-cyan), transparent); filter: blur(1px); opacity: .85; }
+        .welcome-glass h1 { margin: 0 0 6px; font-size: 1.7rem; font-weight: 800; }
+        .welcome-glass p { margin: 0; color: var(--txt-soft); font-weight: 500; }
+        .welcome-icon { font-size: 3rem; color: var(--neon-cyan); opacity: .45; }
+
+        .panel-glass { background: var(--glass); backdrop-filter: blur(16px) saturate(180%); -webkit-backdrop-filter: blur(16px) saturate(180%); border: 1px solid var(--glass-border); border-radius: 20px; padding: 28px 30px; box-shadow: var(--glass-shadow); margin-bottom: 30px; animation: cardIn .9s cubic-bezier(.2,.8,.2,1) both; }
+        .panel-head { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; border-bottom: 1px solid var(--glass-border); padding-bottom: 12px; }
+        .panel-head h4 { margin: 0; font-weight: 800; }
+        .panel-head i { color: var(--azul); font-size: 1.3rem; }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+        .campo-neon { font-size: 11px; letter-spacing: .8px; text-transform: uppercase; color: var(--txt-soft); margin-bottom: 6px; font-weight: 700; }
+        .input-neon { width: 100%; background: rgba(255,255,255,.9); border: 1.5px solid rgba(0,0,0,.12); color: var(--txt); padding: 11px 14px; border-radius: 10px; font-size: .9rem; outline: none; transition: .2s; }
+        .input-neon:focus { border-color: var(--neon-cyan); box-shadow: 0 0 0 3px rgba(8,145,178,.15); background: #fff; }
+        .input-neon.upper { text-transform: uppercase; }
+        .input-neon::placeholder { color: var(--txt-soft); opacity: .6; }
+        input[type="date"].input-neon, input[type="time"].input-neon { color-scheme: light; }
+        textarea.input-neon { min-height: 100px; resize: vertical; }
+
+        .alert-neon { background: rgba(220,38,38,.08); border: 1px solid rgba(220,38,38,.3); color: #991b1b; border-radius: 12px; padding: 10px 16px; margin-bottom: 18px; font-size: .85rem; font-weight: 500; }
+        .validation-summary-valid { display: none; }
+
+        .actions-bar { display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; }
+        .neon-btn { padding: 13px 28px; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; color: #fff; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, var(--azul) 0%, var(--azul-2) 100%); box-shadow: 0 8px 24px rgba(3,105,161,.35); transition: .2s; position: relative; overflow: hidden; }
+        .neon-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(3,105,161,.5); }
+        .neon-btn::after { content: ""; position: absolute; top: 0; left: -60%; width: 40%; height: 100%; background: linear-gradient(120deg, transparent, rgba(255,255,255,.4), transparent); transform: skewX(-20deg); transition: left .6s; }
+        .neon-btn:hover::after { left: 130%; }
+        .neon-btn.ghost { background: transparent; border: 1.5px solid rgba(0,0,0,.15); color: var(--txt); box-shadow: none; }
+        .neon-btn.ghost:hover { border-color: var(--bad); color: var(--bad); background: rgba(220,38,38,.05); box-shadow: 0 4px 16px rgba(220,38,38,.15); }
+
+        @@keyframes f1 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(60px,50px) scale(1.12); } }
+        @@keyframes f2 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-70px,-40px) scale(1.10); } }
+        @@keyframes f3 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-50px,40px) scale(1.15); } }
+        @@keyframes cardIn { from { opacity: 0; transform: translateY(26px) scale(.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        @@keyframes flotarPlaca {
+            0%, 100% { transform: rotate(var(--rot, 0deg)) translateY(0); }
+            50% { transform: rotate(calc(var(--rot, 0deg) + 8deg)) translateY(-26px); }
+        }
+
+        @@media (prefers-reduced-motion: reduce) {
+            .blob, .welcome-glass, .panel-glass, .placa { animation: none !important; }
+            .neon-btn::after { display: none; }
+        }
+        @@media (max-width: 768px) {
+            .form-grid, .form-grid-3 { grid-template-columns: 1fr; }
+            .welcome-glass { flex-direction: column; text-align: center; padding: 26px 22px; }
+            .welcome-icon { display: none; }
+            .navbar-neon { padding: 12px 16px; }
+            .user-chip { display: none; }
+            .container-neon { padding: 28px 16px 48px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== FONDO ===== -->
+    <div class="bg" aria-hidden="true">
+        <div class="blob b1"></div>
+        <div class="blob b2"></div>
+        <div class="blob b3"></div>
+        <div class="grid-overlay"></div>
+    </div>
+    <div class="placas-layer" id="placas" aria-hidden="true"></div>
+    <canvas id="particles" aria-hidden="true"></canvas>
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar-neon">
+        <a href="/Dashboard" class="brand">
+            <img src="~/images/LOGO FIX CORTO_sin_fondo (1).png" alt="FixMedical" class="brand-logo" />
+        </a>
+        <div class="nav-right">
+            <span class="user-chip"><i class="bi bi-person-circle"></i> @Model.NombreUsuario</span>
+            <a href="/Dashboard" class="btn-glass"><i class="bi bi-arrow-left"></i> Volver</a>
+            <form method="post" asp-page="/Dashboard" asp-page-handler="Logout" style="margin:0;">
+                <button type="submit" class="btn-glass">Cerrar Sesión</button>
+            </form>
+        </div>
+    </nav>
+
+    <div class="container-neon">
+
+        <section class="welcome-glass">
+            <div>
+                <h1>Solicitud de Material de Cirugía</h1>
+                <p>Diligencia los datos logísticos y clínicos. Formato F-G-LG-003.</p>
+            </div>
+            <i class="bi bi-file-earmark-medical welcome-icon"></i>
+        </section>
+
+        <div asp-validation-summary="All" class="alert-neon"></div>
+
+        <form method="post">
+
+            <!-- BLOQUE 1: LOGÍSTICA -->
+            <div class="panel-glass">
+                <div class="panel-head"><i class="bi bi-building"></i><h4>1. Logística y Diligenciamiento</h4></div>
+                <div class="form-grid-3">
+                    <div>
+                        <div class="campo-neon">Tipo de Solicitud *</div>
+                        <input type="text" asp-for="Solicitud.TipoSolicitud" class="input-neon upper" placeholder="Ej: Insumos, Implantes" required />
+                    </div>
+                    <div>
+                        <div class="campo-neon">Fecha de Solicitud *</div>
+                        <input type="date" asp-for="Solicitud.FechaSolicitud" class="input-neon" required />
+                    </div>
+                    <div>
+                        <div class="campo-neon">Hora de Solicitud *</div>
+                        <input type="time" asp-for="Solicitud.HoraSolicitud" class="input-neon" required />
+                    </div>
+                    <div>
+                        <div class="campo-neon">Sucursal *</div>
+                        <input type="text" asp-for="Solicitud.Sucursal" class="input-neon upper" required />
+                    </div>
+                    <div>
+                        <div class="campo-neon">Ejecutivo Comercial *</div>
+                        <input type="text" asp-for="Solicitud.EjecutivoComercial" class="input-neon upper" required />
+                    </div>
+                    <div>
+                        <div class="campo-neon">Estado</div>
+                        <input type="text" asp-for="Solicitud.Estado" class="input-neon" readonly style="opacity:.6; cursor:not-allowed; background: rgba(0,0,0,0.03);" />
+                    </div>
+                </div>
+            </div>
+            <!-- BLOQUE 2: CIRUGÍA -->
+            <div class="panel-glass">
+                <div class="panel-head"><i class="bi bi-hospital"></i><h4>2. Datos de la Cirugía</h4></div>
+                <div class="form-grid">
+                    <div>
+                        <div class="campo-neon">Ciudad *</div>
+                        <input type="text" asp-for="Solicitud.Ciudad" class="input-neon upper" required />
+                    </div>
+                    <div>
+                        <div class="campo-neon">Institución *</div>
+                        <input type="text" asp-for="Solicitud.Institucion" class="input-neon upper" required />
+                    </div>
+                    <div>
+                        <div class="campo-neon">Facturar A *</div>
+                        <input type="text" asp-for="Solicitud.Facturar_A" class="input-neon upper" required />
+                    </div>
+                    <div>
+                        <div class="campo-neon">Especialista *</div>
+                        <input type="text" asp-for="Solicitud.Especialista" class="input-neon upper" required />
+                    </div>
+                    <div>
+                        <div class="campo-neon">Fecha de Cirugía *</div>
+                        <input type="date" asp-for="Solicitud.FechaCirugia" class="input-neon" required />
+                    </div>
+                    <div>
+                        <div class="campo-neon">Hora de Cirugía *</div>
+                        <input type="time" asp-for="Solicitud.HoraCirugia" class="input-neon" required />
+                    </div>
+                </div>
+            </div>
+
+            <!-- BLOQUE 3: PACIENTE -->
+            <div class="panel-glass">
+                <div class="panel-head"><i class="bi bi-person-badge"></i><h4>3. Paciente y Especialidad</h4></div>
+                <div class="form-grid">
+                    <div>
+                        <div class="campo-neon">Nombre del Paciente *</div>
+                        <input type="text" asp-for="Solicitud.NombrePaciente" class="input-neon upper" required />
+                    </div>
+                    <div>
+                        <div class="campo-neon">Número de Identificación *</div>
+                        <input type="text" asp-for="Solicitud.NumeroIdentificacion" class="input-neon" required />
+                    </div>
+                    <div>
+                        <div class="campo-neon">Especialidad *</div>
+                        <input type="text" asp-for="Solicitud.Especialidad" class="input-neon upper" required />
+                    </div>
+                    <div>
+                        <div class="campo-neon">Indicación *</div>
+                        <input type="text" asp-for="Solicitud.Indicacion" class="input-neon upper" required />
+                    </div>
+                </div>
+            </div>
+
+            <!-- BLOQUE 4: MATERIAL -->
+            <div class="panel-glass">
+                <div class="panel-head"><i class="bi bi-box-seam"></i><h4>4. Material y Observaciones</h4></div>
+                <div class="form-grid">
+                    <div style="grid-column: 1 / -1;">
+                        <div class="campo-neon">Material Solicitado *</div>
+                        <textarea asp-for="Solicitud.MaterialSolicitado" class="input-neon upper" placeholder="Detalle de referencia, lotes, cantidades..." required></textarea>
+                    </div>
+                    <div>
+                        <div class="campo-neon">Motor / Equipo *</div>
+                        <input type="text" asp-for="Solicitud.Motor" class="input-neon upper" required />
+                    </div>
+                    <div style="grid-column: 1 / -1;">
+                        <div class="campo-neon">Observaciones Ejecutivos *</div>
+                        <textarea asp-for="Solicitud.ObservacionesEjecutivos" class="input-neon upper" placeholder="Notas adicionales para el equipo de programación..." required></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="actions-bar">
+                <a href="/Dashboard" class="neon-btn ghost"><i class="bi bi-x-circle"></i> Cancelar</a>
+                <button type="submit" class="neon-btn"><i class="bi bi-send-check"></i> Enviar Solicitud</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- ===== PLACAS DE IMPLANTE FLOTANTES (SVG aleatorias) ===== -->
+    <script>
+            (function() {
+                try {
+                    var layer = document.getElementById('placas');
+                    if (!layer) return;
+                    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                    var COLORES = ['3,105,161', '8,145,178', '7,89,133'];
+
+                    function svgPlaca(tipo, color, w) {
+                        var holes = '', y;
+                        if (tipo === 0) { // placa recta
+                            for (y = 24; y <= 150; y += 32) holes += '<circle cx="20" cy="' + y + '" r="5" fill="#ffffff"/>';
+                            return '<svg viewBox="0 0 40 170" width="' + w + '" height="' + (w * 4.25) + '"><rect x="8" y="4" width="24" height="162" rx="12" fill="rgba(' + color + ',0.9)"/>' + holes + '</svg>';
+                        }
+                        if (tipo === 1) { // placa en T
+                            for (y = 56; y <= 150; y += 32) holes += '<circle cx="20" cy="' + y + '" r="5" fill="#ffffff"/>';
+                            return '<svg viewBox="0 0 90 170" width="' + w + '" height="' + (w * 1.9) + '"><rect x="5" y="6" width="80" height="26" rx="13" fill="rgba(' + color + ',0.9)"/><rect x="8" y="22" width="24" height="144" rx="12" fill="rgba(' + color + ',0.9)"/><circle cx="24" cy="19" r="5" fill="#ffffff"/><circle cx="66" cy="19" r="5" fill="#ffffff"/>' + holes + '</svg>';
+                        }
+                        // placa inclinada
+                        for (y = 26; y <= 146; y += 30) holes += '<circle cx="20" cy="' + y + '" r="5" fill="#ffffff"/>';
+                        return '<svg viewBox="0 0 40 170" width="' + w + '" height="' + (w * 4.25) + '"><g transform="rotate(20 20 85)"><rect x="8" y="6" width="24" height="158" rx="12" fill="rgba(' + color + ',0.9)"/>' + holes + '</g></svg>';
+                    }
+
+                    var N = 10;
+                    for (var i = 0; i < N; i++) {
+                        var d = document.createElement('div');
+                        d.className = 'placa';
+                        var tipo = Math.floor(Math.random() * 3);
+                        var w = 40 + Math.random() * 70;
+                        d.innerHTML = svgPlaca(tipo, COLORES[Math.floor(Math.random() * COLORES.length)], Math.round(w));
+                        d.style.left = (Math.random() * 92) + '%';
+                        d.style.top = (Math.random() * 88) + '%';
+                        d.style.setProperty('--rot', Math.round(Math.random() * 70 - 35) + 'deg');
+                        d.style.setProperty('--op', (0.07 + Math.random() * 0.10).toFixed(2));
+                        d.style.setProperty('--dur', Math.round(10 + Math.random() * 12) + 's');
+                        d.style.setProperty('--del', (-Math.random() * 20).toFixed(1) + 's');
+                        if (reduce) d.style.animation = 'none';
+                        layer.appendChild(d);
+                    }
+                } catch (e) { }
+            })();
+    </script>
+
+    <!-- ===== PARTÍCULAS (solo azules) ===== -->
+    <script>
+            (function() {
+                try {
+                    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                    if (reduce) return;
+                    var canvas = document.getElementById('particles');
+                    if (!canvas || !canvas.getContext) return;
+                    var ctx = canvas.getContext('2d');
+                    var w, h, particles = [];
+                    var COLORS = ['3,105,161', '8,145,178'];
+                    function resize() {
+                        w = canvas.width = window.innerWidth;
+                        h = canvas.height = window.innerHeight;
+                        particles = [];
+                        for (var i = 0; i < Math.min(55, Math.floor((w * h) / 24000)); i++) {
+                            particles.push({
+                                x: Math.random() * w, y: Math.random() * h,
+                                vx: (Math.random() - 0.5) * 0.35, vy: (Math.random() - 0.5) * 0.35,
+                                r: Math.random() * 1.6 + 0.5,
+                                c: COLORS[Math.floor(Math.random() * COLORS.length)]
+                            });
+                        }
+                    }
+                    function draw() {
+                        ctx.clearRect(0, 0, w, h);
+                        for (var i = 0; i < particles.length; i++) {
+                            var p = particles[i];
+                            p.x += p.vx; p.y += p.vy;
+                            if (p.x < 0 || p.x > w) p.vx *= -1;
+                            if (p.y < 0 || p.y > h) p.vy *= -1;
+                            ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                            ctx.fillStyle = 'rgba(' + p.c + ',0.45)'; ctx.fill();
+                            for (var j = i + 1; j < particles.length; j++) {
+                                var q = particles[j];
+                                var dx = p.x - q.x, dy = p.y - q.y, dist = Math.sqrt(dx * dx + dy * dy);
+                                if (dist < 130) {
+                                    ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y);
+                                    ctx.strokeStyle = 'rgba(' + p.c + ',' + (0.10 * (1 - dist / 130)) + ')';
+                                    ctx.lineWidth = 0.5; ctx.stroke();
+                                }
+                            }
+                        }
+                        requestAnimationFrame(draw);
+                    }
+                    resize(); window.addEventListener('resize', resize); draw();
+                } catch (e) { }
+            })();
+    </script>
+</body>
+</html>

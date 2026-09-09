@@ -1,0 +1,8 @@
+bin/
+obj/
+.vs/
+*.user
+*.suo
+firmas/
+pdfs/
+SQLQuery1.sql

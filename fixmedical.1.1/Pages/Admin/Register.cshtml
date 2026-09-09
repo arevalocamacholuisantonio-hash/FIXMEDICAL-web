@@ -1,0 +1,960 @@
+﻿@page
+@model fixmedical._1._1.Pages.Admin.RegisterModel
+@{
+    Layout = null;
+    ViewData["Title"] = "Registrar usuario - FixMedical";
+
+    string IconoRol(string nombre)
+    {
+        var n = (nombre ?? "").ToLowerInvariant();
+        if (n.Contains("administr")) return "bi-shield-lock-fill";
+        if (n.Contains("eqc") || n.Contains("calidad")) return "bi-clipboard2-pulse";
+
+        if (n.Contains("ciruj") || n.Contains("especial")) return "bi-person-plus-fill";
+        return "bi-person-badge-fill";
+    }
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registrar usuario - FixMedical</title>
+    <link rel="icon" type="image/png" sizes="40x40" href="~/images/LOGO FIX CORTO_sin_fondo (1).png" />
+    <link rel="apple-touch-icon" href="~/images/LOGO FIX CORTO_sin_fondo (1).png" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <style>
+            :root {
+                --bg-0: #05070f;
+                --bg-1: #0a1226;
+                --bg-2: #0d1b3a;
+                --azul: #004b87;
+                --azul-2: #002d54;
+                --naranja: #f39200;
+                --neon-cyan: #22d3ee;
+                --neon-magenta: #ff4d8d;
+                --ok: #34d399;
+                --bad: #ff5a6e;
+                --txt: #eaf2ff;
+                --txt-soft: #8fb3d9;
+                --glass: rgba(13, 20, 40, .55);
+                --glass-border: rgba(255, 255, 255, .08);
+            }
+
+            * {
+                box-sizing: border-box;
+            }
+
+            html, body {
+                height: 100%;
+            }
+
+            body {
+                margin: 0;
+                background-color: var(--bg-0);
+                color: var(--txt);
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                overflow-x: hidden;
+            }
+    
+            /* ===== FONDO AMBIENT ===== */
+            .bg {
+                position: fixed;
+                inset: 0;
+                z-index: 0;
+                overflow: hidden;
+            }
+
+            .bg-gradient {
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(135deg, var(--bg-0) 0%, var(--bg-1) 45%, var(--bg-2) 100%);
+                background-size: 200% 200%;
+                animation: gradientShift 18s ease infinite;
+            }
+
+            .blob {
+                position: absolute;
+                border-radius: 50%;
+                filter: blur(90px);
+                opacity: .45;
+                mix-blend-mode: screen;
+                will-change: transform;
+            }
+
+            .b1 {
+                width: 520px;
+                height: 520px;
+                background: radial-gradient(circle at 30% 30%, var(--naranja), transparent 60%);
+                top: -140px;
+                left: -120px;
+                animation: float1 22s ease-in-out infinite;
+            }
+
+            .b2 {
+                width: 600px;
+                height: 600px;
+                background: radial-gradient(circle at 70% 40%, var(--azul), transparent 60%);
+                bottom: -200px;
+                right: -160px;
+                animation: float2 26s ease-in-out infinite;
+            }
+
+            .b3 {
+                width: 420px;
+                height: 420px;
+                background: radial-gradient(circle at 50% 50%, var(--neon-cyan), transparent 60%);
+                top: 30%;
+                left: 48%;
+                opacity: .22;
+                animation: float3 30s ease-in-out infinite;
+            }
+
+            .grid-overlay {
+                position: absolute;
+                inset: 0;
+                background-image: linear-gradient(rgba(34, 211, 238, .06) 1px, transparent 1px), linear-gradient(90deg, rgba(34, 211, 238, .06) 1px, transparent 1px);
+                background-size: 44px 44px;
+                -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, #000 0%, transparent 80%);
+                mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, #000 0%, transparent 80%);
+            }
+
+            #particles {
+                position: fixed;
+                inset: 0;
+                z-index: 1;
+                pointer-events: none;
+            }
+
+            /* ===== NAVBAR GLASS ===== */
+            .navbar-neon {
+                position: sticky;
+                top: 0;
+                z-index: 50;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 16px 28px;
+                background: rgba(5, 7, 15, .55);
+                -webkit-backdrop-filter: blur(14px) saturate(140%);
+                backdrop-filter: blur(14px) saturate(140%);
+                border-bottom: 1px solid var(--glass-border);
+                box-shadow: 0 6px 24px rgba(0, 0, 0, .4);
+            }
+
+            .brand {
+                display: inline-flex;
+                align-items: center;
+                text-decoration: none;
+            }
+
+            .brand-logo {
+                height: 55px;
+                width: auto;
+                display: block;
+                filter: drop-shadow(0 0 8px rgba(243,146,0,.55)) drop-shadow(0 0 18px rgba(243,146,0,.28));
+                transition: filter .25s, transform .25s;
+            }
+
+            .brand:hover .brand-logo {
+                filter: drop-shadow(0 0 12px rgba(243,146,0,.85)) drop-shadow(0 0 26px rgba(34,211,238,.35));
+                transform: scale(1.04);
+            }
+
+            .nav-right {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+
+            .btn-glass {
+                background: rgba(255, 255, 255, .06);
+                border: 1px solid rgba(255, 255, 255, .15);
+                color: var(--txt);
+                border-radius: 8px;
+                padding: 7px 16px;
+                font-size: .85rem;
+                cursor: pointer;
+                text-decoration: none;
+                transition: border-color .25s, box-shadow .25s, color .25s;
+            }
+
+                .btn-glass:hover {
+                    border-color: var(--naranja);
+                    box-shadow: 0 0 16px rgba(243, 146, 0, .35);
+                    color: #fff;
+                }
+
+            /* ===== LAYOUT ===== */
+            .shell {
+                position: relative;
+                z-index: 2;
+                max-width: 1040px;
+                margin: 0 auto;
+                padding: 44px 24px 64px;
+            }
+
+            .eyebrow {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                font-size: .72rem;
+                letter-spacing: 2px;
+                text-transform: uppercase;
+                font-weight: 700;
+                color: var(--neon-cyan);
+                background: rgba(34, 211, 238, .08);
+                border: 1px solid rgba(34, 211, 238, .25);
+                padding: 6px 12px;
+                border-radius: 999px;
+                margin-bottom: 18px;
+            }
+
+            .grid-2 {
+                display: grid;
+                grid-template-columns: 1.02fr 1fr;
+                gap: 26px;
+                align-items: stretch;
+            }
+
+            .glass {
+                background: var(--glass);
+                -webkit-backdrop-filter: blur(16px) saturate(140%);
+                backdrop-filter: blur(16px) saturate(140%);
+                border: 1px solid var(--glass-border);
+                border-radius: 22px;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, .5);
+                position: relative;
+                overflow: hidden;
+                animation: cardIn .8s cubic-bezier(.2, .8, .2, 1) both;
+            }
+
+                .glass::before {
+                    content: "";
+                    position: absolute;
+                    top: 0;
+                    left: 10%;
+                    right: 10%;
+                    height: 2px;
+                    background: linear-gradient(90deg, transparent, var(--naranja), var(--neon-cyan), transparent);
+                    filter: blur(1px);
+                    opacity: .85;
+                }
+
+            /* ===== PANEL IZQUIERDO: CONTRATO DE SEGURIDAD ===== */
+            .manifesto {
+                padding: 38px 36px;
+                display: flex;
+                flex-direction: column;
+            }
+
+                .manifesto h1 {
+                    margin: 0 0 10px;
+                    font-size: 2.5rem;
+                    line-height: 1.05;
+                    font-weight: 800;
+                    letter-spacing: -1px;
+                }
+
+                    .manifesto h1 em {
+                        font-style: normal;
+                        color: var(--naranja);
+                        text-shadow: 0 0 22px rgba(243, 146, 0, .4);
+                    }
+
+                .manifesto .lede {
+                    color: var(--txt-soft);
+                    font-size: .98rem;
+                    line-height: 1.6;
+                    margin: 0 0 28px;
+                }
+
+            /* medidor de fuerza */
+            .meter-label {
+                display: flex;
+                justify-content: space-between;
+                align-items: baseline;
+                margin-bottom: 8px;
+            }
+
+                .meter-label span:first-child {
+                    font-size: .72rem;
+                    letter-spacing: 1.5px;
+                    text-transform: uppercase;
+                    color: var(--txt-soft);
+                    font-weight: 700;
+                }
+
+            .meter-strength {
+                font-size: .8rem;
+                font-weight: 800;
+                letter-spacing: .5px;
+                color: var(--bad);
+                transition: color .3s;
+            }
+
+            .meter {
+                display: flex;
+                gap: 6px;
+                margin-bottom: 26px;
+            }
+
+                .meter i {
+                    flex: 1;
+                    height: 7px;
+                    border-radius: 999px;
+                    background: rgba(255, 255, 255, .1);
+                    transition: background .35s, box-shadow .35s;
+                }
+
+                    .meter i.on {
+                        background: var(--bad);
+                        box-shadow: 0 0 10px rgba(255, 90, 110, .5);
+                    }
+
+            /* reglas */
+            .rules-title {
+                font-size: .72rem;
+                letter-spacing: 1.5px;
+                text-transform: uppercase;
+                color: var(--txt-soft);
+                font-weight: 700;
+                margin-bottom: 12px;
+            }
+
+            #pwdRules {
+                list-style: none;
+                margin: 0;
+                padding: 0;
+                display: flex;
+                flex-direction: column;
+                gap: 11px;
+            }
+
+                #pwdRules li {
+                    display: flex;
+                    align-items: center;
+                    gap: 11px;
+                    font-size: .92rem;
+                    color: var(--txt-soft);
+                    transition: color .25s, transform .25s;
+                }
+
+                    #pwdRules li .dot {
+                        width: 22px;
+                        height: 22px;
+                        flex: 0 0 22px;
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: .8rem;
+                        background: rgba(255, 255, 255, .06);
+                        border: 1px solid rgba(255, 255, 255, .14);
+                        color: var(--txt-soft);
+                        transition: all .3s;
+                    }
+
+                    #pwdRules li.ok {
+                        color: #fff;
+                        transform: translateX(2px);
+                    }
+
+                        #pwdRules li.ok .dot {
+                            background: rgba(52, 211, 153, .16);
+                            border-color: rgba(52, 211, 153, .6);
+                            color: var(--ok);
+                            box-shadow: 0 0 14px rgba(52, 211, 153, .4);
+                        }
+
+            /* ===== PANEL DERECHO: FORMULARIO ===== */
+            .formcard {
+                padding: 36px 34px;
+            }
+
+                .formcard h2 {
+                    margin: 0 0 4px;
+                    font-size: 1.35rem;
+                    font-weight: 800;
+                }
+
+                .formcard .sub {
+                    color: var(--txt-soft);
+                    font-size: .85rem;
+                    margin: 0 0 22px;
+                }
+
+            .form-error {
+                margin-bottom: 18px;
+                padding: 12px 14px;
+                border-radius: 12px;
+                background: rgba(255, 77, 109, .12);
+                border: 1px solid rgba(255, 77, 109, .45);
+                color: #ff9db0;
+                font-size: 13px;
+                box-shadow: 0 0 16px rgba(255, 77, 109, .15);
+            }
+
+                .form-error ul {
+                    margin: 0;
+                    padding-left: 18px;
+                }
+
+            .validation-summary-valid {
+                display: none !important;
+            }
+
+            .form-success {
+                margin-bottom: 18px;
+                padding: 12px 14px;
+                border-radius: 12px;
+                background: rgba(52, 211, 153, .12);
+                border: 1px solid rgba(52, 211, 153, .45);
+                color: #6ee7b7;
+                font-size: 13px;
+                text-align: center;
+                box-shadow: 0 0 16px rgba(52, 211, 153, .15);
+            }
+
+            .field {
+                margin-bottom: 18px;
+            }
+
+                .field > label {
+                    display: block;
+                    font-size: 11px;
+                    font-weight: 700;
+                    letter-spacing: .8px;
+                    text-transform: uppercase;
+                    color: var(--txt-soft);
+                    margin-bottom: 7px;
+                }
+
+            .input-shell {
+                position: relative;
+            }
+
+            .neon-input {
+                width: 100%;
+                padding: 13px 15px;
+                background: rgba(255, 255, 255, .04);
+                border: 1px solid rgba(255, 255, 255, .12);
+                border-radius: 11px;
+                color: var(--txt);
+                font-size: 15px;
+                outline: none;
+                transition: border-color .25s, box-shadow .25s, background .25s;
+            }
+
+                .neon-input::placeholder {
+                    color: rgba(234, 242, 255, .32);
+                }
+
+                .neon-input:focus {
+                    border-color: var(--naranja);
+                    background: rgba(243, 146, 0, .06);
+                    box-shadow: 0 0 0 3px rgba(243, 146, 0, .18), 0 0 18px rgba(243, 146, 0, .25);
+                }
+
+            .has-eye .neon-input {
+                padding-right: 46px;
+            }
+
+            .eye {
+                position: absolute;
+                right: 8px;
+                top: 50%;
+                transform: translateY(-50%);
+                background: none;
+                border: none;
+                color: var(--txt-soft);
+                cursor: pointer;
+                font-size: 1.05rem;
+                padding: 6px;
+                line-height: 1;
+                border-radius: 8px;
+                transition: color .2s;
+            }
+
+                .eye:hover {
+                    color: var(--naranja);
+                }
+
+            .match-msg {
+                font-size: 12px;
+                margin-top: 6px;
+                min-height: 16px;
+                transition: color .2s;
+            }
+
+                .match-msg.ok {
+                    color: var(--ok);
+                }
+
+                .match-msg.bad {
+                    color: var(--bad);
+                }
+
+            .pwd-counter {
+                font-size: 12px;
+                color: var(--txt-soft);
+                margin-top: 6px;
+            }
+
+                .pwd-counter b {
+                    color: var(--neon-cyan);
+                }
+
+            /* roles como tarjetas */
+            .roles {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+
+            .role-card {
+                position: relative;
+                cursor: pointer;
+            }
+
+                .role-card input {
+                    position: absolute;
+                    opacity: 0;
+                    inset: 0;
+                    cursor: pointer;
+                }
+
+            .role-face {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 12px 13px;
+                border-radius: 12px;
+                background: rgba(255, 255, 255, .04);
+                border: 1px solid rgba(255, 255, 255, .12);
+                transition: border-color .25s, box-shadow .25s, background .25s, transform .15s;
+            }
+
+                .role-face i {
+                    font-size: 1.2rem;
+                    color: var(--txt-soft);
+                    transition: color .25s, text-shadow .25s;
+                }
+
+                .role-face span {
+                    font-size: .9rem;
+                    font-weight: 600;
+                }
+
+            .role-card:hover .role-face {
+                border-color: rgba(243, 146, 0, .4);
+                transform: translateY(-1px);
+            }
+
+            .role-card input:checked + .role-face {
+                border-color: var(--naranja);
+                background: rgba(243, 146, 0, .1);
+                box-shadow: 0 0 0 2px rgba(243, 146, 0, .2), 0 0 18px rgba(243, 146, 0, .25);
+            }
+
+                .role-card input:checked + .role-face i {
+                    color: var(--naranja);
+                    text-shadow: 0 0 12px rgba(243, 146, 0, .6);
+                }
+
+            .role-card input:focus-visible + .role-face {
+                outline: 2px solid var(--neon-cyan);
+                outline-offset: 2px;
+            }
+
+            /* botón */
+            .neon-btn {
+                width: 100%;
+                margin-top: 24px;
+                padding: 14px;
+                border: 1px solid rgba(243, 146, 0, .35);
+                border-radius: 11px;
+                font-size: 15px;
+                font-weight: 700;
+                letter-spacing: .5px;
+                color: #fff;
+                cursor: pointer;
+                background: linear-gradient(135deg, var(--azul) 0%, var(--azul-2) 100%);
+                box-shadow: 0 8px 24px rgba(0, 75, 135, .45), 0 0 0 1px rgba(34, 211, 238, .12) inset;
+                transition: transform .18s, box-shadow .25s, filter .25s;
+                position: relative;
+                overflow: hidden;
+            }
+
+                .neon-btn:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 12px 30px rgba(0, 75, 135, .6), 0 0 24px rgba(243, 146, 0, .5);
+                    filter: brightness(1.08);
+                }
+
+                .neon-btn:active {
+                    transform: translateY(0);
+                }
+
+                .neon-btn::after {
+                    content: "";
+                    position: absolute;
+                    top: 0;
+                    left: -60%;
+                    width: 40%;
+                    height: 100%;
+                    background: linear-gradient(120deg, transparent, rgba(255, 255, 255, .28), transparent);
+                    transform: skewX(-20deg);
+                    transition: left .6s;
+                }
+
+                .neon-btn:hover::after {
+                    left: 130%;
+                }
+
+            /* ===== ANIMACIONES ===== */
+            @@keyframes gradientShift {
+                0% {
+                    background-position: 0% 50%;
+                }
+
+                50% {
+                    background-position: 100% 50%;
+                }
+
+                100% {
+                    background-position: 0% 50%;
+                }
+            }
+
+            @@keyframes float1 {
+                0%, 100% {
+                    transform: translate(0,0) scale(1);
+                }
+
+                50% {
+                    transform: translate(60px,50px) scale(1.12);
+                }
+            }
+
+            @@keyframes float2 {
+                0%, 100% {
+                    transform: translate(0,0) scale(1);
+                }
+
+                50% {
+                    transform: translate(-70px,-40px) scale(1.10);
+                }
+            }
+
+            @@keyframes float3 {
+                0%, 100% {
+                    transform: translate(0,0) scale(1);
+                }
+
+                50% {
+                    transform: translate(-50px,40px) scale(1.15);
+                }
+            }
+
+            @@keyframes cardIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(26px) scale(.97);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0) scale(1);
+                }
+            }
+
+            @@media (prefers-reduced-motion: reduce) {
+                .blob, .bg-gradient, .glass {
+                    animation: none !important;
+                }
+
+                .neon-btn::after {
+                    display: none;
+                }
+            }
+
+            @@media (max-width: 860px) {
+                .grid-2 {
+                    grid-template-columns: 1fr;
+                }
+
+                .manifesto h1 {
+                    font-size: 2rem;
+                }
+            }
+
+            @@media (max-width: 480px) {
+                .manifesto, .formcard {
+                    padding: 26px 20px;
+                }
+
+                .roles {
+                    grid-template-columns: 1fr;
+                }
+
+                .navbar-neon {
+                    padding: 12px 16px;
+                }
+            }
+    </style>
+</head>
+<body>
+
+    <!-- ===== FONDO ===== -->
+    <div class="bg" aria-hidden="true">
+        <div class="bg-gradient"></div>
+        <div class="blob b1"></div>
+        <div class="blob b2"></div>
+        <div class="blob b3"></div>
+        <div class="grid-overlay"></div>
+    </div>
+    <canvas id="particles" aria-hidden="true"></canvas>
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar-neon">
+        <a href="/Admin/Dashboard" class="brand" title="FixMedical">
+            <img src="~/images/LOGO FIX CORTO_sin_fondo (1).png" alt="FixMedical" class="brand-logo" />
+        </a>
+        <div class="nav-right">
+            <a href="/Admin/Dashboard" class="btn-glass"><i class="bi bi-arrow-left"></i> Panel</a>
+            <form method="post" asp-page="/Dashboard" asp-page-handler="Logout" style="margin:0;">
+                <button type="submit" class="btn-glass">Cerrar Sesión</button>
+            </form>
+        </div>
+    </nav>
+
+    <div class="shell">
+        <span class="eyebrow"><i class="bi bi-shield-lock-fill"></i> Zona de administración · Alta de usuarios</span>
+
+        <div class="grid-2">
+
+            <!-- ===== IZQUIERDA: CONTRATO DE SEGURIDAD (vivo) ===== -->
+            <aside class="glass manifesto">
+                <h1>Credenciales<br /><em>que resisten.</em></h1>
+                <p class="lede">Cada cuenta que creas protege datos clínicos reales. Define una contraseña fuerte y asigna el rol justo: el sistema valida ambos extremos antes de registrar al usuario.</p>
+
+                <div class="meter-label">
+                    <span>Fortaleza</span>
+                    <span class="meter-strength" id="strengthText">—</span>
+                </div>
+                <div class="meter" id="meter" aria-hidden="true">
+                    <i></i><i></i><i></i><i></i><i></i>
+                </div>
+
+                <div class="rules-title">Requisitos de la contraseña</div>
+                <ul id="pwdRules">
+                    <li data-rule="len"><span class="dot"><i class="bi bi-check2"></i></span> Mínimo 8 caracteres</li>
+                    <li data-rule="upper"><span class="dot"><i class="bi bi-check2"></i></span> Al menos 1 MAYÚSCULA</li>
+                    <li data-rule="lower"><span class="dot"><i class="bi bi-check2"></i></span> Al menos 1 minúscula</li>
+                    <li data-rule="digits"><span class="dot"><i class="bi bi-check2"></i></span> Al menos 5 NÚMEROS</li>
+                    <li data-rule="special"><span class="dot"><i class="bi bi-check2"></i></span> Al menos 1 carácter especial</li>
+                </ul>
+            </aside>
+
+            <!-- ===== DERECHA: FORMULARIO ===== -->
+            <section class="glass formcard">
+                <h2>Nuevo usuario</h2>
+                <p class="sub">Completa los datos. Los campos se validan al instante.</p>
+
+                <form method="post" novalidate>
+                    <div asp-validation-summary="ModelOnly" class="form-error"></div>
+
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="form-success" role="alert">
+                            <i class="bi bi-check-circle-fill"></i> @TempData["SuccessMessage"]
+                        </div>
+                    }
+
+                    <div class="field">
+                        <label asp-for="Input.NombreUsuario">Nombre de usuario</label>
+                        <div class="input-shell">
+                            <input asp-for="Input.NombreUsuario" class="neon-input" placeholder="ej. jgarcia" autocomplete="username" required />
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label asp-for="Input.Email">Correo electrónico</label>
+                        <div class="input-shell">
+                            <input asp-for="Input.Email" class="neon-input" type="email" placeholder="nombre@correo.com" autocomplete="email" required />
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label asp-for="Input.Password">Contraseña</label>
+                        <div class="input-shell has-eye">
+                            <input asp-for="Input.Password" id="pwd" class="neon-input" type="password"
+                                   placeholder="••••••••" autocomplete="new-password" required
+                                   pattern="^(?=(?:.*\d){5})(?=.*[A-Z])(?=.*[a-z])(?=.*[^A-Za-z0-9]).{8,}$"
+                                   title="Mín. 8 caracteres, 1 mayúscula, 1 minúscula, 5 números y 1 carácter especial." />
+                            <button type="button" class="eye" data-target="pwd" aria-label="Mostrar u ocultar contraseña"><i class="bi bi-eye"></i></button>
+                        </div>
+                        <div class="pwd-counter">Cumple <b id="pwdCount">0</b> de 5 requisitos</div>
+                    </div>
+
+                    <div class="field">
+                        <label asp-for="Input.ConfirmPassword">Confirmar contraseña</label>
+                        <div class="input-shell has-eye">
+                            <input asp-for="Input.ConfirmPassword" id="pwd2" class="neon-input" type="password"
+                                   placeholder="Repite la contraseña" autocomplete="new-password" required />
+                            <button type="button" class="eye" data-target="pwd2" aria-label="Mostrar u ocultar contraseña"><i class="bi bi-eye"></i></button>
+                        </div>
+                        <div class="match-msg" id="matchMsg"></div>
+                    </div>
+
+                    <div class="field">
+                        <label>Rol del usuario</label>
+                        <div class="roles">
+                            @foreach (var r in Model.RolesDisponibles)
+                            {
+                                if (string.Equals(r.Nombre_Rol, "Auditor", System.StringComparison.OrdinalIgnoreCase))
+                                {
+                                    continue;
+                                }
+
+                                <label class="role-card">
+                                    <input type="radio" asp-for="Input.ID_Rol" value="@r.ID_Rol" required />
+                                    <span class="role-face">
+                                        <i class="bi @IconoRol(r.Nombre_Rol)"></i>
+                                        <span>@r.Nombre_Rol</span>
+                                    </span>
+                                </label>
+                            }
+                        </div>
+                    </div>
+
+                    <button type="submit" class="neon-btn"><i class="bi bi-person-plus-fill"></i> Registrar usuario</button>
+                </form>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- ===== PARTÍCULAS ===== -->
+    <script>
+            (function() {
+                try {
+                    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                    if (reduce) return;
+                    var canvas = document.getElementById('particles');
+                    if (!canvas || !canvas.getContext) return;
+                    var ctx = canvas.getContext('2d');
+                    var w, h, particles = [];
+                    var COLORS = ['34,211,238', '243,146,0', '255,77,141'];
+                    function resize() {
+                        w = canvas.width = window.innerWidth;
+                        h = canvas.height = window.innerHeight;
+                        var count = Math.min(80, Math.floor((w * h) / 18000));
+                        particles = [];
+                        for (var i = 0; i < count; i++) {
+                            particles.push({
+                                x: Math.random() * w, y: Math.random() * h,
+                                vx: (Math.random() - 0.5) * 0.4, vy: (Math.random() - 0.5) * 0.4,
+                                r: Math.random() * 1.8 + 0.6, c: COLORS[Math.floor(Math.random() * COLORS.length)]
+                            });
+                        }
+                    }
+                    function draw() {
+                        ctx.clearRect(0, 0, w, h);
+                        for (var i = 0; i < particles.length; i++) {
+                            var p = particles[i];
+                            p.x += p.vx; p.y += p.vy;
+                            if (p.x < 0 || p.x > w) p.vx *= -1;
+                            if (p.y < 0 || p.y > h) p.vy *= -1;
+                            ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                            ctx.fillStyle = 'rgba(' + p.c + ',0.8)'; ctx.fill();
+                            for (var j = i + 1; j < particles.length; j++) {
+                                var q = particles[j];
+                                var dx = p.x - q.x, dy = p.y - q.y, dist = Math.sqrt(dx * dx + dy * dy);
+                                if (dist < 120) {
+                                    ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y);
+                                    ctx.strokeStyle = 'rgba(' + p.c + ',' + (0.12 * (1 - dist / 120)) + ')';
+                                    ctx.lineWidth = 0.6; ctx.stroke();
+                                }
+                            }
+                        }
+                        requestAnimationFrame(draw);
+                    }
+                    resize(); window.addEventListener('resize', resize); draw();
+                } catch (e) { }
+            })();
+    </script>
+
+    <!-- ===== LÓGICA VIVA: medidor + checklist + coincidencia + ojos ===== -->
+    <script>
+            (function() {
+                var pwd = document.getElementById('pwd');
+                var pwd2 = document.getElementById('pwd2');
+                if (!pwd) return;
+
+                var checks = {
+                    len: function(v) { return v.length >= 8; },
+                    upper: function(v) { return /[A-Z]/.test(v); },
+                    lower: function(v) { return /[a-z]/.test(v); },
+                    digits: function(v) { return (v.match(/\d/g) || []).length >= 5; },
+                    special: function(v) { return /[^A-Za-z0-9]/.test(v); }
+                };
+                var levels = [
+                    { t: '—', c: 'var(--bad)' },
+                    { t: 'Muy débil', c: 'var(--bad)' },
+                    { t: 'Débil', c: '#ff8a3d' },
+                    { t: 'Aceptable', c: 'var(--naranja)' },
+                    { t: 'Fuerte', c: 'var(--neon-cyan)' },
+                    { t: 'Excelente', c: 'var(--ok)' }
+                ];
+
+                var bars = document.querySelectorAll('#meter i');
+                var strengthText = document.getElementById('strengthText');
+                var pwdCount = document.getElementById('pwdCount');
+                var matchMsg = document.getElementById('matchMsg');
+
+                function evaluarPwd() {
+                    var v = pwd.value, ok = 0;
+                    document.querySelectorAll('#pwdRules li').forEach(function(li) {
+                        var pass = checks[li.getAttribute('data-rule')](v);
+                        li.classList.toggle('ok', pass);
+                        if (pass) ok++;
+                    });
+                    pwdCount.textContent = ok;
+
+                    // medidor
+                    bars.forEach(function(b, i) { b.classList.toggle('on', i < ok); });
+                    var lvl = levels[ok];
+                    strengthText.textContent = v.length ? lvl.t : '—';
+                    strengthText.style.color = v.length ? lvl.c : 'var(--txt-soft)';
+                    bars.forEach(function(b) { if (b.classList.contains('on')) { b.style.background = lvl.c; b.style.boxShadow = '0 0 10px ' + lvl.c; } else { b.style.background = ''; b.style.boxShadow = ''; } });
+
+                    evaluarMatch();
+                }
+
+                function evaluarMatch() {
+                    var a = pwd.value, b = pwd2.value;
+                    if (!b) { matchMsg.textContent = ''; matchMsg.className = 'match-msg'; return; }
+                    if (a === b) { matchMsg.textContent = '✓ Las contraseñas coinciden'; matchMsg.className = 'match-msg ok'; }
+                    else { matchMsg.textContent = '✗ No coinciden'; matchMsg.className = 'match-msg bad'; }
+                }
+
+                pwd.addEventListener('input', evaluarPwd);
+                pwd2.addEventListener('input', evaluarMatch);
+                evaluarPwd();
+
+                // ojos mostrar/ocultar
+                document.querySelectorAll('.eye').forEach(function(btn) {
+                    btn.addEventListener('click', function() {
+                        var t = document.getElementById(btn.getAttribute('data-target'));
+                        var icon = btn.querySelector('i');
+                        if (t.type === 'password') { t.type = 'text'; icon.className = 'bi bi-eye-slash'; }
+                        else { t.type = 'password'; icon.className = 'bi bi-eye'; }
+                        t.focus();
+                    });
+                });
+            })();
+    </script>
+</body>
+</html>

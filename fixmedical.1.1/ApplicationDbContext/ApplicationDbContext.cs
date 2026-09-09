@@ -1,4 +1,5 @@
-﻿using fixmedical._1._1.Modelos.P;
+﻿using fixmedical._1._1.Modelos;
+using fixmedical._1._1.Modelos.P;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Emit;
 
@@ -21,9 +22,16 @@ namespace FixMedicalWeb.Models
         public DbSet<InformacionPaciente> InformacionesPacientes { get; set; }
         public DbSet<RegistroConsumo> RegistrosConsumos { get; set; }
         public DbSet<HistorialCambio> HistorialesCambios { get; set; }
-
+        public DbSet<ProgramacionCirugia> ProgramacionesCirugia { get; set; }
         public DbSet<HojaGasto> HojasGasto { get; set; }
         public DbSet<HojaGastoDetalle> HojasGastoDetalle { get; set; }
+        public DbSet<TarjetaImplante> TarjetasImplante { get; set; }
+        public DbSet<TarjetaImplateDetalle> TarjetasImplanteDetalle { get; set; }
+        public DbSet<SolicitudMaterial> SolicitudesMaterial { get; set; }
+
+
+
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -44,7 +52,8 @@ namespace FixMedicalWeb.Models
             modelBuilder.Entity<Role>().HasData(
                 new Role { ID_Rol = 1, Nombre_Rol = "Administrador", Descripcion = "Acceso total. Administra usuarios, catálogo y auditoría." },
                 new Role { ID_Rol = 2, Nombre_Rol = "EQC", Descripcion = "Especialista Quirúrgico. Registra pacientes, cirugías y consumos." },
-                new Role { ID_Rol = 3, Nombre_Rol = "Auditor", Descripcion = "Solo lectura. Genera reportes y consulta consumos." }
+                new Role { ID_Rol = 3, Nombre_Rol = "Auditor", Descripcion = "Solo lectura. Genera reportes y consulta consumos." },
+                new Role { ID_Rol = 4, Nombre_Rol = "Comercial", Descripcion = "Genera solicitudes de material de cirugia ." }
             );
         }
     }
