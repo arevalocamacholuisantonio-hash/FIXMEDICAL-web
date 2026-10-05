@@ -111,7 +111,7 @@ namespace fixmedical._1._1.Pages.Admin.Database
         // ============================================================
         // LIBRO 2: TARJETAS DE IMPLANTE (cabecera + detalle)
         // ⚠ Si tu DbSet/clase del detalle se llama distinto
-        //   (typo conocido: TarjetaImplateDetalle), ajusta la línea del join.
+        //   (typo conocido: TarjetaImplanteDetalle), ajusta la línea del join.
         // ============================================================
         private async Task<List<RegistroConsumoVm>> ConsultarTarjetas()
         {

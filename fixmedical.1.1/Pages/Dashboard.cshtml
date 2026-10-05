@@ -23,6 +23,7 @@
                 --naranja: #f39200;
                 --neon-cyan: #22d3ee;
                 --neon-magenta: #ff4d8d;
+                --ok: #34d399;
                 --txt: #eaf2ff;
                 --txt-soft: #8fb3d9;
                 --glass: rgba(13, 20, 40, .55);
@@ -115,7 +116,12 @@
             .welcome-glass p { margin: 0; color: var(--txt-soft); }
             .welcome-icon { font-size: 3.4rem; color: var(--neon-cyan); opacity: .35; text-shadow: 0 0 24px rgba(34, 211, 238, .5); }
 
-            .cards-row { display: flex; justify-content: center; margin-bottom: 44px; }
+            .badge-role { display: inline-flex; align-items: center; gap: 6px; font-size: .7rem; letter-spacing: 2px; text-transform: uppercase; font-weight: 700; padding: 5px 12px; border-radius: 999px; margin-bottom: 12px; }
+            .badge-admin { color: var(--neon-cyan); background: rgba(34,211,238,.08); border: 1px solid rgba(34,211,238,.25); }
+            .badge-eqc   { color: var(--naranja); background: rgba(243,146,0,.08); border: 1px solid rgba(243,146,0,.25); }
+            .badge-com   { color: var(--ok);      background: rgba(52,211,153,.08); border: 1px solid rgba(52,211,153,.25); }
+
+            .cards-row { display: flex; justify-content: center; margin-bottom: 44px; gap: 22px; flex-wrap: wrap; }
             .glass-card {
                 width: 100%; max-width: 360px;
                 background: var(--glass);
@@ -132,9 +138,10 @@
             .icon-box {
                 width: 64px; height: 64px; border-radius: 16px; margin: 0 auto 20px;
                 display: flex; align-items: center; justify-content: center; font-size: 1.9rem;
-                background: rgba(243, 146, 0, .12); color: var(--naranja);
-                box-shadow: 0 0 22px rgba(243, 146, 0, .25);
             }
+            .ib-orange { background: rgba(243, 146, 0, .12); color: var(--naranja); box-shadow: 0 0 22px rgba(243, 146, 0, .25); }
+            .ib-cyan   { background: rgba(34, 211, 238, .1); color: var(--neon-cyan); box-shadow: 0 0 22px rgba(34, 211, 238, .25); }
+            .ib-ok     { background: rgba(52, 211, 153, .1); color: var(--ok); box-shadow: 0 0 22px rgba(52, 211, 153, .25); }
             .glass-card h4 { margin: 0 0 22px; font-weight: 800; color: #fff; }
 
             .neon-btn {
@@ -152,12 +159,6 @@
                     transform: skewX(-20deg); transition: left .6s;
                 }
                 .neon-btn:hover::after { left: 130%; }
-
-            .neon-btn-disabled {
-                display: inline-block; width: 100%; padding: 13px; border-radius: 10px; font-size: 15px;
-                font-weight: 700; color: var(--txt-soft); cursor: not-allowed; text-align: center;
-                background: rgba(255, 255, 255, .05); border: 1px solid rgba(255, 255, 255, .1);
-            }
 
             .neon-btn-sm {
                 display: inline-flex; align-items: center; gap: 6px; padding: 8px 18px; width: auto;
@@ -182,6 +183,7 @@
                 border-radius: 20px; padding: 28px 30px;
                 box-shadow: 0 16px 44px rgba(0, 0, 0, .4);
                 animation: cardIn .9s cubic-bezier(.2, .8, .2, 1) both;
+                margin-bottom: 30px;
             }
             .panel-head { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
             .panel-head h4 { margin: 0; font-weight: 800; color: #fff; }
@@ -199,6 +201,12 @@
             .td-cirujano { font-weight: 700; text-shadow: 0 0 10px rgba(243, 146, 0, .2); }
             .td-fecha { color: var(--txt-soft); white-space: nowrap; }
             .td-center { text-align: center; }
+
+            .badge-neon { display: inline-block; padding: 5px 12px; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase; }
+            .badge-ok   { color: #7dffb8; background: rgba(40, 167, 69, .12); border: 1px solid rgba(40, 167, 69, .45); }
+            .badge-pend { color: #ffc46b; background: rgba(243, 146, 0, .12); border: 1px solid rgba(243, 146, 0, .45); }
+            .badge-bad  { color: #ff8fb3; background: rgba(220, 38, 38, .12); border: 1px solid rgba(220, 38, 38, .45); }
+            .badge-sol  { color: #a5f3fc; background: rgba(34, 211, 238, .12); border: 1px solid rgba(34, 211, 238, .45); }
 
             .empty-state { color: var(--txt-soft); display: flex; align-items: center; gap: 8px; padding: 6px 2px; }
 
@@ -279,88 +287,203 @@
 
     <div class="container-neon">
 
+        <!-- ===== WELCOME SEGÚN ROL ===== -->
         <section class="welcome-glass">
             <div>
+                @if (Model.EsAdminView)
+                {
+                    <span class="badge-role badge-admin"><i class="bi bi-shield-fill-check"></i> Administrador</span>
+                }
+                else if (Model.EsEQCView)
+                {
+                    <span class="badge-role badge-eqc"><i class="bi bi-clipboard2-pulse-fill"></i> EQC</span>
+                }
+                else if (Model.EsComercialView)
+                {
+                    <span class="badge-role badge-com"><i class="bi bi-briefcase-fill"></i> Comercial</span>
+                }
                 <h1>¡Hola, @Model.NombreUsuario!</h1>
                 <p>Bienvenido al sistema de gestión de osteosíntesis de FixMedical.</p>
             </div>
             <i class="bi bi-hospital welcome-icon"></i>
         </section>
 
+        <!-- ===== TARJETAS POR ROL ===== -->
         <div class="cards-row">
-            <div class="glass-card">
-                <div class="icon-box"><i class="bi bi-shield-lock-fill"></i></div>
-                <h4>Modo Administrador</h4>
-                @if (Model.EsAdministrador)
-                {
+
+            @if (Model.EsAdminView)
+            {
+                <div class="glass-card">
+                    <div class="icon-box ib-orange"><i class="bi bi-shield-fill-check"></i></div>
+                    <h4>Modo Administrador</h4>
                     <a href="/Admin/Dashboard" class="neon-btn">Ingresar</a>
+                </div>
+            }
+
+            @if (Model.EsEQCView)
+            {
+                <div class="glass-card">
+                    <div class="icon-box ib-cyan"><i class="bi bi-calendar2-week"></i></div>
+                    <h4>Mis cirugías asignadas</h4>
+                    <a href="/Admin/Programaciones" class="neon-btn">Ver historial</a>
+                </div>
+            }
+
+            @if (Model.EsComercialView)
+            {
+                <div class="glass-card">
+                    <div class="icon-box ib-ok"><i class="bi bi-file-earmark-medical-fill"></i></div>
+                    <h4>Nueva solicitud de material</h4>
+                    <a href="/Solicitudes/Crear" class="neon-btn">Crear solicitud</a>
+                </div>
+            }
+
+        </div>
+
+        <!-- ===== TABLA DE CIRUGÍAS (Admin y EQC) ===== -->
+        @if (Model.EsAdminView || Model.EsEQCView)
+        {
+            <section class="panel-glass">
+                <div class="panel-head">
+                    <i class="bi bi-calendar2-week"></i>
+                    <h4>
+                        @if (Model.EsAdminView)
+                        {
+                            @:Cirugías programadas
+                        }
+                        else
+                        {
+                            @:Mis cirugías asignadas
+                        }
+                    </h4>
+                </div>
+
+                @if (Model.Programaciones.Any())
+                {
+                    <div class="table-wrap">
+                        <table class="neon-table">
+                            <thead>
+                                <tr>
+                                    <th>Cirujano</th>
+                                    <th>Cirugía</th>
+                                    <th>Fecha</th>
+                                    <th class="td-center">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var p in Model.Programaciones)
+                                {
+                                    <tr>
+                                        <td class="td-cirujano">@p.Cirujano</td>
+                                        <td>@p.CirugiaProgramada</td>
+                                        <td class="td-fecha">@p.FechaProgramada.ToString("dd/MM/yyyy HH:mm")</td>
+                                        <td class="td-center">
+                                            <button type="button" class="neon-btn-sm" onclick="iniciarCirugia(@p.ID_Programacion)">
+                                                <i class="bi bi-play-circle-fill"></i> INICIAR
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
                 }
                 else
                 {
-                    <span class="neon-btn-disabled"><i class="bi bi-lock-fill"></i> Restringido</span>
+                    <div class="empty-state"><i class="bi bi-info-circle"></i>
+                        @if (Model.EsAdminView)
+                        {
+                            @:No hay cirugías programadas pendientes.
+                        }
+                        else
+                        {
+                            @:No tienes cirugías asignadas pendientes.
+                        }
+                    </div>
                 }
-            </div>
-        </div>
+            </section>
+        }
 
-        <section class="panel-glass">
-            <div class="panel-head">
-                <i class="bi bi-calendar2-week"></i>
-                <h4>Cirugías programadas</h4>
-            </div>
-
-            @if (Model.Programaciones.Any())
-            {
-                <div class="table-wrap">
-                    <table class="neon-table">
-                        <thead>
-                            <tr>
-                                <th>Cirujano</th>
-                                <th>Cirugía</th>
-                                <th>Fecha</th>
-                                <th class="td-center">Acción</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var p in Model.Programaciones)
-                            {
-                                <tr>
-                                    <td class="td-cirujano">@p.Cirujano</td>
-                                    <td>@p.CirugiaProgramada</td>
-                                    <td class="td-fecha">@p.FechaProgramada.ToString("dd/MM/yyyy HH:mm")</td>
-                                    <td class="td-center">
-                                        <button type="button" class="neon-btn-sm" onclick="iniciarCirugia(@p.ID_Programacion)">
-                                            <i class="bi bi-play-circle-fill"></i> INICIAR
-                                        </button>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
+        <!-- ===== HISTORIAL DE SOLICITUDES (solo Comercial) ===== -->
+        @if (Model.EsComercialView)
+        {
+            <section class="panel-glass">
+                <div class="panel-head">
+                    <i class="bi bi-clock-history"></i>
+                    <h4>Mis últimas solicitudes</h4>
                 </div>
-            }
-            else
-            {
-                <div class="empty-state"><i class="bi bi-info-circle"></i> No hay cirugías programadas pendientes.</div>
-            }
-        </section>
+
+                @if (Model.MisSolicitudes.Any())
+                {
+                    <div class="table-wrap">
+                        <table class="neon-table">
+                            <thead>
+                                <tr>
+                                    <th>Nº Solicitud</th>
+                                    <th>Paciente / Especialista</th>
+                                    <th>Fecha</th>
+                                    <th class="td-center">Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var s in Model.MisSolicitudes)
+                                {
+                                    <tr>
+                                        <td><span class="badge-neon badge-sol">@s.NumeroSolicitud</span></td>
+                                        <td>
+                                            <div class="td-cirujano">@s.Especialista</div>
+                                            <div style="color:var(--txt-soft); font-size:12px; margin-top:4px;">@s.NombrePaciente</div>
+                                        </td>
+                                        <td class="td-fecha">@s.FechaSolicitud.ToString("dd/MM/yyyy")</td>
+                                        <td class="td-center">
+                                            @if (s.Estado == "Aprobada")
+                                            {
+                                                <span class="badge-neon badge-ok">Aprobada</span>
+                                            }
+                                            else if (s.Estado == "Rechazada")
+                                            {
+                                                <span class="badge-neon badge-bad">Rechazada</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge-neon badge-pend">Pendiente</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="empty-state"><i class="bi bi-info-circle"></i> Aún no has creado solicitudes. ¡Crea la primera arriba!</div>
+                }
+            </section>
+        }
+
     </div>
 
-    <div id="modalDoc" class="modal-neon">
-        <div class="modal-neon-box">
-            <h5><i class="bi bi-broadcast"></i> Cirugía iniciada</h5>
-            <div class="crono"><i class="bi bi-stopwatch"></i> <span id="cronoModal">00:00:00</span></div>
-            <p class="hint">Seleccione el documento a diligenciar:</p>
-            <div class="modal-stack">
-                <button type="button" class="neon-btn" onclick="abrirHojaGasto()">
-                    <i class="bi bi-file-earmark-medical-fill"></i> Hoja de Gasto
-                </button>
-                <button type="button" class="neon-btn" onclick="abrirTarjetaImplante()">
-                    <i class="bi bi-card-checklist"></i> Tarjeta de Implante
-                </button>
+    <!-- ===== MODAL INICIAR CIRUGÍA (fuera del container, correcto) ===== -->
+    @if (Model.EsAdminView || Model.EsEQCView)
+    {
+        <div id="modalDoc" class="modal-neon">
+            <div class="modal-neon-box">
+                <h5><i class="bi bi-broadcast"></i> Cirugía iniciada</h5>
+                <div class="crono"><i class="bi bi-stopwatch"></i> <span id="cronoModal">00:00:00</span></div>
+                <p class="hint">Seleccione el documento a diligenciar:</p>
+                <div class="modal-stack">
+                    <button type="button" class="neon-btn" onclick="abrirHojaGasto()">
+                        <i class="bi bi-file-earmark-medical-fill"></i> Hoja de Gasto
+                    </button>
+                    <button type="button" class="neon-btn" onclick="abrirTarjetaImplante()">
+                        <i class="bi bi-card-checklist"></i> Tarjeta de Implante
+                    </button>
+                </div>
+                <button type="button" class="link-soft" onclick="cerrarModalDoc()">Cancelar</button>
             </div>
-            <button type="button" class="link-soft" onclick="cerrarModalDoc()">Cancelar</button>
         </div>
-    </div>
+    }
 
     <script>
         (function () {
@@ -459,7 +582,8 @@
             }
 
             function cerrarModalDoc() {
-                document.getElementById('modalDoc').style.display = 'none';
+                const modal = document.getElementById('modalDoc');
+                if (modal) modal.style.display = 'none';
                 if (cronoTimer) { clearInterval(cronoTimer); cronoTimer = null; }
             }
 
@@ -474,4 +598,4 @@
             }
     </script>
 </body>
-</html>
+</html> 

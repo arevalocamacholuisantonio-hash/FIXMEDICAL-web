@@ -26,7 +26,6 @@ namespace fixmedical._1._1.Pages.Admin.Database
         public List<HojaGasto> Registros { get; set; } = new();
         public List<TarjetaImplante> RegistrosTarjetas { get; set; } = new();
 
-        // ← Los inicializamos en string.Empty para que el ?? "" del .cshtml sea solo cinturón
         [BindProperty(SupportsGet = true)] public string Buscar { get; set; } = string.Empty;
         [BindProperty(SupportsGet = true)] public string FechaDesde { get; set; } = string.Empty;
         [BindProperty(SupportsGet = true)] public string FechaHasta { get; set; } = string.Empty;
@@ -41,7 +40,6 @@ namespace fixmedical._1._1.Pages.Admin.Database
             NombreUsuario = User.Identity?.Name ?? "Usuario";
             if (!EsAdmin()) return RedirectToPage("/Dashboard");
 
-            // Normalizamos Tipo para evitar problemas de casing
             if (!"tarjetas".Equals(Tipo, StringComparison.OrdinalIgnoreCase))
                 Tipo = "hojas";
 
@@ -85,6 +83,26 @@ namespace fixmedical._1._1.Pages.Admin.Database
             return Page();
         }
 
+        // Handler para devolver los adjuntos de una tarjeta en JSON
+        public async Task<IActionResult> OnGetAdjuntosAsync(int id)
+        {
+            if (!EsAdmin()) return Unauthorized();
+
+            var lista = await _context.TarjetasImplanteAdjuntos
+                .Where(a => a.ID_TarjetaImplante == id)
+                .Select(a => new
+                {
+                    ruta = a.Ruta,
+                    tipo = a.Tipo,
+                    nombre = a.NombreOriginal,
+                    tamanoMB = Math.Round(a.TamanoBytes / (1024.0 * 1024.0), 2)
+                })
+                .OrderBy(a => a.nombre)
+                .ToListAsync();
+
+            return new JsonResult(lista);
+        }
+
         public async Task<IActionResult> OnPostEliminarAsync(int id, string tipoBorrar)
         {
             NombreUsuario = User.Identity?.Name ?? "Usuario";
@@ -96,13 +114,27 @@ namespace fixmedical._1._1.Pages.Admin.Database
                 if (t == null || t.ID_Programacion == null)
                     return RedirectToPageConFiltros();
 
+                // Borrar primero los HIJOS (detalles y adjuntos) para evitar conflicto de FK
+                var detalles = await _context.TarjetasImplanteDetalle
+                    .Where(d => d.ID_TarjetaImplante == id)
+                    .ToListAsync();
+
+                var adjuntos = await _context.TarjetasImplanteAdjuntos
+                    .Where(a => a.ID_TarjetaImplante == id)
+                    .ToListAsync();
+
                 var rutas = new[] { t.RutaPdf, t.FirmaEspecialista, t.firmaEQC, t.FirmaIqxInstitucion };
+
+                _context.TarjetasImplanteDetalle.RemoveRange(detalles);
+                _context.TarjetasImplanteAdjuntos.RemoveRange(adjuntos);
                 _context.TarjetasImplante.Remove(t);
                 await _context.SaveChangesAsync();
+
                 foreach (var r in rutas) BorrarArchivo(r);
+                foreach (var a in adjuntos) BorrarArchivo(a.Ruta);
 
                 TempData["OkMessage"] = "Tarjeta de implante eliminada del historial.";
-                Tipo = "tarjetas"; // mantenemos el switch
+                Tipo = "tarjetas";
                 return RedirectToPageConFiltros();
             }
 
@@ -111,8 +143,8 @@ namespace fixmedical._1._1.Pages.Admin.Database
                 return RedirectToPageConFiltros();
 
             var rutasH = new[] { h.RutaPdf, h.FirmaEspecialista, h.FirmaInstitucion, h.FirmaFixMedical };
-            var detalles = _context.HojasGastoDetalle.Where(d => d.ID_HojaGasto == id);
-            _context.HojasGastoDetalle.RemoveRange(detalles);
+            var detallesH = _context.HojasGastoDetalle.Where(d => d.ID_HojaGasto == id);
+            _context.HojasGastoDetalle.RemoveRange(detallesH);
             _context.HojasGasto.Remove(h);
             await _context.SaveChangesAsync();
             foreach (var r in rutasH) BorrarArchivo(r);

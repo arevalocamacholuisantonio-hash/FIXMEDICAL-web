@@ -608,7 +608,7 @@ namespace fixmedical._1._1.Migrations
                     b.ToTable("TarjetasImplante");
                 });
 
-            modelBuilder.Entity("FixMedicalWeb.Models.TarjetaImplateDetalle", b =>
+            modelBuilder.Entity("FixMedicalWeb.Models.TarjetaImplanteDetalle", b =>
                 {
                     b.Property<int>("ID_TarjetaImplanteDetalle")
                         .ValueGeneratedOnAdd()
@@ -647,14 +647,50 @@ namespace fixmedical._1._1.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int>("TarjetaID_TarjetaImplante")
-                        .HasColumnType("int");
-
                     b.HasKey("ID_TarjetaImplanteDetalle");
 
-                    b.HasIndex("TarjetaID_TarjetaImplante");
+                    b.HasIndex("ID_TarjetaImplante");
 
                     b.ToTable("TarjetasImplanteDetalle");
+                });
+
+            modelBuilder.Entity("FixMedicalWeb.Models.TarjetasImplanteAdjuntos", b =>
+                {
+                    b.Property<int>("ID_TarjetasImplanteAdjuntos")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID_TarjetasImplanteAdjuntos"));
+
+                    b.Property<DateTime>("FechaSubida")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ID_TarjetaImplante")
+                        .HasColumnType("int");
+
+                    b.Property<string>("NombreOriginal")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("Ruta")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<long>("TamanoBytes")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Tipo")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("ID_TarjetasImplanteAdjuntos");
+
+                    b.HasIndex("ID_TarjetaImplante");
+
+                    b.ToTable("TarjetasImplanteAdjuntos");
                 });
 
             modelBuilder.Entity("FixMedicalWeb.Models.Usuario", b =>
@@ -958,11 +994,22 @@ namespace fixmedical._1._1.Migrations
                     b.Navigation("Producto");
                 });
 
-            modelBuilder.Entity("FixMedicalWeb.Models.TarjetaImplateDetalle", b =>
+            modelBuilder.Entity("FixMedicalWeb.Models.TarjetaImplanteDetalle", b =>
                 {
                     b.HasOne("FixMedicalWeb.Models.TarjetaImplante", "Tarjeta")
                         .WithMany("Detalles")
-                        .HasForeignKey("TarjetaID_TarjetaImplante")
+                        .HasForeignKey("ID_TarjetaImplante")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Tarjeta");
+                });
+
+            modelBuilder.Entity("FixMedicalWeb.Models.TarjetasImplanteAdjuntos", b =>
+                {
+                    b.HasOne("FixMedicalWeb.Models.TarjetaImplante", "Tarjeta")
+                        .WithMany("Adjuntos")
+                        .HasForeignKey("ID_TarjetaImplante")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1042,6 +1089,8 @@ namespace fixmedical._1._1.Migrations
 
             modelBuilder.Entity("FixMedicalWeb.Models.TarjetaImplante", b =>
                 {
+                    b.Navigation("Adjuntos");
+
                     b.Navigation("Detalles");
                 });
 

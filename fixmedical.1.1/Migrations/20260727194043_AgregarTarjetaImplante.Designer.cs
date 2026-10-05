@@ -584,7 +584,7 @@ namespace fixmedical._1._1.Migrations
                     b.ToTable("TarjetasImplante");
                 });
 
-            modelBuilder.Entity("FixMedicalWeb.Models.TarjetaImplateDetalle", b =>
+            modelBuilder.Entity("FixMedicalWeb.Models.TarjetaImplanteDetalle", b =>
                 {
                     b.Property<int>("ID_TarjetaImplanteDetalle")
                         .ValueGeneratedOnAdd()
@@ -814,7 +814,7 @@ namespace fixmedical._1._1.Migrations
                     b.Navigation("Producto");
                 });
 
-            modelBuilder.Entity("FixMedicalWeb.Models.TarjetaImplateDetalle", b =>
+            modelBuilder.Entity("FixMedicalWeb.Models.TarjetaImplanteDetalle", b =>
                 {
                     b.HasOne("FixMedicalWeb.Models.TarjetaImplante", "Tarjeta")
                         .WithMany("Detalles")

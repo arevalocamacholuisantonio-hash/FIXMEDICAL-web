@@ -26,19 +26,16 @@ namespace FixMedicalWeb.Models
         public DbSet<HojaGasto> HojasGasto { get; set; }
         public DbSet<HojaGastoDetalle> HojasGastoDetalle { get; set; }
         public DbSet<TarjetaImplante> TarjetasImplante { get; set; }
-        public DbSet<TarjetaImplateDetalle> TarjetasImplanteDetalle { get; set; }
+        public DbSet<TarjetaImplanteDetalle> TarjetasImplanteDetalle { get; set; }
         public DbSet<SolicitudMaterial> SolicitudesMaterial { get; set; }
-
-
-
-
+        public DbSet<TarjetasImplanteAdjuntos> TarjetasImplanteAdjuntos { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-           
+
             modelBuilder.Entity<HojaGasto>()
-                .HasIndex(h=> h.NumeroConsecutivo)
+                .HasIndex(h => h.NumeroConsecutivo)
                 .IsUnique();
 
             modelBuilder.Entity<Usuario>()
@@ -49,6 +46,20 @@ namespace FixMedicalWeb.Models
                 .HasIndex(i => i.Consecutivo_Gasto)
                 .IsUnique();
 
+            // ▼▼▼ AGREGADO: relación Tarjeta ↔ Detalles con FK en ID_TarjetaImplante ▼▼▼
+            modelBuilder.Entity<TarjetaImplanteDetalle>()
+                .HasOne(d => d.Tarjeta)
+                .WithMany(t => t.Detalles)
+                .HasForeignKey(d => d.ID_TarjetaImplante);
+            // ▲▲▲ FIN AGREGADO ▲▲▲
+
+            // ▼▼▼ NUEVO: relación Tarjeta ↔ Adjuntos (imágenes/videos) ▼▼▼
+            modelBuilder.Entity<TarjetasImplanteAdjuntos>()
+                .HasOne(a => a.Tarjeta)
+                .WithMany(t => t.Adjuntos)
+                .HasForeignKey(a => a.ID_TarjetaImplante);
+            // ▲▲▲ FIN NUEVO ▲▲▲
+
             modelBuilder.Entity<Role>().HasData(
                 new Role { ID_Rol = 1, Nombre_Rol = "Administrador", Descripcion = "Acceso total. Administra usuarios, catálogo y auditoría." },
                 new Role { ID_Rol = 2, Nombre_Rol = "EQC", Descripcion = "Especialista Quirúrgico. Registra pacientes, cirugías y consumos." },
@@ -57,4 +68,4 @@ namespace FixMedicalWeb.Models
             );
         }
     }
-}   
+}

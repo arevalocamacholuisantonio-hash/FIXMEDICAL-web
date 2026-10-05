@@ -166,6 +166,10 @@
                 <div class="panel-head"><i class="bi bi-building"></i><h4>1. Logística y Diligenciamiento</h4></div>
                 <div class="form-grid-3">
                     <div>
+                        <div class="campo-neon">Nº de Solicitud (auto)</div>
+                        <input type="text" asp-for="Solicitud.NumeroSolicitud" class="input-neon" readonly style="opacity:.7; background: rgba(0,0,0,0.03); cursor:not-allowed;" />
+                    </div>
+                    <div>
                         <div class="campo-neon">Tipo de Solicitud *</div>
                         <input type="text" asp-for="Solicitud.TipoSolicitud" class="input-neon upper" placeholder="Ej: Insumos, Implantes" required />
                     </div>

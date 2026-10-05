@@ -99,8 +99,9 @@ namespace FixMedicalWeb.Models
         
         //-------------------------------------//----------------------------------//
          
-        public virtual ICollection<TarjetaImplateDetalle> Detalles { get; set; } = new List<TarjetaImplateDetalle>();
-        
+        public virtual ICollection<TarjetaImplanteDetalle> Detalles { get; set; } = new List<TarjetaImplanteDetalle>();
+        public virtual ICollection<TarjetasImplanteAdjuntos> Adjuntos { get; set; } = new List<TarjetasImplanteAdjuntos>();
+
         //-------------------------------------//----------------------------------//
 
         public string? FirmaEspPath { get; set; }

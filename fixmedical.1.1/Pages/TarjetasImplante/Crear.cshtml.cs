@@ -4,10 +4,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
+using System.Text.Json;
 
 namespace fixmedical._1._1.Pages.TarjetasImplante
 {
-    [RequestFormLimits(ValueLengthLimit = 52428800, MultipartBodyLengthLimit = 52428800)]
+    [RequestSizeLimit(524288000)]
+    [RequestFormLimits(ValueLengthLimit = 524288000, MultipartBodyLengthLimit = 524288000)]
     public class CrearModel : PageModel
     {
         private readonly ApplicationDbContext _context;
@@ -58,18 +60,22 @@ namespace fixmedical._1._1.Pages.TarjetasImplante
         }
 
         public async Task<IActionResult> OnPostAsync(
-            string FirmaEspBase64, string FirmaEqcBase64, string FirmaIqxBase64,
-            string PdfBase64,
-            string LatInicioStr, string LngInicioStr, string FhInicioStr,
-            string LatFinStr, string LngFinStr, string FhFinStr)
+            string? FirmaEspBase64, string? FirmaEqcBase64, string? FirmaIqxBase64,
+            string? PdfBase64,
+            string? LatInicioStr, string? LngInicioStr, string? FhInicioStr,
+            string? LatFinStr, string? LngFinStr, string? FhFinStr,
+            string[]? Codigos,
+            string[]? Referencias,
+            string[]? Descripciones,
+            string[]? Cantidades,
+            string[]? Lotes,
+            string[]? Invimas,
+            string? AdjuntosBase64Json)
         {
-            // 1) Removemos del ModelState los campos que el servidor llena
-            //    (evita el Required implícito de <Nullable>enable sobre strings sin ?)
             ModelState.Remove("NuevaTarjeta.NumeroConsecutivo");
             ModelState.Remove("NuevaTarjeta.FechaHoraInicio");
             ModelState.Remove("NuevaTarjeta.FechaHoraFin");
 
-            // 2) Ubicación como texto → número con punto fijo
             NuevaTarjeta.LatitudInicio = ParseD(LatInicioStr);
             NuevaTarjeta.LongitudInicio = ParseD(LngInicioStr);
             NuevaTarjeta.FechaHoraInicio = string.IsNullOrWhiteSpace(FhInicioStr) ? "" : FhInicioStr;
@@ -77,7 +83,6 @@ namespace fixmedical._1._1.Pages.TarjetasImplante
             NuevaTarjeta.LongitudFin = ParseD(LngFinStr);
             NuevaTarjeta.FechaHoraFin = string.IsNullOrWhiteSpace(FhFinStr) ? "" : FhFinStr;
 
-            // 3) ¿Viene de una cirugía programada? + snapshots para el Historial
             var progIdStr = Request.Form["progIdHidden"].ToString();
             if (string.IsNullOrEmpty(progIdStr)) progIdStr = Request.Query["progId"].ToString();
             ProgramacionCirugia? prog = null;
@@ -91,7 +96,6 @@ namespace fixmedical._1._1.Pages.TarjetasImplante
                 NuevaTarjeta.CirugiaSnapshot = prog.CirugiaProgramada ?? "";
             }
 
-            // 4) Validación
             if (!ModelState.IsValid)
             {
                 ConsecutivoGenerado = await GenerarSiguienteConsecutivoAsync();
@@ -99,13 +103,49 @@ namespace fixmedical._1._1.Pages.TarjetasImplante
                 return Page();
             }
 
-            // 5) Firmas + PDF (usando los nombres REALES del modelo)
             NuevaTarjeta.FirmaEspecialista = GuardarFirma(FirmaEspBase64, "esp");
-            NuevaTarjeta.firmaEQC = GuardarFirma(FirmaEqcBase64, "eqc");         // ← minúscula inicial
+            NuevaTarjeta.firmaEQC = GuardarFirma(FirmaEqcBase64, "eqc");
             NuevaTarjeta.FirmaIqxInstitucion = GuardarFirma(FirmaIqxBase64, "iqx");
             NuevaTarjeta.RutaPdf = GuardarPdf(PdfBase64);
 
-            // 6) Guardado con reintento anti-duplicado
+            Codigos = Codigos ?? Array.Empty<string>();
+            Referencias = Referencias ?? Array.Empty<string>();
+            Descripciones = Descripciones ?? Array.Empty<string>();
+            Cantidades = Cantidades ?? Array.Empty<string>();
+            Lotes = Lotes ?? Array.Empty<string>();
+            Invimas = Invimas ?? Array.Empty<string>();
+
+            int filas = Math.Max(Codigos.Length,
+                        Math.Max(Referencias.Length,
+                        Math.Max(Descripciones.Length,
+                        Math.Max(Cantidades.Length,
+                        Math.Max(Lotes.Length, Invimas.Length)))));
+
+            for (int i = 0; i < filas; i++)
+            {
+                string referencia = i < Referencias.Length ? (Referencias[i] ?? "").Trim() : "";
+                string codigo = i < Codigos.Length ? (Codigos[i] ?? "").Trim() : "";
+                string descripcion = i < Descripciones.Length ? (Descripciones[i] ?? "").Trim() : "";
+                string cantidadStr = i < Cantidades.Length ? (Cantidades[i] ?? "").Trim() : "";
+                string lote = i < Lotes.Length ? (Lotes[i] ?? "").Trim() : "";
+                string invima = i < Invimas.Length ? (Invimas[i] ?? "").Trim() : "";
+
+                if (string.IsNullOrEmpty(referencia)) continue;
+
+                int.TryParse(cantidadStr, out int cantidad);
+                if (cantidad <= 0) cantidad = 1;
+
+                NuevaTarjeta.Detalles.Add(new TarjetaImplanteDetalle
+                {
+                    Codigo = codigo,
+                    Referencias = referencia,
+                    Descripcion = descripcion,
+                    Cantidad = cantidad,
+                    Lote = lote,
+                    RegInvima = invima
+                });
+            }
+
             const int MAX_INTENTOS = 5;
             for (int intento = 0; intento < MAX_INTENTOS; intento++)
             {
@@ -114,9 +154,23 @@ namespace fixmedical._1._1.Pages.TarjetasImplante
                 using var tx = await _context.Database.BeginTransactionAsync();
                 try
                 {
+                    var detalles = NuevaTarjeta.Detalles.ToList();
+                    NuevaTarjeta.Detalles.Clear();
+
                     _context.TarjetasImplante.Add(NuevaTarjeta);
                     await _context.SaveChangesAsync();
+
+                    foreach (var d in detalles)
+                    {
+                        d.ID_TarjetaImplante = NuevaTarjeta.ID_TarjetaImplante;
+                        _context.TarjetasImplanteDetalle.Add(d);
+                    }
+                    await _context.SaveChangesAsync();
+
                     await tx.CommitAsync();
+
+                    // Guardar adjuntos desde base64 (sin IFormFile)
+                    await GuardarAdjuntosAsync(AdjuntosBase64Json);
 
                     if (prog != null)
                     {
@@ -153,6 +207,61 @@ namespace fixmedical._1._1.Pages.TarjetasImplante
             ModelState.AddModelError("", "No se pudo generar un consecutivo único tras varios intentos. Intente de nuevo.");
             ConsecutivoGenerado = await GenerarSiguienteConsecutivoAsync();
             return Page();
+        }
+
+        // DTO para deserializar el JSON de adjuntos
+        private class AdjuntoDto
+        {
+            public string? nombre { get; set; }
+            public string? tipo { get; set; }
+            public string? base64 { get; set; }
+        }
+
+        private async Task GuardarAdjuntosAsync(string? json)
+        {
+            if (string.IsNullOrWhiteSpace(json)) return;
+
+            List<AdjuntoDto>? lista;
+            try { lista = JsonSerializer.Deserialize<List<AdjuntoDto>>(json); }
+            catch { return; }
+            if (lista == null || lista.Count == 0) return;
+
+            var extImg = new[] { ".jpg", ".jpeg", ".png", ".webp", ".gif" };
+            var extVid = new[] { ".mp4", ".mov", ".webm", ".mkv" };
+
+            var carpetaBase = Path.Combine(
+                _env.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"),
+                "adjuntos", "tarjetas", NuevaTarjeta.ID_TarjetaImplante.ToString());
+            Directory.CreateDirectory(carpetaBase);
+
+            foreach (var a in lista)
+            {
+                if (a == null || string.IsNullOrWhiteSpace(a.base64)) continue;
+
+                var ext = Path.GetExtension(a.nombre ?? "").ToLowerInvariant();
+                bool esImg = extImg.Contains(ext);
+                bool esVid = extVid.Contains(ext);
+                if (!esImg && !esVid) continue;
+
+                byte[] bytes;
+                try { bytes = Convert.FromBase64String(a.base64); }
+                catch { continue; }
+
+                var nombre = $"{Guid.NewGuid():N}{ext}";
+                await System.IO.File.WriteAllBytesAsync(Path.Combine(carpetaBase, nombre), bytes);
+
+                _context.TarjetasImplanteAdjuntos.Add(new TarjetasImplanteAdjuntos
+                {
+                    ID_TarjetaImplante = NuevaTarjeta.ID_TarjetaImplante,
+                    Tipo = esImg ? "imagen" : "video",
+                    Ruta = $"/adjuntos/tarjetas/{NuevaTarjeta.ID_TarjetaImplante}/{nombre}",
+                    NombreOriginal = a.nombre ?? "",
+                    TamanoBytes = bytes.Length,
+                    FechaSubida = DateTime.Now
+                });
+            }
+
+            await _context.SaveChangesAsync();
         }
 
         private static bool EsDuplicadoConsecutivo(DbUpdateException ex)

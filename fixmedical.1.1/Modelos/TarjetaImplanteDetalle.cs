@@ -3,7 +3,7 @@
 namespace FixMedicalWeb.Models
 {
 
-    public class TarjetaImplateDetalle
+    public class TarjetaImplanteDetalle
     {
         [Key]
         public int ID_TarjetaImplanteDetalle { get; set; }

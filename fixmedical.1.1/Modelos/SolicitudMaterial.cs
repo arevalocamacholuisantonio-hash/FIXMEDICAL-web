@@ -57,8 +57,6 @@ namespace fixmedical._1._1.Modelos
         [Column(TypeName = "date")] 
         public DateTime FechaCirugia { get; set; }
 
-        [Required]
-   
         public DateTime HoraCirugia { get; set; }
 
         [Required]
