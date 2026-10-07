@@ -36,695 +36,182 @@
                 overflow: hidden;
             }
 
-            @@media screen and (max-width: 1200px) {
-                .hoja-container {
-                    transform: scale(0.7);
-                }
-            }
+            @@media screen and (max-width: 1200px) { .hoja-container { transform: scale(0.7); } }
+            @@media screen and (max-width: 900px) { .hoja-container { transform: scale(0.55); } }
+            @@media screen and (max-width: 600px) { .hoja-container { transform: scale(0.4); } }
 
-            @@media screen and (max-width: 900px) {
-                .hoja-container {
-                    transform: scale(0.55);
-                }
-            }
+            #formTarjeta { width: 100%; position: relative; z-index: 1; }
 
+            /* ▼▼▼ RED DE SEGURIDAD: por si algún browser extension inyecta un summary, lo matamos ▼▼▼ */
+            .validation-summary-errors, .validation-summary-valid, .valsum { display: none !important; }
+            /* ▲▲▲ FIN RED DE SEGURIDAD ▲▲▲ */
+
+            /* ▼▼▼ TOASTS FLOTANTES (position:fixed → NUNCA empujan la hoja) ▼▼▼ */
+            .toast-container {
+                position: fixed; top: 20px; right: 20px; z-index: 999999;
+                display: flex; flex-direction: column; gap: 10px; max-width: 380px;
+            }
+            .toast {
+                background: #fff; border-left: 5px solid #c00; border-radius: 8px;
+                padding: 14px 18px; box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+                font-family: 'Calibri', sans-serif; font-size: 13px; color: #333;
+                animation: toastIn .3s cubic-bezier(.2,.8,.2,1) both;
+                position: relative; padding-right: 40px;
+            }
+            .toast.success { border-left-color: #2e7d32; }
+            .toast.info { border-left-color: #1565c0; }
+            .toast-close {
+                position: absolute; top: 8px; right: 10px; background: none; border: none;
+                font-size: 20px; color: #888; cursor: pointer; line-height: 1; padding: 0;
+            }
+            .toast-close:hover { color: #c00; }
+            .toast-title { font-weight: bold; margin-bottom: 4px; font-size: 14px; }
+            .toast.error .toast-title { color: #c00; }
+            .toast.success .toast-title { color: #2e7d32; }
+            .toast.info .toast-title { color: #1565c0; }
+            .toast.out { animation: toastOut .3s ease forwards; }
+            @@keyframes toastIn { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
+            @@keyframes toastOut { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(40px); } }
             @@media screen and (max-width: 600px) {
-                .hoja-container {
-                    transform: scale(0.4);
-                }
+                .toast-container { top: auto; bottom: 20px; right: 10px; left: 10px; max-width: none; }
             }
+            /* ▲▲▲ FIN TOASTS ▲▲▲ */
 
-            #formTarjeta {
-                width: 100%;
-                position: relative;
-                z-index: 1;
-            }
-
-            .validation-summary-valid {
-                display: none !important;
-            }
-
-            .btn-flotantes {
-                position: fixed;
-                top: 20px;
-                left: 20px;
-                z-index: 1000;
-            }
-
+            .btn-flotantes { position: fixed; top: 20px; left: 20px; z-index: 1000; }
             .btn-circular {
-                width: 64px;
-                height: 64px;
-                border-radius: 50%;
-                border: 2px solid #808080;
-                background-color: #a9a9a9;
-                color: white;
-                font-size: 9px;
-                font-weight: bold;
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                text-align: center;
-                padding: 4px;
-                transition: all 0.25s ease;
-                box-shadow: 2px 2px 8px rgba(0,0,0,0.3);
-                text-decoration: none;
-                font-family: 'Calibri', sans-serif;
-                line-height: 1.1;
+                width: 64px; height: 64px; border-radius: 50%;
+                border: 2px solid #808080; background-color: #a9a9a9; color: white;
+                font-size: 9px; font-weight: bold; cursor: pointer;
+                display: flex; align-items: center; justify-content: center;
+                text-align: center; padding: 4px; transition: all 0.25s ease;
+                box-shadow: 2px 2px 8px rgba(0,0,0,0.3); text-decoration: none;
+                font-family: 'Calibri', sans-serif; line-height: 1.1;
             }
-
-                .btn-circular:hover {
-                    background-color: #D8BFD8;
-                    border-color: #D8BFD8;
-                    color: #4a4a4a;
-                    transform: scale(1.05);
-                    box-shadow: 3px 3px 12px rgba(0,0,0,0.35);
-                }
-
-                .btn-circular:active {
-                    transform: scale(0.94);
-                }
+            .btn-circular:hover { background-color: #D8BFD8; border-color: #D8BFD8; color: #4a4a4a; transform: scale(1.05); box-shadow: 3px 3px 12px rgba(0,0,0,0.35); }
+            .btn-circular:active { transform: scale(0.94); }
 
             .barra-acto {
-                position: fixed;
-                top: 20px;
-                left: 50%;
-                transform: translateX(-50%);
-                z-index: 150000;
-                background: #c62828;
-                color: #fff;
-                padding: 8px 20px;
-                border-radius: 30px;
-                font-weight: bold;
-                font-size: 13px;
-                box-shadow: 0 4px 14px rgba(0,0,0,0.3);
-                display: none;
-                align-items: center;
-                gap: 9px;
-                font-family: 'Calibri', sans-serif;
-                letter-spacing: .3px;
+                position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 150000;
+                background: #c62828; color: #fff; padding: 8px 20px; border-radius: 30px;
+                font-weight: bold; font-size: 13px; box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+                display: none; align-items: center; gap: 9px; font-family: 'Calibri', sans-serif; letter-spacing: .3px;
             }
+            .ba-dot { width: 10px; height: 10px; border-radius: 50%; background: #fff; animation: parpadeo 1s infinite; }
+            @@keyframes parpadeo { 0%, 100% { opacity: 1; } 50% { opacity: .25; } }
 
-            .ba-dot {
-                width: 10px;
-                height: 10px;
-                border-radius: 50%;
-                background: #fff;
-                animation: parpadeo 1s infinite;
-            }
+            .id-float { position: absolute; top: 1.1cm; right: 1.3cm; color: #c00; font-weight: bold; font-size: 18px; font-family: 'Calibri', sans-serif; z-index: 2; }
 
-            @@keyframes parpadeo {
-                0%, 100% {
-                    opacity: 1;
-                }
-
-                50% {
-                    opacity: .25;
-                }
-            }
-
-            .id-float {
-                position: absolute;
-                top: 1.1cm;
-                right: 1.3cm;
-                color: #c00;
-                font-weight: bold;
-                font-size: 18px;
-                font-family: 'Calibri', sans-serif;
-                z-index: 2;
-            }
-
-            .watermark-layer {
-                position: absolute;
-                inset: 0;
-                overflow: hidden;
-                z-index: 0;
-                pointer-events: none;
-                user-select: none;
-            }
-
+            .watermark-layer { position: absolute; inset: 0; overflow: hidden; z-index: 0; pointer-events: none; user-select: none; }
             .watermark-grid {
-                position: absolute;
-                top: -35%;
-                left: -35%;
-                width: 170%;
-                height: 170%;
-                transform: rotate(-30deg);
-                display: grid;
-                grid-template-columns: repeat(3, 1fr);
-                grid-auto-rows: 1fr;
-                row-gap: 2.6cm;
-                column-gap: 0.5cm;
-                align-items: center;
-                justify-items: center;
+                position: absolute; top: -35%; left: -35%; width: 170%; height: 170%; transform: rotate(-30deg);
+                display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: 1fr;
+                row-gap: 2.6cm; column-gap: 0.5cm; align-items: center; justify-items: center;
             }
+            .watermark-grid span { font-family: 'Calibri', sans-serif; font-weight: bold; font-size: 2.3cm; letter-spacing: .35cm; color: rgba(130,130,130,0.12); white-space: nowrap; }
 
-                .watermark-grid span {
-                    font-family: 'Calibri', sans-serif;
-                    font-weight: bold;
-                    font-size: 2.3cm;
-                    letter-spacing: .35cm;
-                    color: rgba(130, 130, 130, 0.12);
-                    white-space: nowrap;
-                }
-
-            .doc {
-                width: 100%;
-                border-collapse: collapse;
-                border: none;
-                table-layout: fixed;
-                font-family: 'Calibri', sans-serif;
-            }
-
-                .doc td {
-                    border: 1px solid #000;
-                    padding: 4px 8px;
-                    font-size: 12px;
-                    vertical-align: middle;
-                }
-
-                .doc .titulo-maestro {
-                    text-align: center;
-                    font-weight: bold;
-                    font-size: 15px;
-                    letter-spacing: .5px;
-                    padding: 6px;
-                    border-top: none;
-                }
-
-                .doc .titulo-sec {
-                    text-align: center;
-                    font-weight: bold;
-                    font-size: 12px;
-                    padding: 4px;
-                }
-
-                .doc .etq {
-                    font-weight: bold;
-                    white-space: nowrap;
-                }
-
-                .doc .etq-sm {
-                    font-weight: bold;
-                    white-space: nowrap;
-                }
-
-            .fila-dm td {
-                height: 0.55cm;
-                padding: 1px 6px;
-            }
+            .doc { width: 100%; border-collapse: collapse; border: none; table-layout: fixed; font-family: 'Calibri', sans-serif; }
+            .doc td { border: 1px solid #000; padding: 4px 8px; font-size: 12px; vertical-align: middle; }
+            .doc .titulo-maestro { text-align: center; font-weight: bold; font-size: 15px; letter-spacing: .5px; padding: 6px; border-top: none; }
+            .doc .titulo-sec { text-align: center; font-weight: bold; font-size: 12px; padding: 4px; }
+            .doc .etq { font-weight: bold; white-space: nowrap; }
+            .doc .etq-sm { font-weight: bold; white-space: nowrap; }
+            .fila-dm td { height: 0.55cm; padding: 1px 6px; }
 
             .c {
-                border: none;
-                width: 100%;
-                outline: none;
-                background: transparent;
-                font-size: 12px;
-                font-family: 'Calibri', sans-serif;
-                padding: 1px 3px;
-                text-transform: uppercase;
+                border: none; width: 100%; outline: none; background: transparent;
+                font-size: 12px; font-family: 'Calibri', sans-serif; padding: 1px 3px;
+                text-transform: uppercase; transition: background .2s, box-shadow .2s;
             }
+            .c.invalid { background: #fff0f0 !important; box-shadow: inset 0 0 0 2px #c00 !important; }
+            .c.auto { background: transparent; color: #111; cursor: default; }
 
-                .c.auto {
-                    background: transparent;
-                    color: #111;
-                    cursor: default;
-                }
+            .canvas-firma { width: 100%; height: 40px; display: block; background: transparent; cursor: crosshair; touch-action: none; }
+            .canvas-firma.invalid { box-shadow: inset 0 0 0 2px #c00; background: #fff0f0; }
 
-            .canvas-firma {
-                width: 100%;
-                height: 40px;
-                display: block;
-                background: transparent;
-                cursor: crosshair;
-                touch-action: none;
-            }
+            .sticker { text-align: center; vertical-align: middle; color: #9aa0a6; font-style: italic; font-weight: bold; letter-spacing: 1px; font-size: 13px; }
 
-            .sticker {
-                text-align: center;
-                vertical-align: middle;
-                color: #9aa0a6;
-                font-style: italic;
-                font-weight: bold;
-                letter-spacing: 1px;
-                font-size: 13px;
-            }
+            .logo-header { display: flex; align-items: center; gap: 0.8cm; padding: 0.25cm 0.4cm; box-sizing: border-box; }
+            .logo-header img { max-height: 1.9cm; height: auto; width: auto; display: block; }
 
-            .logo-header {
-                display: flex;
-                align-items: center;
-                gap: 0.8cm;
-                padding: 0.25cm 0.4cm;
-                box-sizing: border-box;
-            }
+            .sugerencias-dropdown { position: fixed; z-index: 100000; background: #ffffff; border: 1px solid #999; border-radius: 5px; max-height: 230px; overflow-y: auto; box-shadow: 0 5px 15px rgba(0,0,0,0.25); display: none; font-family: 'Calibri', sans-serif; }
+            .sugerencias-item { padding: 6px 10px; cursor: pointer; font-size: 11px; display: flex; justify-content: space-between; align-items: center; gap: 12px; border-bottom: 1px solid #eee; transition: background .15s ease; }
+            .sugerencias-item:last-child { border-bottom: none; }
+            .sugerencias-item:hover, .sugerencias-item.active { background-color: #D8BFD8; }
+            .sugerencias-ref { font-weight: bold; white-space: nowrap; }
+            .sugerencias-desc { color: #555; font-size: 10px; max-width: 320px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: right; }
+            .sugerencias-vacio { padding: 6px 10px; font-size: 10px; color: #888; font-style: italic; }
 
-                .logo-header img {
-                    max-height: 1.9cm;
-                    height: auto;
-                    width: auto;
-                    display: block;
-                }
+            .modal-acciones { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.55); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); z-index: 200000; display: none; align-items: center; justify-content: center; font-family: 'Calibri', sans-serif; }
+            .modal-box { background: #fff; border-radius: 14px; padding: 25px 30px; width: 440px; max-width: 92%; box-shadow: 0 10px 40px rgba(0,0,0,0.4); position: relative; animation: modalIn .25s cubic-bezier(.2,.8,.2,1) both; }
+            .modal-box h3 { margin: 0 0 18px 0; font-size: 18px; text-transform: uppercase; color: #333; text-align: center; letter-spacing: .5px; }
+            .modal-close { position: absolute; top: 8px; right: 12px; border: none; background: transparent; font-size: 24px; cursor: pointer; color: #888; line-height: 1; transition: color .2s, transform .2s; }
+            .modal-close:hover { color: #c00; transform: rotate(90deg); }
+            .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+            .accion-btn { border: none; border-radius: 10px; padding: 14px 10px; font-size: 13px; font-weight: bold; cursor: pointer; color: #fff; font-family: 'Calibri', sans-serif; transition: transform 0.15s ease, filter 0.15s ease, box-shadow .15s ease; position: relative; overflow: hidden; }
+            .accion-btn:hover { transform: translateY(-2px); filter: brightness(1.08); box-shadow: 0 6px 16px rgba(0,0,0,0.25); }
+            .accion-btn:active { transform: translateY(0); }
+            .accion-btn::after { content: ""; position: absolute; top: 0; left: -60%; width: 40%; height: 100%; background: linear-gradient(120deg, transparent, rgba(255,255,255,.35), transparent); transform: skewX(-20deg); transition: left .55s ease; }
+            .accion-btn:hover::after { left: 130%; }
+            .accion-btn.guardar { background: #2e7d32; grid-column: 1 / -1; font-size: 15px; }
+            .accion-btn.pdf { background: #1565c0; }
+            .accion-btn.correo { background: #6a1b9a; }
+            .accion-btn.adjuntar { background: #00838f; grid-column: 1 / -1; }
+            @@keyframes modalIn { from { opacity: 0; transform: translateY(12px) scale(.95); } to { opacity: 1; transform: none; } }
 
-            .sugerencias-dropdown {
-                position: fixed;
-                z-index: 100000;
-                background: #ffffff;
-                border: 1px solid #999;
-                border-radius: 5px;
-                max-height: 230px;
-                overflow-y: auto;
-                box-shadow: 0 5px 15px rgba(0,0,0,0.25);
-                display: none;
-                font-family: 'Calibri', sans-serif;
-            }
+            .hoja-container.pdf-compact { width: 27.94cm !important; height: 21.59cm !important; padding: 0.5cm !important; margin: 0 !important; box-shadow: none !important; transform: none !important; overflow: hidden !important; }
+            .hoja-container.pdf-compact .valsum { display: none !important; }
+            .hoja-container.pdf-compact .id-float { top: 0.7cm; right: 0.8cm; font-size: 12px; }
+            .hoja-container.pdf-compact .watermark-grid { row-gap: 2cm; }
+            .hoja-container.pdf-compact .watermark-grid span { font-size: 1.8cm; letter-spacing: .25cm; }
+            .hoja-container.pdf-compact .doc { font-size: 9px; }
+            .hoja-container.pdf-compact .doc td { padding: 1px 4px; }
+            .hoja-container.pdf-compact .logo-header { padding: 0.15cm 0.3cm; gap: 0.5cm; }
+            .hoja-container.pdf-compact .logo-header img { max-height: 1.5cm !important; }
+            .hoja-container.pdf-compact .doc .titulo-maestro { font-size: 11px; padding: 3px; }
+            .hoja-container.pdf-compact .doc .titulo-sec { font-size: 8px; padding: 2px; }
+            .hoja-container.pdf-compact .doc .etq, .hoja-container.pdf-compact .doc .etq-sm { font-size: 7.5px; }
+            .hoja-container.pdf-compact .fila-dm td { height: 0.5cm; padding: 0 4px; }
+            .hoja-container.pdf-compact .c { font-size: 8px; padding: 0 2px; }
+            .hoja-container.pdf-compact .canvas-firma { height: 22px; }
+            .hoja-container.pdf-compact .sticker { font-size: 9px; }
 
-            .sugerencias-item {
-                padding: 6px 10px;
-                cursor: pointer;
-                font-size: 11px;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                gap: 12px;
-                border-bottom: 1px solid #eee;
-                transition: background .15s ease;
-            }
+            .pdf-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 99999; display: none; flex-direction: column; align-items: center; justify-content: center; color: white; font-size: 20px; font-family: 'Calibri', sans-serif; font-weight: bold; animation: fadeIn .2s ease both; }
+            .pdf-overlay .spin { width: 36px; height: 36px; border: 4px solid rgba(255,255,255,.28); border-top-color: #fff; border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto 14px; }
+            @@keyframes spin { to { transform: rotate(360deg); } }
+            @@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-                .sugerencias-item:last-child {
-                    border-bottom: none;
-                }
-
-                .sugerencias-item:hover,
-                .sugerencias-item.active {
-                    background-color: #D8BFD8;
-                }
-
-            .sugerencias-ref {
-                font-weight: bold;
-                white-space: nowrap;
-            }
-
-            .sugerencias-desc {
-                color: #555;
-                font-size: 10px;
-                max-width: 320px;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-                text-align: right;
-            }
-
-            .sugerencias-vacio {
-                padding: 6px 10px;
-                font-size: 10px;
-                color: #888;
-                font-style: italic;
-            }
-
-            .modal-acciones {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0,0,0,0.55);
-                -webkit-backdrop-filter: blur(3px);
-                backdrop-filter: blur(3px);
-                z-index: 200000;
-                display: none;
-                align-items: center;
-                justify-content: center;
-                font-family: 'Calibri', sans-serif;
-            }
-
-            .modal-box {
-                background: #fff;
-                border-radius: 14px;
-                padding: 25px 30px;
-                width: 440px;
-                max-width: 92%;
-                box-shadow: 0 10px 40px rgba(0,0,0,0.4);
-                position: relative;
-                animation: modalIn .25s cubic-bezier(.2,.8,.2,1) both;
-            }
-
-                .modal-box h3 {
-                    margin: 0 0 18px 0;
-                    font-size: 18px;
-                    text-transform: uppercase;
-                    color: #333;
-                    text-align: center;
-                    letter-spacing: .5px;
-                }
-
-            .modal-close {
-                position: absolute;
-                top: 8px;
-                right: 12px;
-                border: none;
-                background: transparent;
-                font-size: 24px;
-                cursor: pointer;
-                color: #888;
-                line-height: 1;
-                transition: color .2s, transform .2s;
-            }
-
-                .modal-close:hover {
-                    color: #c00;
-                    transform: rotate(90deg);
-                }
-
-            .modal-grid {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 12px;
-            }
-
-            .accion-btn {
-                border: none;
-                border-radius: 10px;
-                padding: 14px 10px;
-                font-size: 13px;
-                font-weight: bold;
-                cursor: pointer;
-                color: #fff;
-                font-family: 'Calibri', sans-serif;
-                transition: transform 0.15s ease, filter 0.15s ease, box-shadow .15s ease;
-                position: relative;
-                overflow: hidden;
-            }
-
-                .accion-btn:hover {
-                    transform: translateY(-2px);
-                    filter: brightness(1.08);
-                    box-shadow: 0 6px 16px rgba(0,0,0,0.25);
-                }
-
-                .accion-btn:active {
-                    transform: translateY(0);
-                }
-
-                .accion-btn::after {
-                    content: "";
-                    position: absolute;
-                    top: 0;
-                    left: -60%;
-                    width: 40%;
-                    height: 100%;
-                    background: linear-gradient(120deg, transparent, rgba(255,255,255,.35), transparent);
-                    transform: skewX(-20deg);
-                    transition: left .55s ease;
-                }
-
-                .accion-btn:hover::after {
-                    left: 130%;
-                }
-
-                .accion-btn.guardar {
-                    background: #2e7d32;
-                    grid-column: 1 / -1;
-                    font-size: 15px;
-                }
-
-                .accion-btn.pdf {
-                    background: #1565c0;
-                }
-
-                .accion-btn.correo {
-                    background: #6a1b9a;
-                }
-
-                .accion-btn.adjuntar {
-                    background: #00838f;
-                    grid-column: 1 / -1;
-                }
-
-            @@keyframes modalIn {
-                from {
-                    opacity: 0;
-                    transform: translateY(12px) scale(.95);
-                }
-
-                to {
-                    opacity: 1;
-                    transform: none;
-                }
-            }
-
-            .hoja-container.pdf-compact {
-                width: 27.94cm !important;
-                height: 21.59cm !important;
-                padding: 0.5cm !important;
-                margin: 0 !important;
-                box-shadow: none !important;
-                transform: none !important;
-                overflow: hidden !important;
-            }
-
-                .hoja-container.pdf-compact .valsum {
-                    display: none !important;
-                }
-
-                .hoja-container.pdf-compact .id-float {
-                    top: 0.7cm;
-                    right: 0.8cm;
-                    font-size: 12px;
-                }
-
-                .hoja-container.pdf-compact .watermark-grid {
-                    row-gap: 2cm;
-                }
-
-                    .hoja-container.pdf-compact .watermark-grid span {
-                        font-size: 1.8cm;
-                        letter-spacing: .25cm;
-                    }
-
-                .hoja-container.pdf-compact .doc {
-                    font-size: 9px;
-                }
-
-                    .hoja-container.pdf-compact .doc td {
-                        padding: 1px 4px;
-                    }
-
-                .hoja-container.pdf-compact .logo-header {
-                    padding: 0.15cm 0.3cm;
-                    gap: 0.5cm;
-                }
-
-                    .hoja-container.pdf-compact .logo-header img {
-                        max-height: 1.5cm !important;
-                    }
-
-                .hoja-container.pdf-compact .doc .titulo-maestro {
-                    font-size: 11px;
-                    padding: 3px;
-                }
-
-                .hoja-container.pdf-compact .doc .titulo-sec {
-                    font-size: 8px;
-                    padding: 2px;
-                }
-
-                .hoja-container.pdf-compact .doc .etq, .hoja-container.pdf-compact .doc .etq-sm {
-                    font-size: 7.5px;
-                }
-
-                .hoja-container.pdf-compact .fila-dm td {
-                    height: 0.5cm;
-                    padding: 0 4px;
-                }
-
-                .hoja-container.pdf-compact .c {
-                    font-size: 8px;
-                    padding: 0 2px;
-                }
-
-                .hoja-container.pdf-compact .canvas-firma {
-                    height: 22px;
-                }
-
-                .hoja-container.pdf-compact .sticker {
-                    font-size: 9px;
-                }
-
-            .pdf-overlay {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0,0,0,0.6);
-                z-index: 99999;
-                display: none;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                color: white;
-                font-size: 20px;
-                font-family: 'Calibri', sans-serif;
-                font-weight: bold;
-                animation: fadeIn .2s ease both;
-            }
-
-                .pdf-overlay .spin {
-                    width: 36px;
-                    height: 36px;
-                    border: 4px solid rgba(255,255,255,.28);
-                    border-top-color: #fff;
-                    border-radius: 50%;
-                    animation: spin .8s linear infinite;
-                    margin: 0 auto 14px;
-                }
-
-            @@keyframes spin {
-                to {
-                    transform: rotate(360deg);
-                }
-            }
-
-            @@keyframes fadeIn {
-                from {
-                    opacity: 0;
-                }
-
-                to {
-                    opacity: 1;
-                }
-            }
-
-            @@page {
-                size: letter landscape;
-                margin: 0.5cm;
-            }
-
+            @@page { size: letter landscape; margin: 0.5cm; }
             @@media print {
-                body {
-                    background-color: white;
-                    padding: 0;
-                }
-
-                .no-print, .btn-flotantes, .barra-acto, .valsum {
-                    display: none !important;
-                }
-
-                .hoja-container {
-                    margin: 0;
-                    border: none;
-                    box-shadow: none;
-                    transform: none !important;
-                    width: auto;
-                    height: auto;
-                    padding: 0.5cm;
-                    overflow: visible;
-                }
+                body { background-color: white; padding: 0; }
+                .no-print, .btn-flotantes, .barra-acto, .valsum, .toast-container { display: none !important; }
+                .hoja-container { margin: 0; border: none; box-shadow: none; transform: none !important; width: auto; height: auto; padding: 0.5cm; overflow: visible; }
             }
 
             @@media screen and (max-width: 700px) {
-                body {
-                    padding: 8px;
-                }
-
-                .hoja-container {
-                    width: 100%;
-                    height: auto;
-                    margin: 8px auto;
-                    padding: 12px;
-                    transform: none !important;
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-                }
-
-                .id-float {
-                    position: static;
-                    display: block;
-                    text-align: right;
-                    margin: 0 0 8px 0;
-                    font-size: 16px;
-                }
-
-                .tabla-scroll {
-                    overflow-x: auto;
-                    -webkit-overflow-scrolling: touch;
-                }
-
-                .doc {
-                    min-width: 700px;
-                }
-
-                .c {
-                    font-size: 16px;
-                    min-height: 44px;
-                }
-
-                .canvas-firma {
-                    height: 120px;
-                }
-
-                .sticker {
-                    min-height: 120px;
-                }
-
-                .logo-header {
-                    flex-wrap: wrap;
-                    gap: 0.4cm;
-                    padding: 6px 0;
-                }
-
-                    .logo-header img {
-                        max-height: 1.4cm;
-                    }
-
-                .watermark-grid span {
-                    font-size: 1.6cm;
-                    letter-spacing: .2cm;
-                }
-
-                .btn-flotantes {
-                    top: auto;
-                    left: auto;
-                    right: 16px;
-                    bottom: 16px;
-                }
-
-                .barra-acto {
-                    font-size: 11px;
-                    padding: 6px 12px;
-                    max-width: 92vw;
-                    top: 12px;
-                }
-
-                .modal-grid {
-                    grid-template-columns: 1fr;
-                }
-
-                .sugerencias-dropdown {
-                    max-width: 94vw;
-                }
+                body { padding: 8px; }
+                .hoja-container { width: 100%; height: auto; margin: 8px auto; padding: 12px; transform: none !important; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+                .id-float { position: static; display: block; text-align: right; margin: 0 0 8px 0; font-size: 16px; }
+                .tabla-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+                .doc { min-width: 700px; }
+                .c { font-size: 16px; min-height: 44px; }
+                .canvas-firma { height: 120px; }
+                .sticker { min-height: 120px; }
+                .logo-header { flex-wrap: wrap; gap: 0.4cm; padding: 6px 0; }
+                .logo-header img { max-height: 1.4cm; }
+                .watermark-grid span { font-size: 1.6cm; letter-spacing: .2cm; }
+                .btn-flotantes { top: auto; left: auto; right: 16px; bottom: 16px; }
+                .barra-acto { font-size: 11px; padding: 6px 12px; max-width: 92vw; top: 12px; }
+                .modal-grid { grid-template-columns: 1fr; }
+                .sugerencias-dropdown { max-width: 94vw; }
             }
 
-            .hoja-container.pdf-compact .tabla-scroll {
-                overflow: visible !important;
-            }
+            .hoja-container.pdf-compact .tabla-scroll { overflow: visible !important; }
+            .hoja-container.pdf-compact .doc { min-width: 0 !important; }
+            .hoja-container.pdf-compact .c { min-height: 0 !important; }
+            .hoja-container.pdf-compact .id-float { position: absolute !important; }
+            .hoja-container.pdf-compact .logo-header { flex-wrap: nowrap !important; }
 
-            .hoja-container.pdf-compact .doc {
-                min-width: 0 !important;
-            }
-
-            .hoja-container.pdf-compact .c {
-                min-height: 0 !important;
-            }
-
-            .hoja-container.pdf-compact .id-float {
-                position: absolute !important;
-            }
-
-            .hoja-container.pdf-compact .logo-header {
-                flex-wrap: nowrap !important;
-            }
-
-            /* ▼▼▼ ADJUNTOS: estilos de vista previa ▼▼▼ */
+            /* ▼▼▼ ADJUNTOS ▼▼▼ */
             .preview-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
             .preview-item { position: relative; width: 90px; height: 90px; border: 1px solid #bbb; border-radius: 6px; overflow: hidden; background: #f5f5f5; display: flex; align-items: center; justify-content: center; }
             .preview-item img, .preview-item video { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -737,6 +224,10 @@
     </style>
 </head>
 <body>
+
+    <!-- ▼▼▼ CONTENEDOR DE TOASTS (fixed → no empuja la hoja) ▼▼▼ -->
+    <div id="toastContainer" class="toast-container"></div>
+    <!-- ▲▲▲ FIN TOASTS ▲▲▲ -->
 
     <div class="btn-flotantes no-print">
         <button type="button" class="btn-circular" onclick="abrirModal()" title="Opciones">OPCIONES</button>
@@ -759,7 +250,8 @@
         <div class="id-float">@Model.ConsecutivoGenerado</div>
 
         <form method="post" id="formTarjeta" enctype="multipart/form-data">
-            <div asp-validation-summary="All" class="valsum" style="color:red; font-weight:bold; margin:0 0 6px 0;"></div>
+            <!-- ⛔ NO existe validation-summary: la hoja NUNCA se deforma. Los errores viajan por el hidden de abajo y se muestran como toasts. -->
+            <input type="hidden" id="erroresServidor" value="@Model.ErroresJson" />
 
             <div class="tabla-scroll">
                 <table class="doc">
@@ -788,51 +280,51 @@
                     <tr><td colspan="8" class="titulo-sec">INFORMACIÓN INSTITUCIÓN MÉDICA</td></tr>
                     <tr>
                         <td class="etq">INSTITUCIÓN</td>
-                        <td colspan="4"><input asp-for="NuevaTarjeta.Institucion" class="c" /></td>
+                        <td colspan="4"><input asp-for="NuevaTarjeta.Institucion" class="c" data-required="true" data-label="Institución" /></td>
                         <td class="etq-sm" rowspan="2" style="text-align:center;">REMISIÓN</td>
-                        <td colspan="2" rowspan="2"><input asp-for="NuevaTarjeta.Remision" class="c" /></td>
+                        <td colspan="2" rowspan="2"><input asp-for="NuevaTarjeta.Remision" class="c" data-required="true" data-label="Remisión" /></td>
                     </tr>
                     <tr>
                         <td class="etq">CIUDAD</td>
-                        <td colspan="4"><input asp-for="NuevaTarjeta.Ciudad" class="c" /></td>
+                        <td colspan="4"><input asp-for="NuevaTarjeta.Ciudad" class="c" data-required="true" data-label="Ciudad" /></td>
                     </tr>
 
                     <tr><td colspan="8" class="titulo-sec">INFORMACIÓN PACIENTE</td></tr>
                     <tr>
                         <td class="etq">FECHA DE CIRUGÍA</td>
-                        <td colspan="7"><input asp-for="NuevaTarjeta.FechaCirugia" type="date" class="c" /></td>
+                        <td colspan="7"><input asp-for="NuevaTarjeta.FechaCirugia" type="date" class="c" data-required="true" data-label="Fecha de cirugía" /></td>
                     </tr>
                     <tr>
                         <td class="etq">NOMBRE PACIENTE</td>
-                        <td colspan="7"><input asp-for="NuevaTarjeta.NombrePaciente" class="c" /></td>
+                        <td colspan="7"><input asp-for="NuevaTarjeta.NombrePaciente" class="c" data-required="true" data-label="Nombre del paciente" /></td>
                     </tr>
                     <tr>
                         <td class="etq">No. IDENTIFICACIÓN</td>
-                        <td colspan="7"><input asp-for="NuevaTarjeta.NumeroIdentificacion" class="c" /></td>
+                        <td colspan="7"><input asp-for="NuevaTarjeta.NumeroIdentificacion" class="c" data-required="true" data-label="Número de identificación" /></td>
                     </tr>
                     <tr>
                         <td class="etq-sm">NOMBRE ESPECIALISTA</td>
-                        <td colspan="2"><input asp-for="NuevaTarjeta.NombreEspecialista" class="c" /></td>
+                        <td colspan="2"><input asp-for="NuevaTarjeta.NombreEspecialista" class="c" data-required="true" data-label="Nombre del especialista" /></td>
                         <td class="etq-sm">NOMBRE EQC</td>
-                        <td colspan="2"><input asp-for="NuevaTarjeta.NombreEQC" class="c" /></td>
+                        <td colspan="2"><input asp-for="NuevaTarjeta.NombreEQC" class="c" data-required="true" data-label="Nombre del EQC" /></td>
                         <td class="etq-sm">NOMBRE IQX INSTITUCIÓN</td>
-                        <td><input asp-for="NuevaTarjeta.NombreIqxInstitucion" class="c" /></td>
+                        <td><input asp-for="NuevaTarjeta.NombreIqxInstitucion" class="c" data-required="true" data-label="Nombre IQX institución" /></td>
                     </tr>
                     <tr>
                         <td class="etq-sm">FIRMA</td>
-                        <td colspan="2"><canvas id="canvasEsp" class="canvas-firma"></canvas></td>
+                        <td colspan="2"><canvas id="canvasEsp" class="canvas-firma" data-required="true" data-label="Firma del especialista"></canvas></td>
                         <td class="etq-sm">FIRMA</td>
-                        <td colspan="2"><canvas id="canvasEqc" class="canvas-firma"></canvas></td>
+                        <td colspan="2"><canvas id="canvasEqc" class="canvas-firma" data-required="true" data-label="Firma del EQC"></canvas></td>
                         <td class="etq-sm">FIRMA</td>
-                        <td><canvas id="canvasIqx" class="canvas-firma"></canvas></td>
+                        <td><canvas id="canvasIqx" class="canvas-firma" data-required="true" data-label="Firma IQX institución"></canvas></td>
                     </tr>
 
                     <tr><td colspan="8" class="titulo-sec">DISPOSITIVOS MÉDICOS</td></tr>
                     <tr>
                         <td class="etq-sm">FABRICANTE</td>
-                        <td colspan="2"><input asp-for="NuevaTarjeta.Fabricante" class="c" /></td>
+                        <td colspan="2"><input asp-for="NuevaTarjeta.Fabricante" class="c" data-required="true" data-label="Fabricante" /></td>
                         <td class="etq-sm">PAÍS</td>
-                        <td colspan="4"><input asp-for="NuevaTarjeta.Pais" class="c" /></td>
+                        <td colspan="4"><input asp-for="NuevaTarjeta.Pais" class="c" data-required="true" data-label="País" /></td>
                     </tr>
                     <tr>
                         <td class="etq-sm" style="text-align:center;">CÓDIGO</td>
@@ -868,14 +360,12 @@
             <input type="hidden" name="FhFinStr" id="FechaHoraFin" />
             <input type="hidden" name="NuevaTarjeta.DuracionSegundos" id="DuracionSegundos" value="0" />
             <input type="hidden" name="PdfBase64" id="PdfBase64" />
-            <!-- ▼▼▼ NUEVO: aquí viajan los adjuntos como base64 (JSON) ▼▼▼ -->
             <input type="hidden" name="AdjuntosBase64Json" id="AdjuntosBase64Json" />
-            <!-- ▲▲▲ FIN NUEVO ▲▲▲ -->
             <input type="hidden" name="progIdHidden" value="@Model.ProgIdActual" />
         </form>
     </div>
 
-    <!-- ===== MODAL DE ACCIONES (con ADJUNTAR integrado) ===== -->
+    <!-- ===== MODAL DE ACCIONES ===== -->
     <div id="modalAcciones" class="modal-acciones">
         <div class="modal-box">
             <button type="button" class="modal-close" onclick="cerrarModal()">&times;</button>
@@ -889,11 +379,9 @@
                 <button type="submit" form="formTarjeta" class="accion-btn guardar">💾 GUARDAR TARJETA</button>
             </div>
 
-            <!-- Input oculto: solo para elegir archivos; el contenido viaja como base64 en el hidden de arriba -->
             <input type="file" id="inputAdjuntos" name="Adjuntos" form="formTarjeta"
                    multiple accept="image/*,video/*" style="display:none;" />
 
-            <!-- Vista previa de lo seleccionado -->
             <div id="previewAdjuntos" class="preview-grid"></div>
             <div id="msgAdjuntos" class="adjuntos-msg"></div>
         </div>
@@ -904,6 +392,43 @@
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script>
+            // ============================================================
+            // ▼▼▼  TOASTS  ▼▼▼
+            // ============================================================
+            const toastContainer = document.getElementById('toastContainer');
+            let toastCounter = 0;
+            function showToast(title, message, type = 'error', duration = 6000) {
+                const id = 'toast_' + (++toastCounter);
+                const toast = document.createElement('div');
+                toast.className = 'toast ' + type;
+                toast.id = id;
+                toast.innerHTML =
+                    '<button class="toast-close" onclick="cerrarToast(\'' + id + '\')">&times;</button>' +
+                    '<div class="toast-title">' + title + '</div><div>' + message + '</div>';
+                toastContainer.appendChild(toast);
+                if (duration > 0) setTimeout(function () { cerrarToast(id); }, duration);
+                return id;
+            }
+            function cerrarToast(id) {
+                const t = document.getElementById(id);
+                if (!t) return;
+                t.classList.add('out');
+                setTimeout(function () { t.remove(); }, 300);
+            }
+            function mostrarErroresToast(errores) {
+                if (!errores || errores.length === 0) return;
+                errores.slice(0, 5).forEach(function (err, i) {
+                    setTimeout(function () { showToast('Campo requerido', err, 'error'); }, i * 150);
+                });
+                if (errores.length > 5) {
+                    setTimeout(function () { showToast('Y más...', '+' + (errores.length - 5) + ' campos faltantes', 'info'); }, 5 * 150);
+                }
+            }
+            function limpiarInvalidos() {
+                document.querySelectorAll('.invalid').forEach(function (el) { el.classList.remove('invalid'); });
+            }
+            // ▲▲▲  FIN TOASTS  ▲▲▲
+
             const canvasEsp = document.getElementById('canvasEsp');
             const canvasEqc = document.getElementById('canvasEqc');
             const canvasIqx = document.getElementById('canvasIqx');
@@ -925,26 +450,22 @@
                 var tabla = hoja.querySelector('.doc');
                 var stickerTd = hoja.querySelector('.fila-sticker td');
                 if (!form || !tabla || !stickerTd) return;
-
                 stickerTd.style.height = '';
                 var cs = getComputedStyle(hoja);
                 var padV = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
                 var altoInterno = hoja.clientHeight - padV;
-
                 var extra = 0;
-                Array.prototype.forEach.call(form.children, function(ch) {
+                Array.prototype.forEach.call(form.children, function (ch) {
                     if (ch !== tabla && !ch.contains(tabla) && ch.offsetParent !== null) {
                         var m = getComputedStyle(ch);
                         extra += ch.offsetHeight + parseFloat(m.marginTop) + parseFloat(m.marginBottom);
                     }
                 });
                 var disponibleTabla = altoInterno - extra;
-
                 var usado = 0;
-                Array.prototype.forEach.call(tabla.rows, function(tr) {
+                Array.prototype.forEach.call(tabla.rows, function (tr) {
                     if (!tr.classList.contains('fila-sticker')) usado += tr.offsetHeight;
                 });
-
                 var h = disponibleTabla - usado;
                 if (h < 50) h = 50;
                 stickerTd.style.height = h + 'px';
@@ -956,51 +477,33 @@
                 var tabla = hoja.querySelector('.doc');
                 var stickerTd = hoja.querySelector('.fila-sticker td');
                 if (!form || !tabla || !stickerTd) return hoja;
-
                 hoja.classList.add('pdf-compact');
                 void hoja.offsetHeight;
-
                 var cs = getComputedStyle(hoja);
                 var padV = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
                 var altoInterno = hoja.clientHeight - padV;
                 var SEG = 14;
-
                 var extra = 0;
-                Array.prototype.forEach.call(form.children, function(ch) {
+                Array.prototype.forEach.call(form.children, function (ch) {
                     if (ch !== tabla && !ch.contains(tabla) && ch.offsetParent !== null) {
                         var m = getComputedStyle(ch);
                         extra += ch.offsetHeight + parseFloat(m.marginTop) + parseFloat(m.marginBottom);
                     }
                 });
                 var objetivo = altoInterno - extra - SEG;
-
                 stickerTd.style.height = '2px';
                 void hoja.offsetHeight;
                 var base = form.scrollHeight;
-
                 var crecer = objetivo - (base - 2);
                 if (crecer < 30) crecer = 30;
                 stickerTd.style.height = crecer + 'px';
                 void hoja.offsetHeight;
-
                 var over = form.scrollHeight - objetivo;
-                if (over > 0) {
-                    crecer -= (over + 4);
-                    if (crecer < 30) crecer = 30;
-                    stickerTd.style.height = crecer + 'px';
-                    void hoja.offsetHeight;
-                }
-
+                if (over > 0) { crecer -= (over + 4); if (crecer < 30) crecer = 30; stickerTd.style.height = crecer + 'px'; void hoja.offsetHeight; }
                 var overHoja = hoja.scrollHeight - hoja.clientHeight;
-                if (overHoja > 0) {
-                    crecer -= (overHoja + 2);
-                    if (crecer < 20) crecer = 20;
-                    stickerTd.style.height = crecer + 'px';
-                    void hoja.offsetHeight;
-                }
+                if (overHoja > 0) { crecer -= (overHoja + 2); if (crecer < 20) crecer = 20; stickerTd.style.height = crecer + 'px'; void hoja.offsetHeight; }
                 return hoja;
             }
-
             function limpiarCompacto() {
                 var hoja = document.getElementById('hojaOriginal');
                 var stickerTd = hoja.querySelector('.fila-sticker td');
@@ -1010,8 +513,8 @@
                 ajustarSticker();
             }
 
-            window.addEventListener('load', function() {
-                [canvasEsp, canvasEqc, canvasIqx].forEach(c => ajustarCanvas(c));
+            window.addEventListener('load', function () {
+                [canvasEsp, canvasEqc, canvasIqx].forEach(function (c) { ajustarCanvas(c); });
                 ajustarSticker();
                 setTimeout(ajustarSticker, 80);
             });
@@ -1021,6 +524,10 @@
             const padEqc = new SignaturePad(canvasEqc);
             const padIqx = new SignaturePad(canvasIqx);
 
+            [canvasEsp, canvasEqc, canvasIqx].forEach(function (c) {
+                c.addEventListener('pointerdown', function () { c.classList.remove('invalid'); });
+            });
+
             function setFirmas() {
                 document.getElementById('FirmaEspBase64').value = padEsp.isEmpty() ? '' : padEsp.toDataURL('image/png');
                 document.getElementById('FirmaEqcBase64').value = padEqc.isEmpty() ? '' : padEqc.toDataURL('image/png');
@@ -1029,7 +536,7 @@
 
             function abrirModal() { document.getElementById('modalAcciones').style.display = 'flex'; }
             function cerrarModal() { document.getElementById('modalAcciones').style.display = 'none'; }
-            document.getElementById('modalAcciones').addEventListener('mousedown', function(e) { if (e.target === this) cerrarModal(); });
+            document.getElementById('modalAcciones').addEventListener('mousedown', function (e) { if (e.target === this) cerrarModal(); });
 
             function showOverlay(msg) {
                 let o = document.getElementById('pdfOverlay');
@@ -1047,15 +554,15 @@
                 catch (e) { return null; }
             }
             function ahoraStr() {
-                const d = new Date(), p = n => String(n).padStart(2, '0');
+                const d = new Date(), p = function (n) { return String(n).padStart(2, '0'); };
                 return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
             }
             function tomarUbicacion() {
-                return new Promise((resolve, reject) => {
+                return new Promise(function (resolve, reject) {
                     if (!navigator.geolocation) { reject('Este navegador no soporta geolocalización.'); return; }
                     navigator.geolocation.getCurrentPosition(
-                        pos => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-                        err => reject('No se pudo obtener la ubicación (' + err.message + '). Verifique permisos y HTTPS.'),
+                        function (pos) { resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }); },
+                        function (err) { reject('No se pudo obtener la ubicación (' + err.message + '). Verifique permisos y HTTPS.'); },
                         { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
                     );
                 });
@@ -1073,7 +580,7 @@
                 }
                 tick(); cronTimer = setInterval(tick, 1000);
             }
-            window.addEventListener('load', () => {
+            window.addEventListener('load', function () {
                 const acto = getActo();
                 if (acto && acto.horaInicio) {
                     document.getElementById('barraActo').style.display = 'flex';
@@ -1084,12 +591,29 @@
                 }
             });
 
+            // ▼▼▼ ERRORES QUE LLEGARON DEL SERVIDOR → toasts (la hoja NO se deforma) ▼▼▼
+            window.addEventListener('load', function () {
+                try {
+                    const raw = document.getElementById('erroresServidor');
+                    if (!raw || !raw.value) return;
+                    const arr = JSON.parse(raw.value);
+                    if (Array.isArray(arr) && arr.length) {
+                        arr.forEach(function (t, i) {
+                            setTimeout(function () { showToast('Campo requerido', t, 'error'); }, i * 150);
+                        });
+                        const primero = document.querySelector('.invalid');
+                        if (primero) primero.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                } catch (e) { /* hidden vacío o inválido → ignorar */ }
+            });
+            // ▲▲▲ FIN ERRORES SERVIDOR ▲▲▲
+
             const dropdown = document.getElementById('sugerenciasDropdown');
             let inputActivo = null, indiceActivo = -1, sugerenciasActuales = [], debounceTimer = null;
             function dropdownVisible() { return dropdown.style.display === 'block'; }
             function mostrarDropdown() { dropdown.style.display = 'block'; }
             function ocultarDropdown() { dropdown.style.display = 'none'; indiceActivo = -1; sugerenciasActuales = []; }
-            function escapeHtml(s) { return (s || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+            function escapeHtml(s) { return (s || '').replace(/[&<>"]/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]); }); }
             function posicionarDropdown(input) {
                 const rect = input.getBoundingClientRect();
                 dropdown.style.top = (rect.bottom + 2) + 'px';
@@ -1101,10 +625,10 @@
                 inputActivo = input;
                 if (texto.length < 1) { ocultarDropdown(); return; }
                 clearTimeout(debounceTimer);
-                debounceTimer = setTimeout(() => {
+                debounceTimer = setTimeout(function () {
                     fetch('?handler=BuscarReferencias&texto=' + encodeURIComponent(texto))
-                        .then(r => r.json())
-                        .then(data => {
+                        .then(function (r) { return r.json(); })
+                        .then(function (data) {
                             if (input !== inputActivo) return;
                             if (!data || data.length === 0) {
                                 sugerenciasActuales = [];
@@ -1113,25 +637,24 @@
                             }
                             sugerenciasActuales = data; indiceActivo = -1;
                             renderSugerencias(); posicionarDropdown(input); mostrarDropdown();
-                        }).catch(() => ocultarDropdown());
+                        }).catch(function () { ocultarDropdown(); });
                 }, 200);
             }
             function renderSugerencias() {
                 dropdown.innerHTML = '';
-                sugerenciasActuales.forEach((item, idx) => {
+                sugerenciasActuales.forEach(function (item, idx) {
                     const div = document.createElement('div');
                     div.className = 'sugerencias-item' + (idx === indiceActivo ? ' active' : '');
                     div.innerHTML = '<span class="sugerencias-ref">' + escapeHtml(item.referencia) + '</span><span class="sugerencias-desc">' + escapeHtml(item.descripcion) + '</span>';
-                    div.addEventListener('mousedown', function(e) { e.preventDefault(); aplicarSugerencia(idx); });
+                    div.addEventListener('mousedown', function (e) { e.preventDefault(); aplicarSugerencia(idx); });
                     dropdown.appendChild(div);
                 });
             }
             function actualizarActivo() {
                 const items = dropdown.querySelectorAll('.sugerencias-item');
-                items.forEach((it, i) => it.classList.toggle('active', i === indiceActivo));
+                items.forEach(function (it, i) { it.classList.toggle('active', i === indiceActivo); });
                 if (indiceActivo >= 0 && items[indiceActivo]) items[indiceActivo].scrollIntoView({ block: 'nearest' });
             }
-
             function aplicarSugerencia(idx) {
                 if (!inputActivo || idx < 0 || idx >= sugerenciasActuales.length) return;
                 const data = sugerenciasActuales[idx];
@@ -1148,13 +671,13 @@
                 ocultarDropdown();
                 if (fila) saltarASiguienteFila(fila);
             }
-            document.querySelectorAll('input[name="Referencias[]"]').forEach(input => {
-                input.addEventListener('input', () => pedirSugerencias(input));
-                input.addEventListener('focus', () => { if (input.value.trim()) pedirSugerencias(input); });
-                input.addEventListener('blur', () => { setTimeout(ocultarDropdown, 120); });
+            document.querySelectorAll('input[name="Referencias[]"]').forEach(function (input) {
+                input.addEventListener('input', function () { pedirSugerencias(input); });
+                input.addEventListener('focus', function () { if (input.value.trim()) pedirSugerencias(input); });
+                input.addEventListener('blur', function () { setTimeout(ocultarDropdown, 120); });
             });
             window.addEventListener('scroll', ocultarDropdown, true);
-            document.addEventListener('mousedown', function(e) {
+            document.addEventListener('mousedown', function (e) {
                 if (!dropdown.contains(e.target) && e.target !== inputActivo) ocultarDropdown();
             });
 
@@ -1170,7 +693,7 @@
             async function generarPdfDataUri() {
                 cerrarModal(); ocultarDropdown();
                 prepararCompacto();
-                await new Promise(r => setTimeout(r, 220));
+                await new Promise(function (r) { setTimeout(r, 220); });
                 try { return (await html2pdf().set(getOpt()).from(document.getElementById('hojaOriginal')).outputPdf('datauristring')) || ''; }
                 finally { limpiarCompacto(); }
             }
@@ -1178,15 +701,54 @@
                 cerrarModal(); ocultarDropdown();
                 showOverlay('Generando PDF...');
                 prepararCompacto();
-                await new Promise(r => setTimeout(r, 220));
+                await new Promise(function (r) { setTimeout(r, 220); });
                 try { await html2pdf().set(getOpt()).from(document.getElementById('hojaOriginal')).save(); }
-                catch (err) { console.error('Error generando PDF:', err); alert('Error al generar el PDF'); }
+                catch (err) { console.error('Error generando PDF:', err); showToast('Error', 'No se pudo generar el PDF', 'error'); }
                 finally { limpiarCompacto(); hideOverlay(); }
             }
 
+            // ▼▼▼ VALIDACIÓN CLIENTE (toasts + resaltar + NO enviar) ▼▼▼
+            function validarFormulario() {
+                limpiarInvalidos();
+                const errores = [];
+                const form = document.getElementById('formTarjeta');
+                form.querySelectorAll('[data-required="true"]').forEach(function (el) {
+                    const label = el.getAttribute('data-label') || 'Campo';
+                    const esCanvas = el.tagName === 'CANVAS';
+                    if (esCanvas) {
+                        let isEmpty = true;
+                        if (el === canvasEsp) isEmpty = padEsp.isEmpty();
+                        else if (el === canvasEqc) isEmpty = padEqc.isEmpty();
+                        else if (el === canvasIqx) isEmpty = padIqx.isEmpty();
+                        if (isEmpty) { el.classList.add('invalid'); errores.push(label); }
+                    } else {
+                        const val = (el.value || '').trim();
+                        if (!val) { el.classList.add('invalid'); errores.push(label); }
+                    }
+                });
+                form.querySelectorAll('.invalid').forEach(function (el) {
+                    el.addEventListener('input', function handler() { el.classList.remove('invalid'); el.removeEventListener('input', handler); }, { once: true });
+                });
+                return errores;
+            }
+            // ▲▲▲ FIN VALIDACIÓN CLIENTE ▲▲▲
+
             let enviando = false;
-            document.getElementById('formTarjeta').addEventListener('submit', async function(e) {
+            document.getElementById('formTarjeta').addEventListener('submit', async function (e) {
                 if (enviando) { e.preventDefault(); return; }
+
+                const errores = validarFormulario();
+                if (errores.length > 0) {
+                    e.preventDefault();
+                    mostrarErroresToast(errores);
+                    const primero = document.querySelector('.invalid');
+                    if (primero) {
+                        primero.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        if (primero.focus) primero.focus();
+                    }
+                    return;
+                }
+
                 setFirmas();
                 const btnGuardar = document.querySelector('.accion-btn.guardar');
                 const acto = getActo();
@@ -1215,7 +777,8 @@
                         hideOverlay();
                         this.submit();
                     } catch (err) {
-                        enviando = false; if (btnGuardar) btnGuardar.disabled = false; hideOverlay(); alert('Error al guardar: ' + err);
+                        enviando = false; if (btnGuardar) btnGuardar.disabled = false; hideOverlay();
+                        showToast('Error al guardar', err.message || String(err), 'error');
                     }
                 } else {
                     enviando = true;
@@ -1226,7 +789,7 @@
 
             function enviarCorreo() {
                 const f = document.getElementById('formTarjeta');
-                const v = n => { const el = f.querySelector('[name="NuevaTarjeta.' + n + '"]'); return el ? (el.value || '') : ''; };
+                const v = function (n) { const el = f.querySelector('[name="NuevaTarjeta.' + n + '"]'); return el ? (el.value || '') : ''; };
                 const cons = (document.querySelector('.id-float') || {}).textContent || '';
                 const asunto = 'Tarjeta de Implante ' + cons.trim() + ' - Paciente ' + v('NombrePaciente');
                 const cuerpo =
@@ -1251,8 +814,8 @@
                     let ref = input.value.trim(), fila = input.closest('tr');
                     if (ref) {
                         fetch('?handler=BuscarProducto&referencia=' + encodeURIComponent(ref))
-                            .then(res => res.json())
-                            .then(data => {
+                            .then(function (res) { return res.json(); })
+                            .then(function (data) {
                                 if (data) {
                                     const cod = fila.querySelector('[name="Codigos[]"]');
                                     const desc = fila.querySelector('[name="Descripciones[]"]');
@@ -1262,7 +825,7 @@
                                     if (inv) inv.value = (data.regInvima || '').toUpperCase();
                                 }
                                 saltarASiguienteFila(fila);
-                            }).catch(err => { console.error(err); saltarASiguienteFila(fila); });
+                            }).catch(function (err) { console.error(err); saltarASiguienteFila(fila); });
                     } else { saltarASiguienteFila(fila); }
                 }
             }
@@ -1280,8 +843,8 @@
                 let ref = input.value, fila = input.closest('tr');
                 if (!ref) return;
                 fetch('?handler=BuscarProducto&referencia=' + encodeURIComponent(ref))
-                    .then(res => res.json())
-                    .then(data => {
+                    .then(function (res) { return res.json(); })
+                    .then(function (data) {
                         if (data) {
                             const cod = fila.querySelector('[name="Codigos[]"]');
                             const desc = fila.querySelector('[name="Descripciones[]"]');
@@ -1291,11 +854,11 @@
                             if (inv) inv.value = (data.regInvima || '').toUpperCase();
                         }
                     })
-                    .catch(err => console.error('Error:', err));
+                    .catch(function (err) { console.error('Error:', err); });
             }
 
-            document.querySelectorAll('input[type="text"]').forEach(input => {
-                input.addEventListener('input', function() {
+            document.querySelectorAll('input[type="text"]').forEach(function (input) {
+                input.addEventListener('input', function () {
                     const start = this.selectionStart, end = this.selectionEnd;
                     this.value = this.value.toUpperCase();
                     this.setSelectionRange(start, end);
@@ -1306,105 +869,72 @@
                 input.setAttribute('spellcheck', 'false');
             });
 
-            // ▼▼▼ ADJUNTOS: preview + lectura a base64 (sin IFormFile) ▼▼▼
+            // ▼▼▼ ADJUNTOS ▼▼▼
             const MAX_ARCHIVOS = 10;
-            const MAX_IMG_BYTES = 20 * 1024 * 1024;    // 20 MB por imagen
-            const MAX_VID_BYTES = 200 * 1024 * 1024;   // 200 MB por video
-            const EXT_IMG = ['jpg','jpeg','png','webp','gif'];
-            const EXT_VID = ['mp4','mov','webm','mkv'];
+            const MAX_IMG_BYTES = 20 * 1024 * 1024;
+            const MAX_VID_BYTES = 200 * 1024 * 1024;
+            const EXT_IMG = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+            const EXT_VID = ['mp4', 'mov', 'webm', 'mkv'];
             const inputAdjuntos = document.getElementById('inputAdjuntos');
             const previewAdjuntos = document.getElementById('previewAdjuntos');
             const msgAdjuntos = document.getElementById('msgAdjuntos');
             const hiddenAdjuntos = document.getElementById('AdjuntosBase64Json');
-
-            let archivosAdjuntos = [];   // File objects para la preview
-            let archivosBase64 = [];     // {nombre, tipo, base64} para enviar
-
-            function extDe(nombre){ return (nombre.split('.').pop() || '').toLowerCase(); }
-
-            function leerComoBase64(file){
-                return new Promise((resolve, reject)=>{
+            let archivosAdjuntos = [];
+            let archivosBase64 = [];
+            function extDe(nombre) { return (nombre.split('.').pop() || '').toLowerCase(); }
+            function leerComoBase64(file) {
+                return new Promise(function (resolve, reject) {
                     const r = new FileReader();
-                    r.onload = ()=> resolve(String(r.result).split(',')[1] || '');
-                    r.onerror = ()=> reject(r.error);
+                    r.onload = function () { resolve(String(r.result).split(',')[1] || ''); };
+                    r.onerror = function () { reject(r.error); };
                     r.readAsDataURL(file);
                 });
             }
-
-            function sincronizarHidden(){
-                hiddenAdjuntos.value = JSON.stringify(archivosBase64);
-            }
-
-            function renderPreview(){
+            function sincronizarHidden() { hiddenAdjuntos.value = JSON.stringify(archivosBase64); }
+            function renderPreview() {
                 previewAdjuntos.innerHTML = '';
                 msgAdjuntos.textContent = '';
                 msgAdjuntos.classList.remove('adjuntos-ok');
-                if(archivosAdjuntos.length === 0) return;
-
-                archivosAdjuntos.forEach((f, idx)=>{
+                if (archivosAdjuntos.length === 0) return;
+                archivosAdjuntos.forEach(function (f, idx) {
                     const esImg = EXT_IMG.includes(extDe(f.name));
                     const item = document.createElement('div');
                     item.className = 'preview-item';
-                    if(esImg){
-                        const img = document.createElement('img');
-                        img.src = URL.createObjectURL(f);
-                        item.appendChild(img);
-                    } else {
-                        const vid = document.createElement('video');
-                        vid.src = URL.createObjectURL(f);
-                        vid.muted = true;
-                        item.appendChild(vid);
-                    }
-                    const tag = document.createElement('div');
-                    tag.className = 'tag';
-                    tag.textContent = esImg ? 'IMG' : 'VIDEO';
-                    item.appendChild(tag);
-                    const btn = document.createElement('button');
-                    btn.type='button'; btn.className='quitar'; btn.title='Quitar este archivo'; btn.textContent='×';
-                    btn.addEventListener('click', function(){ removerArchivo(idx); });
+                    if (esImg) { const img = document.createElement('img'); img.src = URL.createObjectURL(f); item.appendChild(img); }
+                    else { const vid = document.createElement('video'); vid.src = URL.createObjectURL(f); vid.muted = true; item.appendChild(vid); }
+                    const tag = document.createElement('div'); tag.className = 'tag'; tag.textContent = esImg ? 'IMG' : 'VIDEO'; item.appendChild(tag);
+                    const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'quitar'; btn.title = 'Quitar este archivo'; btn.textContent = '×';
+                    btn.addEventListener('click', function () { removerArchivo(idx); });
                     item.appendChild(btn);
                     previewAdjuntos.appendChild(item);
                 });
                 msgAdjuntos.textContent = archivosAdjuntos.length + ' archivo(s) listo(s) para guardar.';
                 msgAdjuntos.classList.add('adjuntos-ok');
             }
-
-            function removerArchivo(indice){
-                archivosAdjuntos.splice(indice,1);
-                archivosBase64.splice(indice,1);
-                sincronizarHidden();
-                renderPreview();
-            }
-
-            inputAdjuntos.addEventListener('change', async function(){
+            function removerArchivo(indice) { archivosAdjuntos.splice(indice, 1); archivosBase64.splice(indice, 1); sincronizarHidden(); renderPreview(); }
+            inputAdjuntos.addEventListener('change', async function () {
                 const nuevos = Array.from(this.files || []);
                 this.value = '';
-                if(nuevos.length === 0){ renderPreview(); return; }
-
+                if (nuevos.length === 0) { renderPreview(); return; }
                 let error = '';
-                for(const f of nuevos){
+                for (const f of nuevos) {
                     const ext = extDe(f.name);
                     const esImg = EXT_IMG.includes(ext);
                     const esVid = EXT_VID.includes(ext);
-                    if(!esImg && !esVid){ error='Archivo no permitido: '+f.name; break; }
-                    if(f.size > (esImg?MAX_IMG_BYTES:MAX_VID_BYTES)){ error='Archivo muy grande: '+f.name; break; }
+                    if (!esImg && !esVid) { error = 'Archivo no permitido: ' + f.name; break; }
+                    if (f.size > (esImg ? MAX_IMG_BYTES : MAX_VID_BYTES)) { error = 'Archivo muy grande: ' + f.name; break; }
                 }
-                if(error){ msgAdjuntos.textContent = error; msgAdjuntos.classList.remove('adjuntos-ok'); return; }
-
-                for(const f of nuevos){
-                    const dup = archivosAdjuntos.some(x=>x.name===f.name && x.size===f.size);
-                    if(dup) continue;
-                    try{
+                if (error) { showToast('Archivo no válido', error, 'error'); return; }
+                for (const f of nuevos) {
+                    const dup = archivosAdjuntos.some(function (x) { return x.name === f.name && x.size === f.size; });
+                    if (dup) continue;
+                    try {
                         const b64 = await leerComoBase64(f);
                         archivosAdjuntos.push(f);
-                        archivosBase64.push({ nombre:f.name, tipo: EXT_IMG.includes(extDe(f.name))?'imagen':'video', base64:b64 });
-                    }catch(e){ console.error('No se pudo leer '+f.name, e); }
+                        archivosBase64.push({ nombre: f.name, tipo: EXT_IMG.includes(extDe(f.name)) ? 'imagen' : 'video', base64: b64 });
+                    } catch (e) { console.error('No se pudo leer ' + f.name, e); }
                 }
-
-                if(archivosAdjuntos.length > MAX_ARCHIVOS){
-                    archivosAdjuntos = archivosAdjuntos.slice(0,MAX_ARCHIVOS);
-                    archivosBase64 = archivosBase64.slice(0,MAX_ARCHIVOS);
-                }
+                if (archivosAdjuntos.length > MAX_ARCHIVOS) { archivosAdjuntos = archivosAdjuntos.slice(0, MAX_ARCHIVOS); archivosBase64 = archivosBase64.slice(0, MAX_ARCHIVOS); }
                 sincronizarHidden();
                 renderPreview();
             });

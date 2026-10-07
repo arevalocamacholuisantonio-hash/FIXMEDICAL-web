@@ -23,7 +23,7 @@ namespace fixmedical._1._1.Modelos
 
         [Required]
         
-        public DateTime HoraSolicitud { get; set; }
+        public TimeSpan HoraSolicitud { get; set; }
 
         [Required]
         [StringLength(100)]
@@ -57,7 +57,7 @@ namespace fixmedical._1._1.Modelos
         [Column(TypeName = "date")] 
         public DateTime FechaCirugia { get; set; }
 
-        public DateTime HoraCirugia { get; set; }
+        public TimeSpan HoraCirugia { get; set; }
 
         [Required]
         [StringLength(200)]

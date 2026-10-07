@@ -1,0 +1,353 @@
+﻿@page
+@model fixmedical._1._1.Pages.Solicitudes.FormatoModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" sizes="40x40" href="~/images/LOGO FIX CORTO_sin_fondo (1).png" />
+    <title>F-G-LG-001 Solicitud de Material - FixMedical</title>
+    <style>
+        body {
+            background-color: #dcdcdc;
+            font-family: 'Calibri', sans-serif;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* HOJA VERTICAL (letter portrait), idéntica al papel */
+        .hoja-container {
+            background: white;
+            width: 21.59cm;
+            min-height: 27.94cm;
+            margin: 20px auto;
+            padding: .6cm .7cm;
+            box-shadow: 5px 5px 15px rgba(0,0,0,.3);
+            box-sizing: border-box;
+            position: relative;
+            font-family: 'Calibri', sans-serif;
+        }
+
+        .doc {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            font-family: 'Calibri', sans-serif;
+        }
+
+        .doc td {
+            border: 1px solid #000;
+            padding: 3px 6px;
+            font-size: 11px;
+            vertical-align: middle;
+            background: #fff;
+        }
+
+        .doc td.sinborde { border: none; background: transparent; }
+        .doc .centro { text-align: center; font-weight: bold; }
+        .doc .centro-n { text-align: center; font-weight: normal; }
+        .doc .etq { font-weight: normal; }
+        .doc .etq2 { font-weight: bold; }
+        .doc td.val { text-transform: uppercase; }
+        .multiline { white-space: pre-wrap; }
+
+        /* Tabla anidada de CLIENTES EPS: líneas internas finas, divisor al 50%, letra 11px */
+        .mini { width: 100%; border-collapse: collapse; }
+        .mini td {
+            border: none;
+            border-bottom: 1px solid #000;
+            border-right: 1px solid #000;
+            padding: 1px 5px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .mini tr:last-child td { border-bottom: none; }
+        .mini td:last-child { border-right: none; }
+
+        /* filas compactas de equipos, como el papel */
+        .eq td { padding: 1px 4px; height: 19px; font-size: 10.5px; }
+
+        .btn-flotantes { position: fixed; top: 20px; left: 20px; z-index: 1000; }
+        .btn-circular {
+            width: 64px; height: 64px; border-radius: 50%;
+            border: 2px solid #808080; background-color: #a9a9a9; color: white;
+            font-size: 9px; font-weight: bold; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 2px 2px 8px rgba(0,0,0,.3); font-family: 'Calibri', sans-serif;
+        }
+
+        /* ===== MODAL DE OPCIONES ===== */
+        .modal-acciones {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.55); backdrop-filter: blur(3px);
+            z-index: 200000; display: none; align-items: center; justify-content: center;
+            font-family: 'Calibri', sans-serif;
+        }
+        .modal-box {
+            background: #fff; border-radius: 14px; padding: 25px 30px;
+            width: 380px; max-width: 92%; box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            position: relative; font-family: 'Calibri', sans-serif;
+        }
+        .modal-box h3 { margin: 0 0 18px 0; font-size: 16px; text-transform: uppercase; color: #333; text-align: center; }
+        .modal-close { position: absolute; top: 8px; right: 12px; border: none; background: transparent; font-size: 24px; cursor: pointer; color: #888; }
+        .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .accion-btn {
+            border: none; border-radius: 10px; padding: 14px 10px; font-size: 13px; font-weight: bold;
+            cursor: pointer; color: #fff; font-family: 'Calibri', sans-serif;
+        }
+        .accion-btn.pdf { background: #1565c0; }
+        .accion-btn.imprimir { background: #2e7d32; }
+
+        /* overlay de generando PDF */
+        .pdf-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); z-index: 99999; display: none;
+            flex-direction: column; align-items: center; justify-content: center;
+            color: white; font-size: 20px; font-weight: bold; font-family: 'Calibri', sans-serif;
+        }
+        .pdf-overlay .spin {
+            width: 36px; height: 36px; border: 4px solid rgba(255,255,255,.28); border-top-color: #fff;
+            border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto 14px;
+        }
+        @@keyframes spin { to { transform: rotate(360deg); } }
+
+        /* quita la sombra solo durante la captura del PDF */
+        .pdf-clean { box-shadow: none !important; margin: 0 !important; }
+
+        @@media screen and (max-width: 900px) { .hoja-container { transform: scale(0.6); transform-origin: top center; } }
+        @@media screen and (max-width: 600px) { .hoja-container { transform: scale(0.45); transform-origin: top center; } }
+
+        @@page { size: letter portrait; margin: 0.5cm; }
+
+        @@media print {
+            body { background: #fff; padding: 0; }
+            .hoja-container { margin: 0; box-shadow: none; transform: none !important; padding: 0.5cm; }
+            .btn-flotantes { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="btn-flotantes">
+        <button type="button" class="btn-circular" title="Opciones" onclick="abrirModal()">OPCIONES</button>
+    </div>
+
+    <div class="hoja-container" id="hojaOriginal">
+        <table class="doc">
+            <colgroup>
+                <col style="width:25%">
+                <col style="width:23%">
+                <col style="width:26%">
+                <col style="width:26%">
+            </colgroup>
+
+            <!-- ===== ENCABEZADO: 3 TERCIOS CON BORDE ===== -->
+            <tr>
+                <td colspan="4" style="padding:0; border:none;">
+                    <table style="width:100%; border-collapse:collapse;">
+                        <colgroup>
+                            <col style="width:34%">
+                            <col style="width:33%">
+                            <col style="width:33%">
+                        </colgroup>
+                        <tr>
+                            <td style="border:1px solid #000; padding:4px 6px;">
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <img src="~/images/LOGO FIX_sin_fondo.png" style="max-height:1.5cm;" alt="FixMedical" />
+                                    <img src="~/images/logo_bic.png" style="max-height:1.3cm;" alt="BIC" onerror="this.style.display='none'" />
+                                </div>
+                            </td>
+                            <td style="border:1px solid #000; padding:0;">
+                                <table style="width:100%; border-collapse:collapse;">
+                                    <tr><td style="border:none; border-bottom:1px solid #000; text-align:center; font-size:11px; padding:6px 4px;">SOLICITUD DE MATERIAL DE CIRUGÍA</td></tr>
+                                    <tr><td style="border:none; text-align:center; font-size:11px; padding:6px 4px;">LOGÍSTICA</td></tr>
+                                </table>
+                            </td>
+                            <td style="border:1px solid #000; padding:0;">
+                                <table style="width:100%; border-collapse:collapse;">
+                                    <tr><td style="border:none; border-bottom:1px solid #000; font-size:10.5px; padding:2px 6px;">Código: F-G-LG-001</td></tr>
+                                    <tr><td style="border:none; border-bottom:1px solid #000; font-size:10.5px; padding:2px 6px;">Versión: 03</td></tr>
+                                    <tr><td style="border:none; border-bottom:1px solid #000; font-size:10.5px; padding:2px 6px;">Elaborado:Coord. Logística</td></tr>
+                                    <tr><td style="border:none; font-size:10.5px; padding:2px 6px;">Fecha de vigencia: 25-08-2025</td></tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+
+            <!-- ===== TÍTULOS ===== -->
+            <tr>
+                <td colspan="4" class="sinborde" style="text-align:center; font-size:15px; padding:10px 0 6px 0;">SOLICITUD DE MATERIAL DE CIRUGÍA</td>
+            </tr>
+            <!-- Subtítulo fijo del formato oficial. Si algún día debe variar por tipo de solicitud,
+                 reemplaza el texto por: @Model.Solicitud.TipoSolicitud -->
+            <tr>
+                <td colspan="4" class="centro-n">SOLICITUD COMERCIAL</td>
+            </tr>
+
+            <!-- ===== ZONA 1: SOLICITUD COMERCIAL ===== -->
+            <tr><td class="etq">N° DE SOLICITUD:</td><td class="val" colspan="3">@Model.Solicitud.NumeroSolicitud</td></tr>
+            <tr>
+                <td class="etq">FECHA DE SOLICITUD:</td>
+                <td class="val">@Model.FormatoFecha(Model.Solicitud.FechaSolicitud)</td>
+                <td class="etq">HORA DE SOLICITUD:</td>
+                <td class="val">@Model.FormatoHora(Model.Solicitud.HoraSolicitud)</td>
+            </tr>
+            <tr><td class="etq">EJECUTIVO COMERCIAL:</td><td class="val" colspan="3">@Model.Solicitud.EjecutivoComercial</td></tr>
+            <tr><td class="etq">CIUDAD:</td><td class="val" colspan="3">@Model.Solicitud.Ciudad</td></tr>
+            <tr><td class="etq">INSTITUCIÓN:</td><td class="val" colspan="3">@Model.Solicitud.Institucion</td></tr>
+            <tr><td class="etq">FACTURAR A:</td><td class="val" colspan="3">@Model.Solicitud.Facturar_A</td></tr>
+            <tr><td class="etq">ESPECIALISTA:</td><td class="val" colspan="3">@Model.Solicitud.Especialista</td></tr>
+            <tr>
+                <td class="etq">FECHA DE LA CIRUGÍA:</td>
+                <td class="val">@Model.FormatoFecha(Model.Solicitud.FechaCirugia)</td>
+                <td class="etq">HORA DE LA CIRUGÍA:</td>
+                <td class="val">@Model.FormatoHoraOpcional(Model.Solicitud.HoraCirugia)</td>
+            </tr>
+            <tr><td class="etq">NOMBRE DEL PACIENTE:</td><td class="val" colspan="3">@Model.Solicitud.NombrePaciente</td></tr>
+            <tr><td class="etq">N° DE IDENTIFICACIÓN:</td><td class="val" colspan="3">@Model.Solicitud.NumeroIdentificacion</td></tr>
+            <tr><td class="etq">ESPECIALIDAD:</td><td class="val" colspan="3">@Model.Solicitud.Especialidad</td></tr>
+            <tr><td class="etq">INDICACIÓN:</td><td class="val" colspan="3">@Model.Solicitud.Indicacion</td></tr>
+            <tr>
+                <td class="etq" style="vertical-align:top;">MATERIAL SOLICITADO:</td>
+                <td class="val multiline" colspan="3" style="vertical-align:top;">@Model.Solicitud.MaterialSolicitado</td>
+            </tr>
+            <tr><td class="etq">MOTOR:</td><td class="val" colspan="3">@Model.Solicitud.Motor</td></tr>
+            <tr><td class="etq">OBSERVACIONES</td><td class="val" colspan="3">@Model.Solicitud.ObservacionesEjecutivos</td></tr>
+
+            <!-- ===== ZONA 2: LOGÍSTICA ===== -->
+            <tr><td colspan="4" class="centro">DILIGENCIAMIENTO EXCLUSIVO DE LOGÍSTICA</td></tr>
+            <tr><td colspan="4" class="etq2" style="height:45px;">ASIGNACIÓN DE EQUIPOS:</td></tr>
+            <tr><td class="etq2">NÚMERO DE REMISIÓN</td><td colspan="3"></td></tr>
+            <tr><td class="etq2">CONSUMO No.:</td><td></td><td class="centro">SIN CONSUMO</td><td></td></tr>
+            <tr><td class="etq2">SOLICITUD DE REPOSICIÓN No.:</td><td colspan="3"></td></tr>
+            <tr><td class="etq2">REPOSICIÓN No.:</td><td colspan="3"></td></tr>
+            <tr>
+                <td colspan="2" class="etq2" style="height:74px;">CLIENTES EPS:</td>
+                <td colspan="2" style="padding:0;">
+                    <!-- Cajita anidada: 2 filas, rótulos arriba de las celdas altas -->
+                    <table class="mini">
+                        <tr><td style="width:50%;">VALIDADOR DE USUARIO</td><td colspan="2" style="text-align:center;">AUTORIZACIÓN</td></tr>
+                        <tr>
+                            <td style="height:80px; vertical-align:top;">ACTIVO</td>
+                            <td style="vertical-align:top;">NÚMERO</td>
+                            <td style="vertical-align:top;">CORREO</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <!-- fila vacía EXTERNA de 4 celdas = espacio de firma de los cuatro roles -->
+            <tr>
+                <td style="height:26px;"></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td class="centro" style="height:32px;">ACEPTADO POR</td>
+                <td class="centro">DELEGADO A</td>
+                <td class="centro">REVISADO POR</td>
+                <td class="centro">ENTREGADO A</td>
+            </tr>
+
+            <!-- ===== ESTADO DE EQUIPOS DE DESPACHO ===== -->
+            <tr><td colspan="4" class="centro">ESTADO DE EQUIPOS DE DESPACHO</td></tr>
+            <tr><td colspan="2" class="centro">DILIGENCIAR TRANSPORTADOR</td><td colspan="2" class="centro">RECIBIDO LAVADO</td></tr>
+            <tr class="eq"><td class="centro">CONTENEDORES</td><td></td><td></td><td rowspan="6"></td></tr>
+            <tr class="eq"><td class="centro">CHALECO Y CUELLO</td><td></td><td></td></tr>
+            <tr class="eq"><td class="centro">MOTOR</td><td></td><td></td></tr>
+            <tr class="eq"><td class="centro">CAJA DE INSTRUMENTAL</td><td></td><td></td></tr>
+            <tr class="eq"><td class="centro">CAJAS DE IMPLANTES</td><td></td><td></td></tr>
+            <tr class="eq"><td class="centro">KIT DE PLACAS</td><td></td><td></td></tr>
+            <tr class="eq"><td class="centro">ACCESORIOS</td><td></td><td></td><td class="centro">FIRMA</td></tr>
+
+            <!-- pie pegado arribita de la tabla -->
+            <tr><td colspan="4" class="sinborde" style="height:1.5cm;"></td></tr>
+
+            <!-- ===== PIE DE PÁGINA: 3 TERCIOS ANCLADOS A LA IZQUIERDA ===== -->
+            <tr>
+                <td colspan="4" style="padding:0; border:none;">
+                    <table style="width:90%; border-collapse:collapse; margin:0;">
+                        <colgroup>
+                            <col style="width:33.3%">
+                            <col style="width:33.3%">
+                            <col style="width:33.4%">
+                        </colgroup>
+                        <tr>
+                            <td style="border:1px solid #000; font-size:10px; padding:2px 6px;">Código: F-G-LG-001</td>
+                            <td style="border:1px solid #000; font-size:10px; padding:2px 6px;">F. Vigencia: 25-08-2025</td>
+                            <td style="border:1px solid #000; font-size:10px; padding:2px 6px;">Versión: 03</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- ===== MODAL DE OPCIONES DEL FORMATO ===== -->
+    <div id="modalAcciones" class="modal-acciones">
+        <div class="modal-box">
+            <button type="button" class="modal-close" onclick="cerrarModal()">&times;</button>
+            <h3>Acciones del formato</h3>
+            <div class="modal-grid">
+                <button type="button" class="accion-btn pdf" onclick="descargarPDF()">📄 GENERAR PDF</button>
+                <button type="button" class="accion-btn imprimir" onclick="window.print()">🖨️ IMPRIMIR</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="pdfOverlay" class="pdf-overlay">
+        <div class="spin"></div><div>Generando PDF...</div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script>
+        function abrirModal() { document.getElementById('modalAcciones').style.display = 'flex'; }
+        function cerrarModal() { document.getElementById('modalAcciones').style.display = 'none'; }
+        document.getElementById('modalAcciones').addEventListener('mousedown', function (e) { if (e.target === this) cerrarModal(); });
+
+        function showOverlay() { document.getElementById('pdfOverlay').style.display = 'flex'; }
+        function hideOverlay() { document.getElementById('pdfOverlay').style.display = 'none'; }
+
+        async function descargarPDF() {
+            cerrarModal();
+            showOverlay();
+            await new Promise(r => setTimeout(r, 220));
+            
+            const hoja = document.getElementById('hojaOriginal');
+            hoja.classList.add('pdf-clean'); // sin sombra durante la captura
+
+            const opt = {
+                filename: ('F-G-LG-001_' + '@Model.Solicitud.NumeroSolicitud' + '.pdf').replace(/[\\/:*?"<>|]/g, '_'),
+                margin: 0,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true, logging: false, backgroundColor: '#ffffff' },
+                jsPDF: { unit: 'cm', format: 'letter', orientation: 'portrait' }
+            };
+
+            try {
+                await html2pdf().set(opt).from(hoja).save();
+            } catch (err) {
+                console.error('Error generando PDF:', err);
+                alert('Error al generar el PDF');
+            } finally {
+                hoja.classList.remove('pdf-clean');
+                hideOverlay();
+            }
+        }
+    </script>
+        <!-- MODO PDF: si la página llegó con ?pdf=true, genera el PDF automáticamente -->
+    @if (Model.ModoPdf)
+    {
+        <script>
+            window.addEventListener('load', function () {
+                setTimeout(function () { descargarPDF(); }, 700);
+            });
+        </script>
+    }
+</body>
+</html>

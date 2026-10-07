@@ -868,11 +868,11 @@ namespace fixmedical._1._1.Migrations
                     b.Property<DateTime>("FechaSolicitud")
                         .HasColumnType("date");
 
-                    b.Property<DateTime>("HoraCirugia")
-                        .HasColumnType("datetime2");
+                    b.Property<TimeSpan>("HoraCirugia")
+                        .HasColumnType("time");
 
-                    b.Property<DateTime>("HoraSolicitud")
-                        .HasColumnType("datetime2");
+                    b.Property<TimeSpan>("HoraSolicitud")
+                        .HasColumnType("time");
 
                     b.Property<string>("Indicacion")
                         .IsRequired()

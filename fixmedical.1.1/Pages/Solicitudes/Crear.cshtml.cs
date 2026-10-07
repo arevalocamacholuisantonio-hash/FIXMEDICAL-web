@@ -41,7 +41,7 @@ namespace fixmedical._1._1.Pages.Solicitudes
             // Pre-genera el número para que el campo readonly no llegue vacío al POST
             Solicitud.NumeroSolicitud = GenerarNumeroSolicitud();
             Solicitud.FechaSolicitud = DateTime.Today;
-            Solicitud.HoraSolicitud = DateTime.Now;
+            Solicitud.HoraSolicitud = DateTime.Now.TimeOfDay;
             Solicitud.Estado = "Pendiente";
 
             return Page();
@@ -50,7 +50,7 @@ namespace fixmedical._1._1.Pages.Solicitudes
         public async Task<IActionResult> OnPostAsync()
         {
             if (!TieneAcceso()) return RedirectToPage("/Dashboard");
-            NombreUsuario = User.Identity?.Name ?? "Usuario";
+            NombreUsuario = User.Identity?.Name ?? "Usuario"; Solicitud.HoraSolicitud = DateTime.Now.TimeOfDay;
 
             if (!ModelState.IsValid)
             {

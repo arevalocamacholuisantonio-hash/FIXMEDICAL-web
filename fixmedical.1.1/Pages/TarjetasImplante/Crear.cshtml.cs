@@ -1,6 +1,7 @@
 using fixmedical._1._1.Modelos;
 using FixMedicalWeb.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
@@ -27,11 +28,50 @@ namespace fixmedical._1._1.Pages.TarjetasImplante
         public string ConsecutivoGenerado { get; set; } = string.Empty;
         public string ProgIdActual { get; set; } = string.Empty;
 
+        // ▼▼▼ Canal servidor→toasts: JSON con las etiquetas de los campos que fallaron ▼▼▼
+        public string ErroresJson { get; set; } = "[]";
+
+        // Mapa campo→etiqueta en español (para no mostrar "The Ciudad field is required")
+        private static readonly Dictionary<string, string> Etiquetas = new(StringComparer.OrdinalIgnoreCase)
+        {
+            ["Institucion"] = "Institución",
+            ["Ciudad"] = "Ciudad",
+            ["Remision"] = "Remisión",
+            ["FechaCirugia"] = "Fecha de cirugía",
+            ["NombrePaciente"] = "Nombre del paciente",
+            ["NumeroIdentificacion"] = "Número de identificación",
+            ["NombreEspecialista"] = "Nombre del especialista",
+            ["NombreEQC"] = "Nombre del EQC",
+            ["NombreIqxInstitucion"] = "Nombre IQX institución",
+            ["Fabricante"] = "Fabricante",
+            ["Pais"] = "País",
+            ["FirmaEspecialista"] = "Firma del especialista",
+            ["firmaEQC"] = "Firma del EQC",
+            ["FirmaIqxInstitucion"] = "Firma IQX institución",
+        };
+
+        // Traduce las claves de ModelState a etiquetas en español y las serializa a JSON
+        private string ErroresAMensajeJson()
+        {
+            var msgs = new List<string>();
+            foreach (var kv in ModelState)
+            {
+                if (string.IsNullOrEmpty(kv.Key)) continue; // el global no lo mostramos (lo cubre el cliente)
+                var campo = kv.Key.StartsWith("NuevaTarjeta.")
+                    ? kv.Key.Substring("NuevaTarjeta.".Length)
+                    : kv.Key;
+                var etiqueta = Etiquetas.TryGetValue(campo, out var e) ? e : campo;
+                if (!msgs.Contains(etiqueta)) msgs.Add(etiqueta);
+            }
+            return JsonSerializer.Serialize(msgs);
+        }
+
         public async Task OnGetAsync()
         {
             NuevaTarjeta.FechaCirugia = DateTime.Now;
             ConsecutivoGenerado = await GenerarSiguienteConsecutivoAsync();
             ProgIdActual = Request.Query["progId"].ToString();
+            ErroresJson = "[]";
         }
 
         public JsonResult OnGetBuscarReferencias(string texto)
@@ -99,7 +139,7 @@ namespace fixmedical._1._1.Pages.TarjetasImplante
             if (!ModelState.IsValid)
             {
                 ConsecutivoGenerado = await GenerarSiguienteConsecutivoAsync();
-                ModelState.AddModelError("", "Faltan campos obligatorios. Revise el formulario.");
+                ErroresJson = ErroresAMensajeJson();   // ← viaja al hidden → toasts (hoja intacta)
                 return Page();
             }
 
@@ -169,7 +209,6 @@ namespace fixmedical._1._1.Pages.TarjetasImplante
 
                     await tx.CommitAsync();
 
-                    // Guardar adjuntos desde base64 (sin IFormFile)
                     await GuardarAdjuntosAsync(AdjuntosBase64Json);
 
                     if (prog != null)
@@ -191,25 +230,24 @@ namespace fixmedical._1._1.Pages.TarjetasImplante
                 {
                     await tx.RollbackAsync();
                     string msg = dbEx.InnerException?.Message ?? dbEx.Message;
-                    ModelState.AddModelError("", "ERROR AL GUARDAR (SQL): " + msg);
                     ConsecutivoGenerado = await GenerarSiguienteConsecutivoAsync();
+                    ErroresJson = JsonSerializer.Serialize(new[] { "Error al guardar: " + msg });
                     return Page();
                 }
                 catch (Exception ex)
                 {
                     await tx.RollbackAsync();
-                    ModelState.AddModelError("", "ERROR GENERAL: " + ex.Message);
                     ConsecutivoGenerado = await GenerarSiguienteConsecutivoAsync();
+                    ErroresJson = JsonSerializer.Serialize(new[] { "Error general: " + ex.Message });
                     return Page();
                 }
             }
 
-            ModelState.AddModelError("", "No se pudo generar un consecutivo único tras varios intentos. Intente de nuevo.");
             ConsecutivoGenerado = await GenerarSiguienteConsecutivoAsync();
+            ErroresJson = JsonSerializer.Serialize(new[] { "No se pudo generar un consecutivo único. Intente de nuevo." });
             return Page();
         }
 
-        // DTO para deserializar el JSON de adjuntos
         private class AdjuntoDto
         {
             public string? nombre { get; set; }

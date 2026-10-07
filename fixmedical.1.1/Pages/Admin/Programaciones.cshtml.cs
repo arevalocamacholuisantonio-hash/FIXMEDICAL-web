@@ -167,7 +167,7 @@ namespace fixmedical._1._1.Pages.Admin
             if (sol == null || sol.Estado != "Pendiente") return RedirectToPage();
 
             // Fusiona fecha y hora en un solo DateTime
-            DateTime fechaCirugia = sol.FechaCirugia.Date.Add(sol.HoraCirugia.TimeOfDay);
+            DateTime fechaCirugia = sol.FechaCirugia.Date.Add(sol.HoraCirugia);
 
             var nueva = new ProgramacionCirugia
             {
